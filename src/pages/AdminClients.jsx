@@ -13,7 +13,8 @@ import {
   PlayCircle,
   CheckCircle2,
   TrendingUp,
-  BookOpen
+  BookOpen,
+  ChevronDown
 } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -35,14 +36,22 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function AdminClients() {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [deleteClient, setDeleteClient] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [newClient, setNewClient] = useState({ email: '', name: '' });
+  const [newClient, setNewClient] = useState({ email: '', name: '', course_id: '' });
   const [selectedClientCourses, setSelectedClientCourses] = useState(null);
   const [selectedClientLessons, setSelectedClientLessons] = useState(null);
+  const [removeAccess, setRemoveAccess] = useState(null);
   
   const queryClient = useQueryClient();
 
@@ -71,20 +80,54 @@ export default function AdminClients() {
     queryFn: () => base44.entities.Chapter.list(),
   });
 
+  const { data: clientAccess = [] } = useQuery({
+    queryKey: ['clientAccess'],
+    queryFn: () => base44.entities.ClientCourseAccess.list(),
+  });
+
   const addClientMutation = useMutation({
-    mutationFn: (data) => base44.entities.AllowedClient.create(data),
+    mutationFn: async (data) => {
+      const client = await base44.entities.AllowedClient.create({ email: data.email, name: data.name });
+      if (data.course_id) {
+        await base44.entities.ClientCourseAccess.create({
+          email: data.email,
+          course_id: data.course_id
+        });
+      }
+      return client;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['clients']);
+      queryClient.invalidateQueries(['clientAccess']);
       setShowAddDialog(false);
-      setNewClient({ email: '', name: '' });
+      setNewClient({ email: '', name: '', course_id: '' });
     },
   });
 
   const deleteClientMutation = useMutation({
-    mutationFn: (id) => base44.entities.AllowedClient.delete(id),
+    mutationFn: async (client) => {
+      // Delete all course access for this client
+      const access = clientAccess.filter(a => a.email === client.email);
+      for (const a of access) {
+        await base44.entities.ClientCourseAccess.delete(a.id);
+      }
+      await base44.entities.AllowedClient.delete(client.id);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['clients']);
+      queryClient.invalidateQueries(['clientAccess']);
       setDeleteClient(null);
+    },
+  });
+
+  const removeAccessMutation = useMutation({
+    mutationFn: ({ email, course_id }) => {
+      const access = clientAccess.find(a => a.email === email && a.course_id === course_id);
+      return base44.entities.ClientCourseAccess.delete(access.id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['clientAccess']);
+      setRemoveAccess(null);
     },
   });
 
@@ -100,6 +143,11 @@ export default function AdminClients() {
 
   const getTotalLessons = () => {
     return lessons.length;
+  };
+
+  const getClientCourses = (clientEmail) => {
+    const accessList = clientAccess.filter(a => a.email === clientEmail);
+    return courses.filter(c => accessList.some(a => a.course_id === c.id));
   };
 
   const handleAddClient = (e) => {
@@ -214,8 +262,8 @@ export default function AdminClients() {
                         <PlayCircle className="w-4 h-4 text-blue-400" />
                       </div>
                       <div className="text-right">
-                        <p className="text-xs text-gray-500 group-hover/stat:text-blue-400 transition-colors">סה"כ קורסים</p>
-                        <p className="text-white font-semibold">{courses.length}</p>
+                        <p className="text-xs text-gray-500 group-hover/stat:text-blue-400 transition-colors">קורסים מורשים</p>
+                        <p className="text-white font-semibold">{getClientCourses(client.email).length}</p>
                       </div>
                     </button>
                     <button
@@ -288,6 +336,24 @@ export default function AdminClients() {
                 />
               </div>
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="course">קורס *</Label>
+              <Select
+                value={newClient.course_id}
+                onValueChange={(value) => setNewClient({ ...newClient, course_id: value })}
+              >
+                <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
+                  <SelectValue placeholder="בחר קורס" />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-800 border-zinc-700">
+                  {courses.map((course) => (
+                    <SelectItem key={course.id} value={course.id} className="text-white">
+                      {course.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="flex gap-3 pt-4">
               <Button
                 type="button"
@@ -299,8 +365,8 @@ export default function AdminClients() {
               </Button>
               <Button
                 type="submit"
-                disabled={addClientMutation.isPending}
-                className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold"
+                disabled={addClientMutation.isPending || !newClient.course_id}
+                className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold disabled:opacity-50"
               >
                 {addClientMutation.isPending ? 'מוסיף...' : 'הוסף לקוח'}
               </Button>
@@ -316,13 +382,13 @@ export default function AdminClients() {
             <DialogTitle>קורסים של {selectedClientCourses?.name || selectedClientCourses?.email}</DialogTitle>
           </DialogHeader>
           <div className="mt-4 space-y-3">
-            {courses.length === 0 ? (
+            {getClientCourses(selectedClientCourses?.email).length === 0 ? (
               <div className="text-center py-8">
                 <BookOpen className="w-12 h-12 text-gray-700 mx-auto mb-3" />
-                <p className="text-gray-400">אין קורסים במערכת</p>
+                <p className="text-gray-400">אין קורסים מורשים ללקוח זה</p>
               </div>
             ) : (
-              courses.map((course) => {
+              getClientCourses(selectedClientCourses?.email).map((course) => {
                 const courseLessons = lessons.filter(l => l.course_id === course.id);
                 const clientProgress = allProgress.filter(
                   p => p.user_email === selectedClientCourses?.email && 
@@ -362,6 +428,14 @@ export default function AdminClients() {
                           </span>
                         </div>
                       </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setRemoveAccess({ email: selectedClientCourses.email, course_id: course.id, course_title: course.title })}
+                        className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 shrink-0"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
                   </Card>
                 );
@@ -471,10 +545,34 @@ export default function AdminClients() {
               ביטול
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteClientMutation.mutate(deleteClient?.id)}
+              onClick={() => deleteClientMutation.mutate(deleteClient)}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
               מחק
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Remove Access Confirmation */}
+      <AlertDialog open={!!removeAccess} onOpenChange={() => setRemoveAccess(null)}>
+        <AlertDialogContent className="bg-zinc-900 border-zinc-800">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">הסרת גישה לקורס</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400">
+              האם אתה בטוח שברצונך להסיר את הגישה לקורס "{removeAccess?.course_title}"? 
+              הלקוח לא יוכל יותר לגשת לקורס זה.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-3">
+            <AlertDialogCancel className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700">
+              ביטול
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => removeAccessMutation.mutate({ email: removeAccess.email, course_id: removeAccess.course_id })}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              הסר גישה
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
