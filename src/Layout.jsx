@@ -21,6 +21,8 @@ export default function Layout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isAllowed, setIsAllowed] = useState(null);
 
+  const [clientName, setClientName] = useState('');
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -31,6 +33,11 @@ export default function Layout({ children, currentPageName }) {
         if (currentUser?.role !== 'admin') {
           const clientAccess = await base44.entities.ClientCourseAccess.filter({ email: currentUser.email });
           setIsAllowed(clientAccess.length > 0);
+          
+          const clientData = await base44.entities.AllowedClient.filter({ email: currentUser.email });
+          if (clientData.length > 0 && clientData[0].name) {
+            setClientName(clientData[0].name);
+          }
         } else {
           setIsAllowed(true);
         }
@@ -215,7 +222,7 @@ export default function Layout({ children, currentPageName }) {
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white font-medium truncate">{user?.full_name || user?.email?.split('@')[0] || 'משתמש'}</p>
+                    <p className="text-white font-medium truncate">{clientName || user?.full_name || user?.email?.split('@')[0] || 'משתמש'}</p>
                     <p className="text-gray-500 text-sm truncate">{user?.email}</p>
                   </div>
                 </div>
@@ -272,7 +279,7 @@ export default function Layout({ children, currentPageName }) {
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-white font-medium truncate">{user?.full_name || user?.email?.split('@')[0] || 'משתמש'}</p>
+              <p className="text-white font-medium truncate">{clientName || user?.full_name || user?.email?.split('@')[0] || 'משתמש'}</p>
               <p className="text-gray-500 text-sm truncate">{user?.email}</p>
             </div>
           </div>

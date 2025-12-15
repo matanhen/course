@@ -390,7 +390,7 @@ export default function AdminClients() {
                 type="button"
                 variant="outline"
                 onClick={() => setShowAddDialog(false)}
-                className="flex-1 border-zinc-700 text-gray-300 hover:bg-zinc-800"
+                className="flex-1 border-red-700 text-red-400 hover:bg-red-500/10"
               >
                 ביטול
               </Button>

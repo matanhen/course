@@ -25,6 +25,12 @@ export default function Home() {
     enabled: !!user?.email,
   });
 
+  const { data: clientData = [] } = useQuery({
+    queryKey: ['clientData', user?.email],
+    queryFn: () => base44.entities.AllowedClient.filter({ email: user?.email }),
+    enabled: !!user?.email,
+  });
+
   const { data: allCourses = [], isLoading: coursesLoading } = useQuery({
     queryKey: ['courses'],
     queryFn: () => base44.entities.Course.filter({ is_published: true }),
@@ -75,7 +81,7 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           className="text-3xl lg:text-4xl font-bold text-white mb-2"
         >
-          שלום, {user?.full_name || user?.email?.split('@')[0] || 'משתמש'}
+          שלום, {clientData[0]?.name || user?.full_name || user?.email?.split('@')[0] || 'משתמש'}
         </motion.h1>
         <p className="text-gray-400">בחר קורס והתחל ללמוד</p>
       </div>
