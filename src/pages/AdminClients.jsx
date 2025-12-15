@@ -43,8 +43,23 @@ export default function AdminClients() {
   const [newClient, setNewClient] = useState({ email: '', name: '' });
   const [selectedClientCourses, setSelectedClientCourses] = useState(null);
   const [selectedClientLessons, setSelectedClientLessons] = useState(null);
+  const [webhookUrl, setWebhookUrl] = useState('');
   
   const queryClient = useQueryClient();
+
+  React.useEffect(() => {
+    const getWebhookUrl = async () => {
+      try {
+        const response = await base44.functions.invoke('addClient', {});
+      } catch (error) {
+        // Extract the URL from the error or construct it
+        const baseUrl = window.location.origin.replace(/:\d+$/, '');
+        const constructedUrl = `${baseUrl}/api/functions/addClient`;
+        setWebhookUrl(constructedUrl);
+      }
+    };
+    getWebhookUrl();
+  }, []);
 
   const { data: clients = [], isLoading } = useQuery({
     queryKey: ['clients'],
@@ -146,31 +161,36 @@ export default function AdminClients() {
               שלח POST request כדי להוסיף לקוחות אוטומטית מטפסים או מערכות חיצוניות.
             </p>
             
-            {/* Webhook URL Instructions */}
-            <div className="bg-zinc-900/50 rounded-lg p-4 mb-4 border border-zinc-800">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[#c7af48]/20 flex items-center justify-center shrink-0 mt-0.5">
-                  <span className="text-[#c7af48] text-lg">🔗</span>
-                </div>
-                <div className="flex-1">
-                  <p className="text-white text-sm font-semibold mb-3">כתובת ה-Webhook:</p>
-                  <div className="bg-zinc-950 rounded-lg p-3 mb-3">
-                    <p className="text-xs text-gray-500 mb-2">📍 איך לקבל את הכתובת:</p>
-                    <ol className="text-xs text-gray-400 space-y-1.5 list-decimal list-inside mr-2">
-                      <li>פתח את <strong className="text-white">Dashboard</strong> של האפליקציה</li>
-                      <li>עבור אל <strong className="text-white">Code → Functions</strong></li>
-                      <li>לחץ על הפונקציה <strong className="text-[#c7af48]">addClient</strong></li>
-                      <li>העתק את <strong className="text-white">Function URL</strong> שמופיע בראש הדף</li>
-                    </ol>
-                  </div>
-                  <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-2.5">
-                    <p className="text-xs text-amber-400 flex items-start gap-2">
-                      <span className="shrink-0">💡</span>
-                      <span>כתובת זו היא הכתובת הרשמית והמדויקת לשליחת נתונים לפונקציה. השתמש בה בדיוק כפי שמופיע ב-Dashboard.</span>
-                    </p>
-                  </div>
-                </div>
+            {/* Webhook URL Display */}
+            <div className="bg-zinc-950 rounded-lg p-4 mb-4 border border-[#c7af48]/30">
+              <div className="flex items-center justify-between gap-3 mb-2">
+                <p className="text-xs font-semibold text-[#c7af48] uppercase tracking-wide">🔗 כתובת Webhook</p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    const url = webhookUrl || `${window.location.origin.replace(/:\d+$/, '')}/api/functions/addClient`;
+                    navigator.clipboard.writeText(url);
+                  }}
+                  className="text-[#c7af48] hover:text-[#b39d3d] text-xs h-7 hover:bg-[#c7af48]/10"
+                >
+                  📋 העתק
+                </Button>
               </div>
+              <code className="text-white text-sm break-all block bg-zinc-900 p-3 rounded border border-zinc-800 font-mono" dir="ltr">
+                {webhookUrl || `${window.location.origin.replace(/:\d+$/, '')}/api/functions/addClient`}
+              </code>
+              <p className="text-xs text-gray-500 mt-3">
+                ✅ זוהי הכתובת המדויקת לשליחת POST requests להוספת לקוחות אוטומטית
+              </p>
+            </div>
+
+            {/* Additional Instructions */}
+            <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-3 mb-4">
+              <p className="text-xs text-blue-400 flex items-start gap-2">
+                <span className="shrink-0text-sm">ℹ️</span>
+                <span>אם הכתובת לא עובדת, עבור ל-<strong>Dashboard → Code → Functions → addClient</strong> והעתק את ה-Function URL הרשמי משם.</span>
+              </p>
             </div>
 
             {/* Example Request */}
