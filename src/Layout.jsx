@@ -29,8 +29,8 @@ export default function Layout({ children, currentPageName }) {
         setIsAdmin(currentUser?.role === 'admin');
         
         if (currentUser?.role !== 'admin') {
-          const allowedClients = await base44.entities.AllowedClient.filter({ email: currentUser.email });
-          setIsAllowed(allowedClients.length > 0);
+          const clientAccess = await base44.entities.ClientCourseAccess.filter({ email: currentUser.email });
+          setIsAllowed(clientAccess.length > 0);
         } else {
           setIsAllowed(true);
         }

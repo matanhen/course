@@ -19,10 +19,20 @@ export default function Home() {
     getUser();
   }, []);
 
-  const { data: courses = [], isLoading: coursesLoading } = useQuery({
+  const { data: clientAccess = [] } = useQuery({
+    queryKey: ['clientAccess', user?.email],
+    queryFn: () => base44.entities.ClientCourseAccess.filter({ email: user?.email }),
+    enabled: !!user?.email,
+  });
+
+  const { data: allCourses = [], isLoading: coursesLoading } = useQuery({
     queryKey: ['courses'],
     queryFn: () => base44.entities.Course.filter({ is_published: true }),
   });
+
+  const courses = allCourses.filter(course => 
+    clientAccess.some(access => access.course_id === course.id)
+  );
 
   const { data: lessons = [] } = useQuery({
     queryKey: ['lessons'],
