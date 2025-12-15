@@ -143,54 +143,134 @@ export default function AdminClients() {
           <div className="flex-1">
             <h3 className="text-white font-semibold mb-2">הוספת לקוחות אוטומטית דרך Webhook</h3>
             <p className="text-gray-400 text-sm mb-4">
-              שלח POST request לכתובת הבאה כדי להוסיף לקוחות אוטומטית מטפסים או מערכות חיצוניות.
+              שלח POST request כדי להוסיף לקוחות אוטומטית מטפסים או מערכות חיצוניות.
             </p>
             
-            {/* Webhook URL */}
+            {/* Instructions to get URL */}
             <div className="bg-zinc-900/50 rounded-lg p-4 mb-4 border border-zinc-800">
-              <div className="flex items-center justify-between gap-3 mb-2">
-                <p className="text-xs text-gray-500 font-medium">כתובת Webhook:</p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    const url = `${window.location.origin}/api/functions/addClient`;
-                    navigator.clipboard.writeText(url);
-                  }}
-                  className="text-[#c7af48] hover:text-[#b39d3d] text-xs h-6"
-                >
-                  העתק
-                </Button>
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="text-blue-400 text-lg">ℹ️</span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-white text-sm font-medium mb-2">איך לקבל את כתובת ה-Webhook:</p>
+                  <ol className="text-xs text-gray-400 space-y-1 list-decimal list-inside">
+                    <li>עבור אל <strong className="text-gray-300">Dashboard → Code → Functions</strong></li>
+                    <li>לחץ על הפונקציה <strong className="text-[#c7af48]">addClient</strong></li>
+                    <li>העתק את ה-<strong className="text-gray-300">Function URL</strong> מהעמוד</li>
+                  </ol>
+                  <div className="mt-3 p-2 bg-amber-500/10 border border-amber-500/20 rounded text-xs text-amber-400">
+                    💡 זו הכתובת המדויקת והעדכנית של הפונקציה
+                  </div>
+                </div>
               </div>
-              <code className="text-[#c7af48] text-sm break-all">
-                {window.location.origin}/api/functions/addClient
-              </code>
             </div>
 
             {/* Example Request */}
             <details className="bg-zinc-900/30 rounded-lg p-3 mb-3">
-              <summary className="cursor-pointer text-sm text-gray-300 font-medium mb-2">
+              <summary className="cursor-pointer text-sm text-gray-300 font-medium">
                 📝 דוגמה לשליחת בקשה
               </summary>
-              <div className="mt-3 space-y-2">
-                <p className="text-xs text-gray-500">POST Request עם JSON body:</p>
-                <pre className="bg-zinc-950 rounded p-3 text-xs text-gray-300 overflow-x-auto">
+              <div className="mt-3 space-y-3">
+                <div>
+                  <p className="text-xs text-gray-500 mb-2">POST Request עם JSON body:</p>
+                  <pre className="bg-zinc-950 rounded p-3 text-xs text-gray-300 overflow-x-auto">
 {`{
   "email": "client@example.com",
   "name": "שם הלקוח"
 }`}
-                </pre>
-                <p className="text-xs text-gray-500 mt-2">דוגמה עם cURL:</p>
-                <pre className="bg-zinc-950 rounded p-3 text-xs text-gray-300 overflow-x-auto">
-{`curl -X POST ${window.location.origin}/api/functions/addClient \\
+                  </pre>
+                </div>
+                
+                <div>
+                  <p className="text-xs text-gray-500 mb-2">דוגמה עם cURL (החלף [FUNCTION_URL] בכתובת האמיתית):</p>
+                  <pre className="bg-zinc-950 rounded p-3 text-xs text-gray-300 overflow-x-auto" dir="ltr">
+{`curl -X POST [FUNCTION_URL] \\
   -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer YOUR_TOKEN" \\
-  -d '{"email":"client@example.com","name":"שם הלקוח"}'`}
-                </pre>
+  -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \\
+  -d '{"email":"client@example.com","name":"John Doe"}'`}
+                  </pre>
+                </div>
+
+                <div>
+                  <p className="text-xs text-gray-500 mb-2">דוגמה עם JavaScript/Fetch:</p>
+                  <pre className="bg-zinc-950 rounded p-3 text-xs text-gray-300 overflow-x-auto" dir="ltr">
+{`fetch('[FUNCTION_URL]', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer YOUR_ADMIN_TOKEN'
+  },
+  body: JSON.stringify({
+    email: 'client@example.com',
+    name: 'John Doe'
+  })
+})
+.then(res => res.json())
+.then(data => console.log(data));`}
+                  </pre>
+                </div>
+
+                <div className="bg-red-500/10 border border-red-500/20 rounded p-2">
+                  <p className="text-xs text-red-400">
+                    <strong>⚠️ חשוב:</strong> הבקשה דורשת אימות Admin. השתמש ב-Bearer token של משתמש Admin.
+                  </p>
+                </div>
               </div>
             </details>
 
-            {/* Instructions */}
+            {/* Response Examples */}
+            <details className="bg-zinc-900/30 rounded-lg p-3 mb-3">
+              <summary className="cursor-pointer text-sm text-gray-300 font-medium">
+                ✅ תשובות אפשריות
+              </summary>
+              <div className="mt-3 space-y-3">
+                <div>
+                  <p className="text-xs text-green-400 mb-1">✅ הצלחה (201):</p>
+                  <pre className="bg-zinc-950 rounded p-2 text-xs text-gray-300 overflow-x-auto">
+{`{
+  "success": true,
+  "message": "Client added successfully",
+  "client": {
+    "id": "...",
+    "email": "client@example.com",
+    "name": "John Doe"
+  }
+}`}
+                  </pre>
+                </div>
+
+                <div>
+                  <p className="text-xs text-red-400 mb-1">❌ שגיאה - לקוח כבר קיים (409):</p>
+                  <pre className="bg-zinc-950 rounded p-2 text-xs text-gray-300 overflow-x-auto">
+{`{
+  "error": "Client already exists",
+  "client": { ... }
+}`}
+                  </pre>
+                </div>
+
+                <div>
+                  <p className="text-xs text-red-400 mb-1">❌ שגיאה - חסר אימייל (400):</p>
+                  <pre className="bg-zinc-950 rounded p-2 text-xs text-gray-300 overflow-x-auto">
+{`{
+  "error": "Email is required"
+}`}
+                  </pre>
+                </div>
+
+                <div>
+                  <p className="text-xs text-red-400 mb-1">❌ שגיאה - לא מורשה (401):</p>
+                  <pre className="bg-zinc-950 rounded p-2 text-xs text-gray-300 overflow-x-auto">
+{`{
+  "error": "Unauthorized. Admin access required."
+}`}
+                  </pre>
+                </div>
+              </div>
+            </details>
+
+            {/* Parameters Info */}
             <div className="flex flex-wrap gap-2">
               <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-zinc-800 text-gray-400 border border-zinc-700">
                 🔐 דורש אימות Admin
@@ -198,7 +278,7 @@ export default function AdminClients() {
               <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-zinc-800 text-gray-400 border border-zinc-700">
                 📨 POST JSON
               </span>
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-zinc-800 text-gray-400 border border-zinc-700">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-green-400 text-black border border-green-500">
                 ✉️ email: חובה
               </span>
               <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-zinc-800 text-gray-400 border border-zinc-700">
