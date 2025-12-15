@@ -59,7 +59,7 @@ export default function Layout({ children, currentPageName }) {
       <div className="min-h-screen bg-black flex items-center justify-center" dir="rtl">
         <div className="text-center">
           <GraduationCap className="w-20 h-20 text-[#c7af48] mx-auto mb-6" />
-          <h1 className="text-3xl font-bold text-white mb-4">מערכת הקורסים</h1>
+          <h1 className="text-3xl font-bold text-white mb-4">האקדמיה של צעירים מתעשרים</h1>
           <p className="text-gray-400 mb-8">התחבר כדי לגשת לקורסים</p>
           <Button 
             onClick={() => base44.auth.redirectToLogin()}
@@ -150,7 +150,7 @@ export default function Layout({ children, currentPageName }) {
           </Button>
           <div className="flex items-center gap-2">
             <GraduationCap className="w-6 h-6 text-[#c7af48]" />
-            <span className="font-bold text-white">מערכת קורסים</span>
+            <span className="font-bold text-white">האקדמיה של צעירים מתעשרים</span>
           </div>
           <div className="w-10" />
         </div>
@@ -177,7 +177,7 @@ export default function Layout({ children, currentPageName }) {
               <div className="flex items-center justify-between p-4 border-b border-zinc-800">
                 <div className="flex items-center gap-2">
                   <GraduationCap className="w-6 h-6 text-[#c7af48]" />
-                  <span className="font-bold text-white">מערכת קורסים</span>
+                  <span className="font-bold text-white">האקדמיה של צעירים מתעשרים</span>
                 </div>
                 <Button
                   variant="ghost"
@@ -241,7 +241,7 @@ export default function Layout({ children, currentPageName }) {
               <GraduationCap className="w-6 h-6 text-black" />
             </div>
             <div>
-              <h1 className="font-bold text-white">מערכת קורסים</h1>
+              <h1 className="font-bold text-white text-sm">האקדמיה של צעירים מתעשרים</h1>
               <p className="text-xs text-gray-500">{isAdmin ? 'ניהול' : 'לקוח'}</p>
             </div>
           </div>

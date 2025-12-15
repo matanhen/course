@@ -75,7 +75,7 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           className="text-3xl lg:text-4xl font-bold text-white mb-2"
         >
-          שלום, {user?.full_name || 'משתמש'}
+          שלום, {user?.full_name || user?.email?.split('@')[0] || 'משתמש'}
         </motion.h1>
         <p className="text-gray-400">בחר קורס והתחל ללמוד</p>
       </div>
