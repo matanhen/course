@@ -146,25 +146,31 @@ export default function AdminClients() {
               שלח POST request כדי להוסיף לקוחות אוטומטית מטפסים או מערכות חיצוניות.
             </p>
             
-            {/* Webhook URL */}
+            {/* Webhook URL Instructions */}
             <div className="bg-zinc-900/50 rounded-lg p-4 mb-4 border border-zinc-800">
-              <div className="flex items-center justify-between gap-3 mb-2">
-                <p className="text-xs text-gray-500 font-medium">כתובת Webhook:</p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    const url = `${window.location.origin}/api/v1/functions/addClient`;
-                    navigator.clipboard.writeText(url);
-                  }}
-                  className="text-[#c7af48] hover:text-[#b39d3d] text-xs h-6"
-                >
-                  העתק
-                </Button>
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#c7af48]/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="text-[#c7af48] text-lg">🔗</span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-white text-sm font-semibold mb-3">כתובת ה-Webhook:</p>
+                  <div className="bg-zinc-950 rounded-lg p-3 mb-3">
+                    <p className="text-xs text-gray-500 mb-2">📍 איך לקבל את הכתובת:</p>
+                    <ol className="text-xs text-gray-400 space-y-1.5 list-decimal list-inside mr-2">
+                      <li>פתח את <strong className="text-white">Dashboard</strong> של האפליקציה</li>
+                      <li>עבור אל <strong className="text-white">Code → Functions</strong></li>
+                      <li>לחץ על הפונקציה <strong className="text-[#c7af48]">addClient</strong></li>
+                      <li>העתק את <strong className="text-white">Function URL</strong> שמופיע בראש הדף</li>
+                    </ol>
+                  </div>
+                  <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-2.5">
+                    <p className="text-xs text-amber-400 flex items-start gap-2">
+                      <span className="shrink-0">💡</span>
+                      <span>כתובת זו היא הכתובת הרשמית והמדויקת לשליחת נתונים לפונקציה. השתמש בה בדיוק כפי שמופיע ב-Dashboard.</span>
+                    </p>
+                  </div>
+                </div>
               </div>
-              <code className="text-[#c7af48] text-sm break-all block" dir="ltr">
-                {window.location.origin}/api/v1/functions/addClient
-              </code>
             </div>
 
             {/* Example Request */}
@@ -184,9 +190,9 @@ export default function AdminClients() {
                 </div>
                 
                 <div>
-                  <p className="text-xs text-gray-500 mb-2">דוגמה עם cURL:</p>
+                  <p className="text-xs text-gray-500 mb-2">דוגמה עם cURL (החלף YOUR_FUNCTION_URL בכתובת מה-Dashboard):</p>
                   <pre className="bg-zinc-950 rounded p-3 text-xs text-gray-300 overflow-x-auto" dir="ltr">
-{`curl -X POST ${window.location.origin}/api/v1/functions/addClient \\
+{`curl -X POST YOUR_FUNCTION_URL \\
   -H "Content-Type: application/json" \\
   -d '{"email":"client@example.com","name":"John Doe"}'`}
                   </pre>
@@ -195,7 +201,7 @@ export default function AdminClients() {
                 <div>
                   <p className="text-xs text-gray-500 mb-2">דוגמה עם JavaScript/Fetch:</p>
                   <pre className="bg-zinc-950 rounded p-3 text-xs text-gray-300 overflow-x-auto" dir="ltr">
-{`fetch('${window.location.origin}/api/v1/functions/addClient', {
+{`fetch('YOUR_FUNCTION_URL', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
@@ -208,6 +214,12 @@ export default function AdminClients() {
 .then(res => res.json())
 .then(data => console.log(data));`}
                   </pre>
+                </div>
+
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded p-2 mt-2">
+                  <p className="text-xs text-blue-400">
+                    <strong>📌 שים לב:</strong> החלף <code className="bg-zinc-900 px-1 rounded">YOUR_FUNCTION_URL</code> בכתובת המלאה שקיבלת מה-Dashboard.
+                  </p>
                 </div>
               </div>
             </details>
