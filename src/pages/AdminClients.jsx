@@ -53,6 +53,8 @@ export default function AdminClients() {
   const [selectedClientCourses, setSelectedClientCourses] = useState(null);
   const [selectedClientLessons, setSelectedClientLessons] = useState(null);
   const [removeAccess, setRemoveAccess] = useState(null);
+  const [showAddCourseDialog, setShowAddCourseDialog] = useState(false);
+  const [selectedCourseToAdd, setSelectedCourseToAdd] = useState('');
   
   const queryClient = useQueryClient();
 
@@ -140,6 +142,20 @@ export default function AdminClients() {
     },
   });
 
+  const addCourseMutation = useMutation({
+    mutationFn: ({ email, course_id }) => {
+      return base44.entities.ClientCourseAccess.create({
+        email: email,
+        course_id: course_id
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['clientAccess']);
+      setShowAddCourseDialog(false);
+      setSelectedCourseToAdd('');
+    },
+  });
+
   const filteredClients = clients.filter(client =>
     client.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
     client.name?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -157,6 +173,23 @@ export default function AdminClients() {
   const getClientCourses = (clientEmail) => {
     const accessList = clientAccess.filter(a => a.email === clientEmail);
     return courses.filter(c => accessList.some(a => a.course_id === c.id));
+  };
+
+  const getAvailableCoursesForClient = (clientEmail) => {
+    const clientCourseIds = clientAccess
+      .filter(a => a.email === clientEmail)
+      .map(a => a.course_id);
+    return courses.filter(c => !clientCourseIds.includes(c.id));
+  };
+
+  const handleAddCourse = (e) => {
+    e.preventDefault();
+    if (selectedCourseToAdd && selectedClientCourses) {
+      addCourseMutation.mutate({
+        email: selectedClientCourses.email,
+        course_id: selectedCourseToAdd
+      });
+    }
   };
 
   const handleAddClient = (e) => {
@@ -410,7 +443,17 @@ export default function AdminClients() {
       <Dialog open={!!selectedClientCourses} onOpenChange={() => setSelectedClientCourses(null)}>
         <DialogContent className="bg-zinc-900 border-zinc-800 text-white max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>קורסים של {selectedClientCourses?.name || selectedClientCourses?.email}</DialogTitle>
+            <div className="flex items-center justify-between">
+              <DialogTitle>קורסים של {selectedClientCourses?.name || selectedClientCourses?.email}</DialogTitle>
+              <Button
+                onClick={() => setShowAddCourseDialog(true)}
+                className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold"
+                size="sm"
+              >
+                <Plus className="w-4 h-4 ml-1" />
+                הוסף קורס
+              </Button>
+            </div>
           </DialogHeader>
           <div className="mt-4 space-y-3">
             {getClientCourses(selectedClientCourses?.email).length === 0 ? (
@@ -584,6 +627,59 @@ export default function AdminClients() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Add Course Dialog */}
+      <Dialog open={showAddCourseDialog} onOpenChange={setShowAddCourseDialog}>
+        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+          <DialogHeader>
+            <DialogTitle>הוסף קורס ללקוח</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleAddCourse} className="space-y-6 mt-4">
+            <div className="space-y-2">
+              <Label htmlFor="addCourse">בחר קורס</Label>
+              {getAvailableCoursesForClient(selectedClientCourses?.email).length === 0 ? (
+                <p className="text-gray-400 text-sm py-3">כל הקורסים כבר מורשים ללקוח זה</p>
+              ) : (
+                <Select
+                  value={selectedCourseToAdd}
+                  onValueChange={(value) => setSelectedCourseToAdd(value)}
+                >
+                  <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
+                    <SelectValue placeholder="בחר קורס" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-800 border-zinc-700">
+                    {getAvailableCoursesForClient(selectedClientCourses?.email).map((course) => (
+                      <SelectItem key={course.id} value={course.id} className="text-white">
+                        {course.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+            <div className="flex gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setShowAddCourseDialog(false);
+                  setSelectedCourseToAdd('');
+                }}
+                className="flex-1 border-red-700 text-red-400 hover:bg-red-500/10"
+              >
+                ביטול
+              </Button>
+              <Button
+                type="submit"
+                disabled={addCourseMutation.isPending || !selectedCourseToAdd}
+                className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold disabled:opacity-50"
+              >
+                {addCourseMutation.isPending ? 'מוסיף...' : 'הוסף קורס'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Remove Access Confirmation */}
       <AlertDialog open={!!removeAccess} onOpenChange={() => setRemoveAccess(null)}>
