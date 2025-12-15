@@ -146,24 +146,25 @@ export default function AdminClients() {
               שלח POST request כדי להוסיף לקוחות אוטומטית מטפסים או מערכות חיצוניות.
             </p>
             
-            {/* Instructions to get URL */}
+            {/* Webhook URL */}
             <div className="bg-zinc-900/50 rounded-lg p-4 mb-4 border border-zinc-800">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                  <span className="text-blue-400 text-lg">ℹ️</span>
-                </div>
-                <div className="flex-1">
-                  <p className="text-white text-sm font-medium mb-2">איך לקבל את כתובת ה-Webhook:</p>
-                  <ol className="text-xs text-gray-400 space-y-1 list-decimal list-inside">
-                    <li>עבור אל <strong className="text-gray-300">Dashboard → Code → Functions</strong></li>
-                    <li>לחץ על הפונקציה <strong className="text-[#c7af48]">addClient</strong></li>
-                    <li>העתק את ה-<strong className="text-gray-300">Function URL</strong> מהעמוד</li>
-                  </ol>
-                  <div className="mt-3 p-2 bg-amber-500/10 border border-amber-500/20 rounded text-xs text-amber-400">
-                    💡 זו הכתובת המדויקת והעדכנית של הפונקציה
-                  </div>
-                </div>
+              <div className="flex items-center justify-between gap-3 mb-2">
+                <p className="text-xs text-gray-500 font-medium">כתובת Webhook:</p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    const url = `${window.location.origin}/api/v1/functions/addClient`;
+                    navigator.clipboard.writeText(url);
+                  }}
+                  className="text-[#c7af48] hover:text-[#b39d3d] text-xs h-6"
+                >
+                  העתק
+                </Button>
               </div>
+              <code className="text-[#c7af48] text-sm break-all block" dir="ltr">
+                {window.location.origin}/api/v1/functions/addClient
+              </code>
             </div>
 
             {/* Example Request */}
@@ -183,11 +184,10 @@ export default function AdminClients() {
                 </div>
                 
                 <div>
-                  <p className="text-xs text-gray-500 mb-2">דוגמה עם cURL (החלף [FUNCTION_URL] בכתובת האמיתית):</p>
+                  <p className="text-xs text-gray-500 mb-2">דוגמה עם cURL:</p>
                   <pre className="bg-zinc-950 rounded p-3 text-xs text-gray-300 overflow-x-auto" dir="ltr">
-{`curl -X POST [FUNCTION_URL] \\
+{`curl -X POST ${window.location.origin}/api/v1/functions/addClient \\
   -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \\
   -d '{"email":"client@example.com","name":"John Doe"}'`}
                   </pre>
                 </div>
@@ -195,11 +195,10 @@ export default function AdminClients() {
                 <div>
                   <p className="text-xs text-gray-500 mb-2">דוגמה עם JavaScript/Fetch:</p>
                   <pre className="bg-zinc-950 rounded p-3 text-xs text-gray-300 overflow-x-auto" dir="ltr">
-{`fetch('[FUNCTION_URL]', {
+{`fetch('${window.location.origin}/api/v1/functions/addClient', {
   method: 'POST',
   headers: {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer YOUR_ADMIN_TOKEN'
+    'Content-Type': 'application/json'
   },
   body: JSON.stringify({
     email: 'client@example.com',
@@ -209,12 +208,6 @@ export default function AdminClients() {
 .then(res => res.json())
 .then(data => console.log(data));`}
                   </pre>
-                </div>
-
-                <div className="bg-red-500/10 border border-red-500/20 rounded p-2">
-                  <p className="text-xs text-red-400">
-                    <strong>⚠️ חשוב:</strong> הבקשה דורשת אימות Admin. השתמש ב-Bearer token של משתמש Admin.
-                  </p>
                 </div>
               </div>
             </details>
@@ -259,22 +252,12 @@ export default function AdminClients() {
                   </pre>
                 </div>
 
-                <div>
-                  <p className="text-xs text-red-400 mb-1">❌ שגיאה - לא מורשה (401):</p>
-                  <pre className="bg-zinc-950 rounded p-2 text-xs text-gray-300 overflow-x-auto">
-{`{
-  "error": "Unauthorized. Admin access required."
-}`}
-                  </pre>
-                </div>
+
               </div>
             </details>
 
             {/* Parameters Info */}
             <div className="flex flex-wrap gap-2">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-zinc-800 text-gray-400 border border-zinc-700">
-                🔐 דורש אימות Admin
-              </span>
               <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-zinc-800 text-gray-400 border border-zinc-700">
                 📨 POST JSON
               </span>
