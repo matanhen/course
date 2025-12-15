@@ -215,7 +215,7 @@ export default function Layout({ children, currentPageName }) {
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white font-medium truncate">{user?.full_name || 'משתמש'}</p>
+                    <p className="text-white font-medium truncate">{user?.full_name || user?.email?.split('@')[0] || 'משתמש'}</p>
                     <p className="text-gray-500 text-sm truncate">{user?.email}</p>
                   </div>
                 </div>
@@ -272,7 +272,7 @@ export default function Layout({ children, currentPageName }) {
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-white font-medium truncate">{user?.full_name || 'משתמש'}</p>
+              <p className="text-white font-medium truncate">{user?.full_name || user?.email?.split('@')[0] || 'משתמש'}</p>
               <p className="text-gray-500 text-sm truncate">{user?.email}</p>
             </div>
           </div>
