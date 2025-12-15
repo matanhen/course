@@ -284,29 +284,7 @@ export default function AdminCourseEdit() {
     }
   }, [course]);
 
-  if (!user || courseLoading) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
-      </div>
-    );
-  }
-
-  if (user.role !== 'admin') {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center" dir="rtl">
-        <div className="text-center max-w-md px-6">
-          <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <X className="w-10 h-10 text-red-500" />
-          </div>
-          <h1 className="text-2xl font-bold text-white mb-4">אין לך הרשאה</h1>
-          <p className="text-gray-400 mb-8">אין לך הרשאה לגשת לדף זה.</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!editingCourse) {
+  if (!user || courseLoading || !editingCourse) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
