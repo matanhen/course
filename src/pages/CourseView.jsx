@@ -9,7 +9,8 @@ import {
   ChevronUp,
   ArrowLeft,
   Lock,
-  BookOpen
+  BookOpen,
+  FileText
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
@@ -155,6 +156,36 @@ export default function CourseView() {
     return match ? match[1] : null;
   };
 
+  const getEmbedUrl = (url) => {
+    if (!url) return null;
+    
+    // Google Docs
+    if (url.includes('docs.google.com/document')) {
+      const docId = url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      return docId ? `https://docs.google.com/document/d/${docId}/preview` : url;
+    }
+    
+    // Google Sheets
+    if (url.includes('docs.google.com/spreadsheets')) {
+      const sheetId = url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      return sheetId ? `https://docs.google.com/spreadsheets/d/${sheetId}/preview` : url;
+    }
+    
+    // Google Slides
+    if (url.includes('docs.google.com/presentation')) {
+      const slideId = url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      return slideId ? `https://docs.google.com/presentation/d/${slideId}/preview` : url;
+    }
+    
+    // Google Drive general
+    if (url.includes('drive.google.com')) {
+      const fileId = url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1] || url.match(/id=([a-zA-Z0-9-_]+)/)?.[1];
+      return fileId ? `https://drive.google.com/file/d/${fileId}/preview` : url;
+    }
+    
+    return url;
+  };
+
   const toggleChapter = (chapterId) => {
     setExpandedChapters(prev => ({
       ...prev,
@@ -246,13 +277,22 @@ export default function CourseView() {
         <div className="flex-1 lg:ml-80">
           <div className="relative aspect-video bg-zinc-900">
             {currentLesson ? (
-              <iframe
-                ref={playerRef}
-                src={`https://www.youtube.com/embed/${extractYouTubeId(currentLesson.youtube_url)}?rel=0&modestbranding=1`}
-                className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+              currentLesson.lesson_type === 'external_link' ? (
+                <iframe
+                  ref={playerRef}
+                  src={getEmbedUrl(currentLesson.external_url)}
+                  className="w-full h-full"
+                  allowFullScreen
+                />
+              ) : (
+                <iframe
+                  ref={playerRef}
+                  src={`https://www.youtube.com/embed/${extractYouTubeId(currentLesson.youtube_url)}?rel=0&modestbranding=1`}
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              )
             ) : (
               <div className="w-full h-full flex items-center justify-center">
                 <BookOpen className="w-16 h-16 text-zinc-700" />
@@ -390,6 +430,8 @@ export default function CourseView() {
                               }`}>
                                 {isCompleted ? (
                                   <CheckCircle2 className="w-4 h-4 text-white" />
+                                ) : lesson.lesson_type === 'external_link' ? (
+                                  <FileText className="w-3 h-3 text-white" />
                                 ) : (
                                   <span className="text-xs text-white">{lessonIndex + 1}</span>
                                 )}
@@ -400,9 +442,14 @@ export default function CourseView() {
                                 }`}>
                                   {lesson.title}
                                 </p>
-                                {lesson.duration && (
-                                  <p className="text-gray-600 text-xs">{lesson.duration}</p>
-                                )}
+                                <div className="flex items-center gap-2">
+                                  {lesson.duration && (
+                                    <p className="text-gray-600 text-xs">{lesson.duration}</p>
+                                  )}
+                                  {lesson.lesson_type === 'external_link' && (
+                                    <span className="text-[#c7af48] text-xs">קישור חיצוני</span>
+                                  )}
+                                </div>
                               </div>
                             </button>
                           );
