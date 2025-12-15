@@ -50,12 +50,11 @@ export default function AdminClients() {
   React.useEffect(() => {
     const getWebhookUrl = async () => {
       try {
-        const response = await base44.functions.invoke('addClient', {});
+        // Get the actual function URL from base44 SDK
+        const url = base44.functions.getUrl('addClient');
+        setWebhookUrl(url);
       } catch (error) {
-        // Extract the URL from the error or construct it
-        const baseUrl = window.location.origin.replace(/:\d+$/, '');
-        const constructedUrl = `${baseUrl}/api/functions/addClient`;
-        setWebhookUrl(constructedUrl);
+        console.error('Error getting webhook URL:', error);
       }
     };
     getWebhookUrl();
@@ -169,16 +168,18 @@ export default function AdminClients() {
                   variant="ghost"
                   size="sm"
                   onClick={() => {
-                    const url = webhookUrl || `${window.location.origin.replace(/:\d+$/, '')}/api/functions/addClient`;
-                    navigator.clipboard.writeText(url);
+                    if (webhookUrl) {
+                      navigator.clipboard.writeText(webhookUrl);
+                    }
                   }}
-                  className="text-[#c7af48] hover:text-[#b39d3d] text-xs h-7 hover:bg-[#c7af48]/10"
+                  disabled={!webhookUrl}
+                  className="text-[#c7af48] hover:text-[#b39d3d] text-xs h-7 hover:bg-[#c7af48]/10 disabled:opacity-50"
                 >
                   📋 העתק
                 </Button>
               </div>
               <code className="text-white text-sm break-all block bg-zinc-900 p-3 rounded border border-zinc-800 font-mono" dir="ltr">
-                {webhookUrl || `${window.location.origin.replace(/:\d+$/, '')}/api/functions/addClient`}
+                {webhookUrl || 'טוען...'}
               </code>
               <p className="text-xs text-gray-500 mt-3">
                 ✅ זוהי הכתובת המדויקת לשליחת POST requests להוספת לקוחות אוטומטית
