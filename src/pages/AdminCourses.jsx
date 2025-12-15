@@ -12,7 +12,8 @@ import {
   Edit,
   MoreVertical,
   Eye,
-  EyeOff
+  EyeOff,
+  X
 } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function AdminCourses() {
+  const [user, setUser] = useState(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [deleteCourse, setDeleteCourse] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -56,6 +58,36 @@ export default function AdminCourses() {
   const [uploadingImage, setUploadingImage] = useState(false);
   
   const queryClient = useQueryClient();
+
+  React.useEffect(() => {
+    const checkUser = async () => {
+      const currentUser = await base44.auth.me();
+      setUser(currentUser);
+    };
+    checkUser();
+  }, []);
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
+      </div>
+    );
+  }
+
+  if (user.role !== 'admin') {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center" dir="rtl">
+        <div className="text-center max-w-md px-6">
+          <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <X className="w-10 h-10 text-red-500" />
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-4">אין לך הרשאה</h1>
+          <p className="text-gray-400 mb-8">אין לך הרשאה לגשת לדף זה.</p>
+        </div>
+      </div>
+    );
+  }
 
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ['courses'],

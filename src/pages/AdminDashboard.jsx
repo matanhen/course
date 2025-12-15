@@ -16,6 +16,16 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export default function AdminDashboard() {
+  const [user, setUser] = useState(null);
+
+  React.useEffect(() => {
+    const checkUser = async () => {
+      const currentUser = await base44.auth.me();
+      setUser(currentUser);
+    };
+    checkUser();
+  }, []);
+
   const { data: courses = [] } = useQuery({
     queryKey: ['courses'],
     queryFn: () => base44.entities.Course.list(),
