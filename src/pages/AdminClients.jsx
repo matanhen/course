@@ -143,17 +143,66 @@ export default function AdminClients() {
           <div className="flex-1">
             <h3 className="text-white font-semibold mb-2">הוספת לקוחות אוטומטית דרך Webhook</h3>
             <p className="text-gray-400 text-sm mb-4">
-              כדי להוסיף לקוחות אוטומטית מטפסים או מערכות חיצוניות, עליך להפעיל Backend Functions באפליקציה.
+              שלח POST request לכתובת הבאה כדי להוסיף לקוחות אוטומטית מטפסים או מערכות חיצוניות.
             </p>
+            
+            {/* Webhook URL */}
+            <div className="bg-zinc-900/50 rounded-lg p-4 mb-4 border border-zinc-800">
+              <div className="flex items-center justify-between gap-3 mb-2">
+                <p className="text-xs text-gray-500 font-medium">כתובת Webhook:</p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    const url = `${window.location.origin}/api/functions/addClient`;
+                    navigator.clipboard.writeText(url);
+                  }}
+                  className="text-[#c7af48] hover:text-[#b39d3d] text-xs h-6"
+                >
+                  העתק
+                </Button>
+              </div>
+              <code className="text-[#c7af48] text-sm break-all">
+                {window.location.origin}/api/functions/addClient
+              </code>
+            </div>
+
+            {/* Example Request */}
+            <details className="bg-zinc-900/30 rounded-lg p-3 mb-3">
+              <summary className="cursor-pointer text-sm text-gray-300 font-medium mb-2">
+                📝 דוגמה לשליחת בקשה
+              </summary>
+              <div className="mt-3 space-y-2">
+                <p className="text-xs text-gray-500">POST Request עם JSON body:</p>
+                <pre className="bg-zinc-950 rounded p-3 text-xs text-gray-300 overflow-x-auto">
+{`{
+  "email": "client@example.com",
+  "name": "שם הלקוח"
+}`}
+                </pre>
+                <p className="text-xs text-gray-500 mt-2">דוגמה עם cURL:</p>
+                <pre className="bg-zinc-950 rounded p-3 text-xs text-gray-300 overflow-x-auto">
+{`curl -X POST ${window.location.origin}/api/functions/addClient \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer YOUR_TOKEN" \\
+  -d '{"email":"client@example.com","name":"שם הלקוח"}'`}
+                </pre>
+              </div>
+            </details>
+
+            {/* Instructions */}
             <div className="flex flex-wrap gap-2">
               <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-zinc-800 text-gray-400 border border-zinc-700">
-                ⚡ Backend Functions נדרש
+                🔐 דורש אימות Admin
               </span>
               <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-zinc-800 text-gray-400 border border-zinc-700">
-                📨 POST: שם + אימייל
+                📨 POST JSON
               </span>
               <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-zinc-800 text-gray-400 border border-zinc-700">
-                🔄 הוספה אוטומטית
+                ✉️ email: חובה
+              </span>
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-zinc-800 text-gray-400 border border-zinc-700">
+                👤 name: אופציונלי
               </span>
             </div>
           </div>
