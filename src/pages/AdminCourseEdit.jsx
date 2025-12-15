@@ -16,7 +16,9 @@ import {
   ChevronUp,
   Video,
   BookOpen,
-  X
+  X,
+  FileText,
+  Link2
 } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -46,6 +48,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function AdminCourseEdit() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -64,7 +73,9 @@ export default function AdminCourseEdit() {
   const [newChapter, setNewChapter] = useState({ title: '' });
   const [newLesson, setNewLesson] = useState({ 
     title: '', 
+    lesson_type: 'video',
     youtube_url: '', 
+    external_url: '',
     duration: '' 
   });
 
@@ -84,11 +95,14 @@ export default function AdminCourseEdit() {
       const courses = await base44.entities.Course.filter({ id: courseId });
       return courses[0];
     },
-    enabled: !!courseId,
-    onSuccess: (data) => {
-      if (!editingCourse) setEditingCourse(data);
-    }
+    enabled: !!courseId
   });
+
+  React.useEffect(() => {
+    if (course && !editingCourse) {
+      setEditingCourse(course);
+    }
+  }, [course, editingCourse]);
 
   const { data: chapters = [] } = useQuery({
     queryKey: ['chapters', courseId],
@@ -152,7 +166,7 @@ export default function AdminCourseEdit() {
     onSuccess: () => {
       queryClient.invalidateQueries(['lessons', courseId]);
       setShowLessonDialog(false);
-      setNewLesson({ title: '', youtube_url: '', duration: '' });
+      setNewLesson({ title: '', lesson_type: 'video', youtube_url: '', external_url: '', duration: '' });
       setEditingLesson(null);
       setSelectedChapterId(null);
     },
@@ -163,7 +177,7 @@ export default function AdminCourseEdit() {
     onSuccess: () => {
       queryClient.invalidateQueries(['lessons', courseId]);
       setShowLessonDialog(false);
-      setNewLesson({ title: '', youtube_url: '', duration: '' });
+      setNewLesson({ title: '', lesson_type: 'video', youtube_url: '', external_url: '', duration: '' });
       setEditingLesson(null);
     },
   });
@@ -243,7 +257,9 @@ export default function AdminCourseEdit() {
         id: editingLesson.id,
         data: {
           title: newLesson.title,
-          youtube_url: newLesson.youtube_url,
+          lesson_type: newLesson.lesson_type,
+          youtube_url: newLesson.lesson_type === 'video' ? newLesson.youtube_url : '',
+          external_url: newLesson.lesson_type === 'external_link' ? newLesson.external_url : '',
           duration: newLesson.duration,
         }
       });
@@ -256,7 +272,9 @@ export default function AdminCourseEdit() {
         chapter_id: selectedChapterId,
         course_id: courseId,
         title: newLesson.title,
-        youtube_url: newLesson.youtube_url,
+        lesson_type: newLesson.lesson_type,
+        youtube_url: newLesson.lesson_type === 'video' ? newLesson.youtube_url : '',
+        external_url: newLesson.lesson_type === 'external_link' ? newLesson.external_url : '',
         duration: newLesson.duration,
         order: maxOrder + 1,
       });
@@ -273,7 +291,9 @@ export default function AdminCourseEdit() {
     setEditingLesson(lesson);
     setNewLesson({
       title: lesson.title,
-      youtube_url: lesson.youtube_url,
+      lesson_type: lesson.lesson_type || 'video',
+      youtube_url: lesson.youtube_url || '',
+      external_url: lesson.external_url || '',
       duration: lesson.duration || '',
     });
     setShowLessonDialog(true);
@@ -282,7 +302,7 @@ export default function AdminCourseEdit() {
   const openAddLesson = (chapterId) => {
     setSelectedChapterId(chapterId);
     setEditingLesson(null);
-    setNewLesson({ title: '', youtube_url: '', duration: '' });
+    setNewLesson({ title: '', lesson_type: 'video', youtube_url: '', external_url: '', duration: '' });
     setShowLessonDialog(true);
   };
 
@@ -300,12 +320,6 @@ export default function AdminCourseEdit() {
       setUploadingImage(false);
     }
   };
-
-  React.useEffect(() => {
-    if (course && !editingCourse) {
-      setEditingCourse(course);
-    }
-  }, [course]);
 
   return (
     <div className="min-h-screen bg-black p-6 lg:p-10">
@@ -504,15 +518,24 @@ export default function AdminCourseEdit() {
                               className="p-4 pr-12 flex items-center justify-between hover:bg-zinc-800/30 transition-colors"
                             >
                               <div className="flex items-center gap-3">
-                                <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center">
-                                  <PlayCircle className="w-4 h-4 text-gray-400" />
-                                </div>
-                                <div>
-                                  <p className="text-gray-300">{lesson.title}</p>
-                                  {lesson.duration && (
-                                    <p className="text-gray-600 text-xs">{lesson.duration}</p>
-                                  )}
-                                </div>
+                               <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center">
+                                 {lesson.lesson_type === 'external_link' ? (
+                                   <FileText className="w-4 h-4 text-gray-400" />
+                                 ) : (
+                                   <PlayCircle className="w-4 h-4 text-gray-400" />
+                                 )}
+                               </div>
+                               <div>
+                                 <p className="text-gray-300">{lesson.title}</p>
+                                 <div className="flex items-center gap-2">
+                                   {lesson.duration && (
+                                     <p className="text-gray-600 text-xs">{lesson.duration}</p>
+                                   )}
+                                   {lesson.lesson_type === 'external_link' && (
+                                     <span className="text-[#c7af48] text-xs">קישור חיצוני</span>
+                                   )}
+                                 </div>
+                               </div>
                               </div>
                               <div className="flex items-center gap-2">
                                 <Button
@@ -603,20 +626,65 @@ export default function AdminCourseEdit() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="youtubeUrl">קישור YouTube</Label>
-              <div className="relative">
-                <Video className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                <Input
-                  id="youtubeUrl"
-                  required
-                  value={newLesson.youtube_url}
-                  onChange={(e) => setNewLesson({ ...newLesson, youtube_url: e.target.value })}
-                  placeholder="https://youtube.com/watch?v=..."
-                  className="bg-zinc-800 border-zinc-700 text-white pr-11"
-                />
-              </div>
-              <p className="text-gray-500 text-xs">הזן קישור לסרטון YouTube (רשום או לא רשום)</p>
+              <Label htmlFor="lessonType">סוג השיעור</Label>
+              <Select
+                value={newLesson.lesson_type}
+                onValueChange={(value) => setNewLesson({ ...newLesson, lesson_type: value })}
+              >
+                <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
+                  <SelectValue placeholder="בחר סוג שיעור" />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-800 border-zinc-700">
+                  <SelectItem value="video" className="text-white">
+                    <div className="flex items-center gap-2">
+                      <Video className="w-4 h-4" />
+                      <span>וידאו YouTube</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="external_link" className="text-white">
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4" />
+                      <span>קישור חיצוני (Docs, Sheets...)</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+            
+            {newLesson.lesson_type === 'video' ? (
+              <div className="space-y-2">
+                <Label htmlFor="youtubeUrl">קישור YouTube</Label>
+                <div className="relative">
+                  <Video className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <Input
+                    id="youtubeUrl"
+                    required
+                    value={newLesson.youtube_url}
+                    onChange={(e) => setNewLesson({ ...newLesson, youtube_url: e.target.value })}
+                    placeholder="https://youtube.com/watch?v=..."
+                    className="bg-zinc-800 border-zinc-700 text-white pr-11"
+                  />
+                </div>
+                <p className="text-gray-500 text-xs">הזן קישור לסרטון YouTube</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Label htmlFor="externalUrl">קישור חיצוני</Label>
+                <div className="relative">
+                  <Link2 className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <Input
+                    id="externalUrl"
+                    required
+                    value={newLesson.external_url}
+                    onChange={(e) => setNewLesson({ ...newLesson, external_url: e.target.value })}
+                    placeholder="https://docs.google.com/..."
+                    className="bg-zinc-800 border-zinc-700 text-white pr-11"
+                  />
+                </div>
+                <p className="text-gray-500 text-xs">הזן קישור ל-Google Docs, Sheets, Slides או כל קובץ אחר</p>
+              </div>
+            )}
+            
             <div className="space-y-2">
               <Label htmlFor="duration">משך (אופציונלי)</Label>
               <Input
