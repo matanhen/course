@@ -33,13 +33,21 @@ export default function CourseView() {
     getUser();
   }, []);
 
+  const { data: clientAccess = [] } = useQuery({
+    queryKey: ['clientAccess', user?.email],
+    queryFn: () => base44.entities.ClientCourseAccess.filter({ email: user?.email }),
+    enabled: !!user?.email,
+  });
+
+  const hasAccess = clientAccess.some(access => access.course_id === courseId);
+
   const { data: course } = useQuery({
     queryKey: ['course', courseId],
     queryFn: async () => {
       const courses = await base44.entities.Course.filter({ id: courseId });
       return courses[0];
     },
-    enabled: !!courseId,
+    enabled: !!courseId && hasAccess,
   });
 
   const { data: chapters = [] } = useQuery({
@@ -165,6 +173,33 @@ export default function CourseView() {
   const completedCount = progress.filter(p => p.completed).length;
   const totalCount = lessons.length;
   const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+  if (!user || clientAccess.length === 0) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
+      </div>
+    );
+  }
+
+  if (!hasAccess) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center" dir="rtl">
+        <div className="text-center max-w-md px-6">
+          <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Lock className="w-10 h-10 text-red-500" />
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-4">אין לך גישה לקורס זה</h1>
+          <p className="text-gray-400 mb-8">קורס זה אינו זמין עבורך. פנה למנהל המערכת לקבלת גישה.</p>
+          <Link to={createPageUrl('Home')}>
+            <Button className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold">
+              חזור לקורסים שלי
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (!course) {
     return (
