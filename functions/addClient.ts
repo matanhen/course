@@ -12,15 +12,6 @@ Deno.serve(async (req) => {
 
     const base44 = createClientFromRequest(req);
 
-    // Check if user is authenticated and is admin
-    const user = await base44.auth.me();
-    if (!user || user.role !== 'admin') {
-      return Response.json(
-        { error: 'Unauthorized. Admin access required.' },
-        { status: 401 }
-      );
-    }
-
     // Get data from request body
     const body = await req.json();
     const { email, name } = body;
