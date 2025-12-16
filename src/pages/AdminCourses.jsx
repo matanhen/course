@@ -13,7 +13,8 @@ import {
   MoreVertical,
   Eye,
   EyeOff,
-  X
+  X,
+  Copy
 } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -118,6 +119,59 @@ export default function AdminCourses() {
       base44.entities.Course.update(id, { is_published }),
     onSuccess: () => {
       queryClient.invalidateQueries(['courses']);
+    },
+  });
+
+  const duplicateCourseMutation = useMutation({
+    mutationFn: async (courseId) => {
+      const courseToDuplicate = courses.find(c => c.id === courseId);
+      if (!courseToDuplicate) return;
+
+      // Create new course
+      const newCourse = await base44.entities.Course.create({
+        title: `${courseToDuplicate.title} (עותק)`,
+        description: courseToDuplicate.description,
+        thumbnail: courseToDuplicate.thumbnail,
+        is_published: false,
+      });
+
+      // Get all chapters for this course
+      const courseChapters = chapters.filter(ch => ch.course_id === courseId);
+      const chapterMapping = {};
+
+      // Duplicate chapters
+      for (const chapter of courseChapters) {
+        const newChapter = await base44.entities.Chapter.create({
+          course_id: newCourse.id,
+          title: chapter.title,
+          order: chapter.order,
+        });
+        chapterMapping[chapter.id] = newChapter.id;
+      }
+
+      // Get all lessons for this course
+      const courseLessons = lessons.filter(l => l.course_id === courseId);
+
+      // Duplicate lessons
+      for (const lesson of courseLessons) {
+        await base44.entities.Lesson.create({
+          chapter_id: chapterMapping[lesson.chapter_id],
+          course_id: newCourse.id,
+          title: lesson.title,
+          lesson_type: lesson.lesson_type,
+          youtube_url: lesson.youtube_url,
+          external_url: lesson.external_url,
+          duration: lesson.duration,
+          order: lesson.order,
+        });
+      }
+
+      return newCourse;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['courses']);
+      queryClient.invalidateQueries(['chapters']);
+      queryClient.invalidateQueries(['lessons']);
     },
   });
 
@@ -270,6 +324,14 @@ export default function AdminCourses() {
                                 <Edit className="w-4 h-4" />
                                 ערוך קורס
                               </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => duplicateCourseMutation.mutate(course.id)}
+                              disabled={duplicateCourseMutation.isPending}
+                              className="flex items-center gap-2 text-white"
+                            >
+                              <Copy className="w-4 h-4" />
+                              שכפל קורס
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => togglePublishMutation.mutate({
