@@ -445,14 +445,9 @@ export default function CourseView() {
                                 }`}>
                                   {lesson.title}
                                 </p>
-                                <div className="flex items-center gap-2">
-                                  {lesson.duration && (
-                                    <p className="text-gray-600 text-xs">{lesson.duration}</p>
-                                  )}
-                                  {lesson.lesson_type === 'external_link' && (
-                                    <span className="text-[#c7af48] text-xs">קישור חיצוני</span>
-                                  )}
-                                </div>
+                                {lesson.duration && (
+                                  <p className="text-gray-600 text-xs">{lesson.duration}</p>
+                                )}
                               </div>
                             </button>
                           );
