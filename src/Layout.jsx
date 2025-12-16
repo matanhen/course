@@ -69,7 +69,7 @@ export default function Layout({ children, currentPageName }) {
           <h1 className="text-3xl font-bold text-white mb-4">האקדמיה של צעירים מתעשרים</h1>
           <p className="text-gray-400 mb-8">התחבר כדי לגשת לקורסים</p>
           <Button 
-            onClick={() => base44.auth.redirectToLogin()}
+            onClick={() => base44.auth.redirectToLogin(createPageUrl('Home'))}
             className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold px-8 py-3"
           >
             התחברות

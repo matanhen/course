@@ -275,15 +275,18 @@ export default function CourseView() {
       <div className="flex flex-col lg:flex-row">
         {/* Video Player / Document Viewer */}
         <div className="flex-1 lg:ml-80">
-          <div className={`relative bg-zinc-900 ${currentLesson?.lesson_type === 'external_link' ? 'h-screen' : 'aspect-video'}`}>
+          <div className={`relative bg-zinc-900 ${currentLesson?.lesson_type === 'external_link' ? 'min-h-screen' : 'aspect-video'}`}>
             {currentLesson ? (
               currentLesson.lesson_type === 'external_link' ? (
-                <iframe
-                  ref={playerRef}
-                  src={getEmbedUrl(currentLesson.external_url)}
-                  className="w-full h-full border-0"
-                  allowFullScreen
-                />
+                <div className="w-full h-full overflow-auto">
+                  <iframe
+                    ref={playerRef}
+                    src={getEmbedUrl(currentLesson.external_url)}
+                    className="w-full min-h-screen border-0"
+                    style={{ minHeight: '100vh' }}
+                    allowFullScreen
+                  />
+                </div>
               ) : (
                 <iframe
                   ref={playerRef}

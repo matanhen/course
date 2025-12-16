@@ -4,6 +4,7 @@ import AdminCourses from './pages/AdminCourses';
 import AdminDashboard from './pages/AdminDashboard';
 import CourseView from './pages/CourseView';
 import Home from './pages/Home';
+import Index from './pages/Index';
 import __Layout from './Layout.jsx';
 
 
@@ -14,6 +15,7 @@ export const PAGES = {
     "AdminDashboard": AdminDashboard,
     "CourseView": CourseView,
     "Home": Home,
+    "Index": Index,
 }
 
 export const pagesConfig = {
