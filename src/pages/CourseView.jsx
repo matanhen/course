@@ -273,15 +273,15 @@ export default function CourseView() {
       </div>
 
       <div className="flex flex-col lg:flex-row">
-        {/* Video Player */}
+        {/* Video Player / Document Viewer */}
         <div className="flex-1 lg:ml-80">
-          <div className="relative aspect-video bg-zinc-900">
+          <div className={`relative bg-zinc-900 ${currentLesson?.lesson_type === 'external_link' ? 'h-screen' : 'aspect-video'}`}>
             {currentLesson ? (
               currentLesson.lesson_type === 'external_link' ? (
                 <iframe
                   ref={playerRef}
                   src={getEmbedUrl(currentLesson.external_url)}
-                  className="w-full h-full"
+                  className="w-full h-full border-0"
                   allowFullScreen
                 />
               ) : (
