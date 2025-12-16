@@ -779,11 +779,11 @@ export default function AdminCourseEdit() {
                     required
                     value={newLesson.external_url}
                     onChange={(e) => setNewLesson({ ...newLesson, external_url: e.target.value })}
-                    placeholder="https://docs.google.com/..."
+                    placeholder="https://..."
                     className="bg-zinc-800 border-zinc-700 text-white pr-11"
                   />
                 </div>
-                <p className="text-gray-500 text-xs">הזן קישור ל-Google Docs, Sheets, Slides או כל קובץ אחר</p>
+                <p className="text-gray-500 text-xs">הזן קישור לאתר, Google Docs, Sheets, Slides או כל קובץ אחר - יוצג בתוך המערכת</p>
               </div>
             )}
             
