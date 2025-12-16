@@ -23,8 +23,10 @@ export default function CourseView() {
   const [user, setUser] = useState(null);
   const [currentLesson, setCurrentLesson] = useState(null);
   const [expandedChapters, setExpandedChapters] = useState({});
+  const [videoProgress, setVideoProgress] = useState(0);
   const playerRef = useRef(null);
   const queryClient = useQueryClient();
+  const progressUpdateInterval = useRef(null);
 
   useEffect(() => {
     const getUser = async () => {
@@ -72,12 +74,35 @@ export default function CourseView() {
     enabled: !!user?.email && !!courseId,
   });
 
+  const updateProgressMutation = useMutation({
+    mutationFn: async ({ lessonId, progressPercent, completed }) => {
+      const existingProgress = progress.find(p => p.lesson_id === lessonId);
+      if (existingProgress) {
+        await base44.entities.LessonProgress.update(existingProgress.id, { 
+          progress_percent: progressPercent,
+          completed: completed !== undefined ? completed : existingProgress.completed
+        });
+      } else {
+        await base44.entities.LessonProgress.create({
+          user_email: user?.email,
+          lesson_id: lessonId,
+          course_id: courseId,
+          progress_percent: progressPercent,
+          completed: completed || false,
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['progress', user?.email, courseId]);
+    },
+  });
+
   const markCompleteMutation = useMutation({
     mutationFn: async (lessonId) => {
       const existingProgress = progress.find(p => p.lesson_id === lessonId);
       if (existingProgress) {
         if (!existingProgress.completed) {
-          await base44.entities.LessonProgress.update(existingProgress.id, { completed: true });
+          await base44.entities.LessonProgress.update(existingProgress.id, { completed: true, progress_percent: 100 });
         }
       } else {
         await base44.entities.LessonProgress.create({
@@ -85,6 +110,7 @@ export default function CourseView() {
           lesson_id: lessonId,
           course_id: courseId,
           completed: true,
+          progress_percent: 100,
         });
       }
     },
@@ -195,11 +221,95 @@ export default function CourseView() {
 
   const selectLesson = (lesson) => {
     setCurrentLesson(lesson);
+    setVideoProgress(0);
     setExpandedChapters(prev => ({
       ...prev,
       [lesson.chapter_id]: true,
     }));
+    
+    // Mark external link as viewed when opened
+    if (lesson.lesson_type === 'external_link') {
+      setTimeout(() => {
+        updateProgressMutation.mutate({
+          lessonId: lesson.id,
+          progressPercent: 100,
+          completed: true
+        });
+      }, 1000);
+    }
   };
+
+  // Track video progress for YouTube videos
+  useEffect(() => {
+    if (!currentLesson || currentLesson.lesson_type === 'external_link') return;
+
+    const iframe = playerRef.current;
+    if (!iframe) return;
+
+    // YouTube API tracking
+    const checkProgress = () => {
+      if (iframe && iframe.contentWindow) {
+        try {
+          iframe.contentWindow.postMessage('{"event":"command","func":"getCurrentTime","args":""}', '*');
+          iframe.contentWindow.postMessage('{"event":"command","func":"getDuration","args":""}', '*');
+        } catch (e) {
+          // Ignore errors
+        }
+      }
+    };
+
+    let currentTime = 0;
+    let duration = 0;
+
+    const handleMessage = (event) => {
+      if (event.origin !== 'https://www.youtube.com') return;
+      
+      try {
+        const data = JSON.parse(event.data);
+        if (data.event === 'infoDelivery') {
+          if (data.info && data.info.currentTime !== undefined) {
+            currentTime = data.info.currentTime;
+          }
+          if (data.info && data.info.duration !== undefined) {
+            duration = data.info.duration;
+          }
+          
+          if (duration > 0 && currentTime > 0) {
+            const percent = Math.round((currentTime / duration) * 100);
+            setVideoProgress(percent);
+            
+            // Auto-complete at 80%
+            if (percent >= 80 && !isLessonCompleted(currentLesson.id)) {
+              updateProgressMutation.mutate({
+                lessonId: currentLesson.id,
+                progressPercent: percent,
+                completed: true
+              });
+            } else if (percent < 80) {
+              // Update progress without marking as complete
+              updateProgressMutation.mutate({
+                lessonId: currentLesson.id,
+                progressPercent: percent,
+                completed: false
+              });
+            }
+          }
+        }
+      } catch (e) {
+        // Ignore parsing errors
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    progressUpdateInterval.current = setInterval(checkProgress, 3000);
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      if (progressUpdateInterval.current) {
+        clearInterval(progressUpdateInterval.current);
+      }
+    };
+  }, [currentLesson, progress, updateProgressMutation]);
 
   const completedCount = progress.filter(p => p.completed).length;
   const totalCount = lessons.length;
@@ -290,7 +400,7 @@ export default function CourseView() {
               ) : (
                 <iframe
                   ref={playerRef}
-                  src={`https://www.youtube.com/embed/${extractYouTubeId(currentLesson.youtube_url)}?rel=0&modestbranding=1`}
+                  src={`https://www.youtube.com/embed/${extractYouTubeId(currentLesson.youtube_url)}?enablejsapi=1&rel=0&modestbranding=1`}
                   className="w-full h-full"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen

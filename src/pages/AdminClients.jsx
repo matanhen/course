@@ -523,83 +523,145 @@ export default function AdminClients() {
       <Dialog open={!!selectedClientLessons} onOpenChange={() => setSelectedClientLessons(null)}>
         <DialogContent className="bg-zinc-900 border-zinc-800 text-white max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>שיעורים של {selectedClientLessons?.name || selectedClientLessons?.email}</DialogTitle>
+            <DialogTitle>שיעורים נצפו - {selectedClientLessons?.name || selectedClientLessons?.email}</DialogTitle>
           </DialogHeader>
           <div className="mt-4 space-y-4">
-            {lessons.length === 0 ? (
-              <div className="text-center py-8">
-                <PlayCircle className="w-12 h-12 text-gray-700 mx-auto mb-3" />
-                <p className="text-gray-400">אין שיעורים במערכת</p>
-              </div>
-            ) : (
-              chapters
-                .sort((a, b) => a.order - b.order)
-                .map((chapter) => {
-                  const chapterLessons = lessons
-                    .filter(l => l.chapter_id === chapter.id)
-                    .sort((a, b) => a.order - b.order);
-                  
-                  if (chapterLessons.length === 0) return null;
-
-                  const course = courses.find(c => c.id === chapter.course_id);
+            {/* Course Selection */}
+            <div className="space-y-2">
+              <Label>בחר קורס</Label>
+              <div className="grid grid-cols-1 gap-2">
+                {getClientCourses(selectedClientLessons?.email).map((course) => {
+                  const courseLessons = lessons.filter(l => l.course_id === course.id);
+                  const clientProgress = allProgress.filter(
+                    p => p.user_email === selectedClientLessons?.email && 
+                         p.course_id === course.id && 
+                         p.completed
+                  );
+                  const progressPercent = courseLessons.length > 0 
+                    ? Math.round((clientProgress.length / courseLessons.length) * 100)
+                    : 0;
 
                   return (
-                    <div key={chapter.id} className="space-y-2">
-                      <div className="flex items-center gap-2 mb-2">
-                        <BookOpen className="w-4 h-4 text-[#c7af48]" />
-                        <h4 className="text-white font-semibold text-sm">{course?.title} - {chapter.title}</h4>
-                      </div>
-                      <div className="space-y-1">
-                        {chapterLessons.map((lesson, index) => {
-                          const isCompleted = allProgress.some(
-                            p => p.user_email === selectedClientLessons?.email && 
-                                 p.lesson_id === lesson.id && 
-                                 p.completed
-                          );
+                    <button
+                      key={course.id}
+                      onClick={() => {
+                        const courseChapters = chapters
+                          .filter(ch => ch.course_id === course.id)
+                          .sort((a, b) => a.order - b.order);
 
-                          return (
-                            <div
-                              key={lesson.id}
-                              className={`flex items-center justify-between p-3 rounded-lg border ${
-                                isCompleted 
-                                  ? 'bg-green-500/5 border-green-500/20' 
-                                  : 'bg-zinc-800/30 border-zinc-700/50'
-                              }`}
-                            >
-                              <div className="flex items-center gap-3">
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                                  isCompleted 
-                                    ? 'bg-green-500' 
-                                    : 'bg-zinc-700'
-                                }`}>
-                                  {isCompleted ? (
-                                    <CheckCircle2 className="w-4 h-4 text-white" />
-                                  ) : (
-                                    <span className="text-xs text-gray-400">{index + 1}</span>
-                                  )}
-                                </div>
-                                <div>
-                                  <p className="text-gray-300">{lesson.title}</p>
-                                  {lesson.duration && (
-                                    <p className="text-xs text-gray-500">{lesson.duration}</p>
-                                  )}
-                                </div>
-                              </div>
-                              <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                isCompleted 
-                                  ? 'bg-green-500/20 text-green-400' 
-                                  : 'bg-zinc-700 text-gray-400'
-                              }`}>
-                                {isCompleted ? 'נצפה' : 'לא נצפה'}
-                              </div>
-                            </div>
-                          );
-                        })}
+                        if (courseChapters.length > 0) {
+                          document.getElementById(`course-details-${course.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                      }}
+                      className="p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg hover:border-[#c7af48]/50 transition-all text-right group"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="text-white font-semibold group-hover:text-[#c7af48] transition-colors">
+                            {course.title}
+                          </h4>
+                          <p className="text-gray-400 text-sm">
+                            {clientProgress.length}/{courseLessons.length} שיעורים נצפו
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`text-lg font-bold ${
+                            progressPercent === 100 ? 'text-green-400' :
+                            progressPercent > 0 ? 'text-[#c7af48]' : 'text-gray-500'
+                          }`}>
+                            {progressPercent}%
+                          </span>
+                          <ChevronDown className="w-4 h-4 text-gray-500" />
+                        </div>
                       </div>
-                    </div>
+                    </button>
                   );
-                })
-            )}
+                })}
+              </div>
+            </div>
+
+            {/* Course Details */}
+            {getClientCourses(selectedClientLessons?.email).map((course) => {
+              const courseChapters = chapters
+                .filter(ch => ch.course_id === course.id)
+                .sort((a, b) => a.order - b.order);
+
+              return (
+                <div key={course.id} id={`course-details-${course.id}`} className="space-y-3 pt-4 border-t border-zinc-800">
+                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                    <BookOpen className="w-5 h-5 text-[#c7af48]" />
+                    {course.title}
+                  </h3>
+                  {courseChapters.map((chapter) => {
+                    const chapterLessons = lessons
+                      .filter(l => l.chapter_id === chapter.id)
+                      .sort((a, b) => a.order - b.order);
+
+                    if (chapterLessons.length === 0) return null;
+
+                    return (
+                      <div key={chapter.id} className="space-y-2">
+                        <h4 className="text-white font-semibold text-sm px-2">{chapter.title}</h4>
+                        <div className="space-y-1">
+                          {chapterLessons.map((lesson, index) => {
+                            const lessonProgress = allProgress.find(
+                              p => p.user_email === selectedClientLessons?.email && 
+                                   p.lesson_id === lesson.id
+                            );
+                            const isCompleted = lessonProgress?.completed || false;
+                            const progressPercent = lessonProgress?.progress_percent || 0;
+
+                            return (
+                              <div
+                                key={lesson.id}
+                                className={`flex items-center justify-between p-3 rounded-lg border ${
+                                  isCompleted 
+                                    ? 'bg-green-500/5 border-green-500/20' 
+                                    : progressPercent > 0
+                                      ? 'bg-yellow-500/5 border-yellow-500/20'
+                                      : 'bg-zinc-800/30 border-zinc-700/50'
+                                }`}
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                                    isCompleted 
+                                      ? 'bg-green-500' 
+                                      : progressPercent > 0
+                                        ? 'bg-yellow-500'
+                                        : 'bg-zinc-700'
+                                  }`}>
+                                    {isCompleted ? (
+                                      <CheckCircle2 className="w-4 h-4 text-white" />
+                                    ) : (
+                                      <span className="text-xs text-white">{progressPercent > 0 ? `${progressPercent}%` : index + 1}</span>
+                                    )}
+                                  </div>
+                                  <div>
+                                    <p className="text-gray-300">{lesson.title}</p>
+                                    {lesson.duration && (
+                                      <p className="text-xs text-gray-500">{lesson.duration}</p>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                  isCompleted 
+                                    ? 'bg-green-500/20 text-green-400' 
+                                    : progressPercent > 0
+                                      ? 'bg-yellow-500/20 text-yellow-400'
+                                      : 'bg-zinc-700 text-gray-400'
+                                }`}>
+                                  {isCompleted ? 'נצפה' : progressPercent > 0 ? `בתהליך ${progressPercent}%` : 'לא נצפה'}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
           </div>
         </DialogContent>
       </Dialog>
