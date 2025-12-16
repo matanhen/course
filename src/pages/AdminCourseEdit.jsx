@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { 
   ArrowRight, 
   Plus, 
@@ -261,6 +262,7 @@ export default function AdminCourseEdit() {
           youtube_url: newLesson.lesson_type === 'video' ? newLesson.youtube_url : '',
           external_url: newLesson.lesson_type === 'external_link' ? newLesson.external_url : '',
           duration: newLesson.duration,
+          chapter_id: selectedChapterId,
         }
       });
     } else {
@@ -289,6 +291,7 @@ export default function AdminCourseEdit() {
 
   const openEditLesson = (lesson) => {
     setEditingLesson(lesson);
+    setSelectedChapterId(lesson.chapter_id);
     setNewLesson({
       title: lesson.title,
       lesson_type: lesson.lesson_type || 'video',
@@ -319,6 +322,51 @@ export default function AdminCourseEdit() {
     } finally {
       setUploadingImage(false);
     }
+  };
+
+  const handleDragEnd = async (result) => {
+    if (!result.destination) return;
+
+    const sourceChapterId = result.source.droppableId;
+    const destChapterId = result.destination.droppableId;
+    const sourceLessons = getLessonsForChapter(sourceChapterId);
+    
+    // Reorder within same chapter
+    if (sourceChapterId === destChapterId) {
+      const reordered = Array.from(sourceLessons);
+      const [moved] = reordered.splice(result.source.index, 1);
+      reordered.splice(result.destination.index, 0, moved);
+      
+      // Update order for all lessons in this chapter
+      for (let i = 0; i < reordered.length; i++) {
+        await base44.entities.Lesson.update(reordered[i].id, { order: i + 1 });
+      }
+    } else {
+      // Move to different chapter
+      const destLessons = getLessonsForChapter(destChapterId);
+      const movedLesson = sourceLessons[result.source.index];
+      
+      // Update the moved lesson's chapter and order
+      await base44.entities.Lesson.update(movedLesson.id, {
+        chapter_id: destChapterId,
+        order: result.destination.index + 1
+      });
+      
+      // Reorder source chapter
+      const newSourceLessons = sourceLessons.filter(l => l.id !== movedLesson.id);
+      for (let i = 0; i < newSourceLessons.length; i++) {
+        await base44.entities.Lesson.update(newSourceLessons[i].id, { order: i + 1 });
+      }
+      
+      // Reorder destination chapter
+      const newDestLessons = [...destLessons];
+      newDestLessons.splice(result.destination.index, 0, movedLesson);
+      for (let i = 0; i < newDestLessons.length; i++) {
+        await base44.entities.Lesson.update(newDestLessons[i].id, { order: i + 1 });
+      }
+    }
+    
+    queryClient.invalidateQueries(['lessons', courseId]);
   };
 
   return (
@@ -455,115 +503,149 @@ export default function AdminCourseEdit() {
               </Button>
             </Card>
           ) : (
-            <div className="space-y-4">
-              {sortedChapters.map((chapter, chapterIndex) => {
-                const chapterLessons = getLessonsForChapter(chapter.id);
-                
-                return (
-                  <motion.div
-                    key={chapter.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: chapterIndex * 0.05 }}
-                  >
-                    <Card className="bg-zinc-900/50 border-zinc-800 overflow-hidden">
-                      {/* Chapter Header */}
-                      <div className="p-4 flex items-center justify-between border-b border-zinc-800">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-[#c7af48]/10 flex items-center justify-center">
-                            <span className="text-[#c7af48] font-bold text-sm">
-                              {chapterIndex + 1}
-                            </span>
-                          </div>
-                          <div>
-                            <h3 className="text-white font-semibold">{chapter.title}</h3>
-                            <p className="text-gray-500 text-sm">{chapterLessons.length} שיעורים</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => openAddLesson(chapter.id)}
-                            className="text-[#c7af48] hover:text-[#b39d3d] hover:bg-[#c7af48]/10"
-                          >
-                            <Plus className="w-4 h-4 ml-1" />
-                            שיעור
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => openEditChapter(chapter)}
-                            className="text-gray-400 hover:text-white"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setDeleteItem({ type: 'chapter', item: chapter })}
-                            className="text-gray-400 hover:text-red-500"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <div className="space-y-4">
+                {sortedChapters.map((chapter, chapterIndex) => {
+                  const chapterLessons = getLessonsForChapter(chapter.id);
 
-                      {/* Lessons List */}
-                      {chapterLessons.length > 0 && (
-                        <div className="divide-y divide-zinc-800/50">
-                          {chapterLessons.map((lesson, lessonIndex) => (
-                            <div
-                              key={lesson.id}
-                              className="p-4 pr-12 flex items-center justify-between hover:bg-zinc-800/30 transition-colors"
-                            >
-                              <div className="flex items-center gap-3">
-                               <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center">
-                                 {lesson.lesson_type === 'external_link' ? (
-                                   <FileText className="w-4 h-4 text-gray-400" />
-                                 ) : (
-                                   <PlayCircle className="w-4 h-4 text-gray-400" />
-                                 )}
-                               </div>
-                               <div>
-                                 <p className="text-gray-300">{lesson.title}</p>
-                                 <div className="flex items-center gap-2">
-                                   {lesson.duration && (
-                                     <p className="text-gray-600 text-xs">{lesson.duration}</p>
-                                   )}
-                                   {lesson.lesson_type === 'external_link' && (
-                                     <span className="text-[#c7af48] text-xs">קישור חיצוני</span>
-                                   )}
-                                 </div>
-                               </div>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => openEditLesson(lesson)}
-                                  className="text-gray-500 hover:text-white"
-                                >
-                                  <Edit className="w-4 h-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => setDeleteItem({ type: 'lesson', item: lesson })}
-                                  className="text-gray-500 hover:text-red-500"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              </div>
+                  return (
+                    <motion.div
+                      key={chapter.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: chapterIndex * 0.05 }}
+                    >
+                      <Card className="bg-zinc-900/50 border-zinc-800 overflow-hidden">
+                        {/* Chapter Header */}
+                        <div className="p-4 flex items-center justify-between border-b border-zinc-800">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-[#c7af48]/10 flex items-center justify-center">
+                              <span className="text-[#c7af48] font-bold text-sm">
+                                {chapterIndex + 1}
+                              </span>
                             </div>
-                          ))}
+                            <div>
+                              <h3 className="text-white font-semibold">{chapter.title}</h3>
+                              <p className="text-gray-500 text-sm">{chapterLessons.length} שיעורים</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => openAddLesson(chapter.id)}
+                              className="text-[#c7af48] hover:text-[#b39d3d] hover:bg-[#c7af48]/10"
+                            >
+                              <Plus className="w-4 h-4 ml-1" />
+                              שיעור
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => openEditChapter(chapter)}
+                              className="text-gray-400 hover:text-white"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setDeleteItem({ type: 'chapter', item: chapter })}
+                              className="text-gray-400 hover:text-red-500"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </div>
-                      )}
-                    </Card>
-                  </motion.div>
-                );
-              })}
-            </div>
+
+                        {/* Lessons List */}
+                        <Droppable droppableId={chapter.id}>
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.droppableProps}
+                              className={`divide-y divide-zinc-800/50 ${
+                                snapshot.isDraggingOver ? 'bg-zinc-800/30' : ''
+                              }`}
+                            >
+                              {chapterLessons.length > 0 ? (
+                                chapterLessons.map((lesson, lessonIndex) => (
+                                  <Draggable
+                                    key={lesson.id}
+                                    draggableId={lesson.id}
+                                    index={lessonIndex}
+                                  >
+                                    {(provided, snapshot) => (
+                                      <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        className={`p-4 pr-4 flex items-center justify-between hover:bg-zinc-800/30 transition-colors ${
+                                          snapshot.isDragging ? 'bg-zinc-800 shadow-lg' : ''
+                                        }`}
+                                      >
+                                        <div className="flex items-center gap-3 flex-1">
+                                          <div
+                                            {...provided.dragHandleProps}
+                                            className="cursor-grab active:cursor-grabbing"
+                                          >
+                                            <GripVertical className="w-5 h-5 text-gray-600 hover:text-gray-400" />
+                                          </div>
+                                          <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center">
+                                            {lesson.lesson_type === 'external_link' ? (
+                                              <FileText className="w-4 h-4 text-gray-400" />
+                                            ) : (
+                                              <PlayCircle className="w-4 h-4 text-gray-400" />
+                                            )}
+                                          </div>
+                                          <div>
+                                            <p className="text-gray-300">{lesson.title}</p>
+                                            <div className="flex items-center gap-2">
+                                              {lesson.duration && (
+                                                <p className="text-gray-600 text-xs">{lesson.duration}</p>
+                                              )}
+                                              {lesson.lesson_type === 'external_link' && (
+                                                <span className="text-[#c7af48] text-xs">קישור חיצוני</span>
+                                              )}
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                          <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => openEditLesson(lesson)}
+                                            className="text-gray-500 hover:text-white"
+                                          >
+                                            <Edit className="w-4 h-4" />
+                                          </Button>
+                                          <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => setDeleteItem({ type: 'lesson', item: lesson })}
+                                            className="text-gray-500 hover:text-red-500"
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </Draggable>
+                                ))
+                              ) : (
+                                <div className="p-8 text-center text-gray-500">
+                                  אין שיעורים בפרק זה
+                                </div>
+                              )}
+                              {provided.placeholder}
+                            </div>
+                          )}
+                        </Droppable>
+                      </Card>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </DragDropContext>
           )}
         </div>
       </div>
@@ -625,6 +707,26 @@ export default function AdminCourseEdit() {
                 className="bg-zinc-800 border-zinc-700 text-white"
               />
             </div>
+            {editingLesson && (
+              <div className="space-y-2">
+                <Label htmlFor="chapterSelect">פרק</Label>
+                <Select
+                  value={selectedChapterId}
+                  onValueChange={(value) => setSelectedChapterId(value)}
+                >
+                  <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
+                    <SelectValue placeholder="בחר פרק" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-800 border-zinc-700">
+                    {sortedChapters.map((chapter) => (
+                      <SelectItem key={chapter.id} value={chapter.id} className="text-white">
+                        {chapter.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="lessonType">סוג השיעור</Label>
               <Select
