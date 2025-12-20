@@ -35,8 +35,18 @@ export default function Layout({ children, currentPageName }) {
           setIsAllowed(clientAccess.length > 0);
           
           const clientData = await base44.entities.AllowedClient.filter({ email: currentUser.email });
-          if (clientData.length > 0 && clientData[0].name) {
-            setClientName(clientData[0].name);
+          if (clientData.length > 0) {
+            const client = clientData[0];
+            if (client.name) {
+              setClientName(client.name);
+            }
+            
+            // Update first login date if not set
+            if (!client.first_login_date) {
+              await base44.entities.AllowedClient.update(client.id, {
+                first_login_date: new Date().toISOString()
+              });
+            }
           }
         } else {
           setIsAllowed(true);

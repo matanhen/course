@@ -14,12 +14,16 @@ import {
   CheckCircle2,
   TrendingUp,
   BookOpen,
-  ChevronDown
+  ChevronDown,
+  Calendar,
+  Clock
 } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { format } from 'date-fns';
+import { he } from 'date-fns/locale';
 import {
   Dialog,
   DialogContent,
@@ -300,10 +304,22 @@ export default function AdminClients() {
                         <h3 className="text-white font-medium">
                           {client.name || 'ללא שם'}
                         </h3>
-                        <p className="text-gray-500 text-sm flex items-center gap-1">
+                        <p className="text-gray-500 text-sm flex items-center gap-1 mb-1">
                           <Mail className="w-3 h-3" />
                           {client.email}
                         </p>
+                        <div className="flex items-center gap-3 text-xs text-gray-600">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            נרשם: {format(new Date(client.created_date), 'dd/MM/yyyy', { locale: he })}
+                          </span>
+                          {client.first_login_date && (
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              כניסה ראשונה: {format(new Date(client.first_login_date), 'dd/MM/yyyy', { locale: he })}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <Button

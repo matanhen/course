@@ -19,7 +19,7 @@ export const PAGES = {
 }
 
 export const pagesConfig = {
-    mainPage: "CourseView",
+    mainPage: "AdminClients",
     Pages: PAGES,
     Layout: __Layout,
 };
