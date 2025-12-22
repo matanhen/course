@@ -39,10 +39,10 @@ export default function CourseView() {
   const { data: clientAccess = [] } = useQuery({
     queryKey: ['clientAccess', user?.email],
     queryFn: () => base44.entities.ClientCourseAccess.filter({ email: user?.email }),
-    enabled: !!user?.email,
+    enabled: !!user?.email && user?.role !== 'admin',
   });
 
-  const hasAccess = clientAccess.some(access => access.course_id === courseId);
+  const hasAccess = user?.role === 'admin' || clientAccess.some(access => access.course_id === courseId);
 
   const { data: course } = useQuery({
     queryKey: ['course', courseId],

@@ -36,9 +36,11 @@ export default function Home() {
     queryFn: () => base44.entities.Course.filter({ is_published: true }),
   });
 
-  const courses = allCourses.filter(course => 
-    clientAccess.some(access => access.course_id === course.id)
-  );
+  const courses = user?.role === 'admin' 
+    ? allCourses 
+    : allCourses.filter(course => 
+        clientAccess.some(access => access.course_id === course.id)
+      );
 
   const { data: lessons = [] } = useQuery({
     queryKey: ['lessons'],
