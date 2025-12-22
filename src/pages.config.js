@@ -19,7 +19,7 @@ export const PAGES = {
 }
 
 export const pagesConfig = {
-    mainPage: "CourseView",
+    mainPage: "Home",
     Pages: PAGES,
     Layout: __Layout,
 };
