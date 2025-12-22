@@ -386,7 +386,7 @@ export default function CourseView() {
 
       <div className="flex flex-col lg:flex-row">
         {/* Video Player / Document Viewer */}
-        <div className="flex-1 lg:ml-80">
+        <div className="flex-1 lg:ml-96">
           <div className={`relative bg-zinc-900 ${currentLesson?.lesson_type === 'external_link' ? 'min-h-screen' : 'aspect-video'}`}>
             {currentLesson ? (
               currentLesson.lesson_type === 'external_link' ? (
@@ -469,7 +469,7 @@ export default function CourseView() {
         </div>
 
         {/* Sidebar - Course Content */}
-        <aside className="lg:fixed lg:left-0 lg:top-[57px] lg:bottom-0 lg:w-80 bg-zinc-950 border-r border-zinc-800 overflow-y-auto">
+        <aside className="lg:fixed lg:left-0 lg:top-[57px] lg:bottom-0 lg:w-96 bg-zinc-950 border-r border-zinc-800 overflow-y-auto">
           <div className="p-4 border-b border-zinc-800 sticky top-0 bg-zinc-950 z-10">
             <h3 className="font-bold text-white">תוכן הקורס</h3>
             <p className="text-gray-500 text-sm mt-1">
@@ -552,9 +552,9 @@ export default function CourseView() {
                                 )}
                               </div>
                               <div className="text-right flex-1 min-w-0">
-                                <p className={`truncate ${
+                                <p className={`${
                                   isCurrent ? 'text-[#c7af48]' : 'text-gray-300'
-                                }`}>
+                                } break-words`}>
                                   {lesson.title}
                                 </p>
                                 {lesson.duration && (

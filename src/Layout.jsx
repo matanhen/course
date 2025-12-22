@@ -252,7 +252,7 @@ export default function Layout({ children, currentPageName }) {
       </AnimatePresence>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col fixed top-0 right-0 bottom-0 w-64 bg-zinc-950 border-l border-zinc-800">
+      <aside className="hidden lg:flex flex-col fixed top-0 right-0 bottom-0 w-56 bg-zinc-950 border-l border-zinc-800">
         <div className="p-6 border-b border-zinc-800">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center">
@@ -306,7 +306,7 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Main Content */}
-      <main className="lg:mr-64 pt-16 lg:pt-0 min-h-screen">
+      <main className="lg:mr-56 pt-16 lg:pt-0 min-h-screen">
         {children}
       </main>
     </div>
