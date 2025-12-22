@@ -36,13 +36,15 @@ export default function CourseView() {
     getUser();
   }, []);
 
+  const isAdmin = user?.role === 'admin';
+
   const { data: clientAccess = [] } = useQuery({
     queryKey: ['clientAccess', user?.email],
     queryFn: () => base44.entities.ClientCourseAccess.filter({ email: user?.email }),
-    enabled: !!user?.email && user?.role !== 'admin',
+    enabled: !!user?.email && !isAdmin,
   });
 
-  const hasAccess = user?.role === 'admin' || clientAccess.some(access => access.course_id === courseId);
+  const hasAccess = isAdmin || clientAccess.some(access => access.course_id === courseId);
 
   const { data: course } = useQuery({
     queryKey: ['course', courseId],
@@ -50,7 +52,7 @@ export default function CourseView() {
       const courses = await base44.entities.Course.filter({ id: courseId });
       return courses[0];
     },
-    enabled: !!courseId && hasAccess,
+    enabled: !!courseId && !!user,
   });
 
   const { data: chapters = [] } = useQuery({
@@ -71,7 +73,7 @@ export default function CourseView() {
       user_email: user?.email,
       course_id: courseId 
     }),
-    enabled: !!user?.email && !!courseId,
+    enabled: !!user?.email && !!courseId && !isAdmin,
   });
 
   const updateProgressMutation = useMutation({
@@ -315,7 +317,7 @@ export default function CourseView() {
   const totalCount = lessons.length;
   const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
-  if (!user || clientAccess.length === 0) {
+  if (!user) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
@@ -323,7 +325,7 @@ export default function CourseView() {
     );
   }
 
-  if (!hasAccess) {
+  if (!isAdmin && !hasAccess) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center" dir="rtl">
         <div className="text-center max-w-md px-6">
