@@ -31,12 +31,17 @@ export default function Home() {
     enabled: !!user?.email,
   });
 
+  const isAdmin = user?.role === 'admin';
+
   const { data: allCourses = [], isLoading: coursesLoading } = useQuery({
-    queryKey: ['courses'],
-    queryFn: () => base44.entities.Course.filter({ is_published: true }),
+    queryKey: ['courses', isAdmin],
+    queryFn: () => isAdmin 
+      ? base44.entities.Course.list() 
+      : base44.entities.Course.filter({ is_published: true }),
+    enabled: !!user,
   });
 
-  const courses = user?.role === 'admin' 
+  const courses = isAdmin 
     ? allCourses 
     : allCourses.filter(course => 
         clientAccess.some(access => access.course_id === course.id)

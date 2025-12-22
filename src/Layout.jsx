@@ -114,6 +114,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'לוח בקרה', page: 'AdminDashboard', icon: Home },
     { name: 'ניהול קורסים', page: 'AdminCourses', icon: BookOpen },
     { name: 'ניהול לקוחות', page: 'AdminClients', icon: Users },
+    { name: 'צפייה בקורסים', page: 'Home', icon: GraduationCap },
   ];
 
   const userLinks = [
