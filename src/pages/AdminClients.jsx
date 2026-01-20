@@ -114,7 +114,25 @@ export default function AdminClients() {
     enabled: user?.role === 'admin',
   });
 
-  const consultants = allUsers.filter(u => u.user_type === 'consultant');
+  // Get consultants from both User entity and AllowedClient entity
+  const userConsultants = allUsers.filter(u => u.user_type === 'consultant');
+  const allowedClientConsultants = clients.filter(c => c.is_consultant);
+  
+  // Merge and deduplicate by email
+  const consultantsMap = new Map();
+  userConsultants.forEach(c => consultantsMap.set(c.email, c));
+  allowedClientConsultants.forEach(c => {
+    if (!consultantsMap.has(c.email)) {
+      consultantsMap.set(c.email, {
+        email: c.email,
+        full_name: c.name,
+        created_date: c.created_date,
+        id: c.id,
+        user_type: 'consultant'
+      });
+    }
+  });
+  const consultants = Array.from(consultantsMap.values());
 
   const addClientMutation = useMutation({
     mutationFn: async (data) => {
@@ -168,19 +186,18 @@ export default function AdminClients() {
       // Create AllowedClient with consultant flag
       await base44.entities.AllowedClient.create({
         email: data.email,
-        name: data.full_name
+        name: data.full_name,
+        is_consultant: true
       });
       
       // Invite user to the system
       await base44.users.inviteUser(data.email, 'user');
       
-      // Create temporary consultant record that will be used until first login
-      // When they login, their User entity will be created and we'll set user_type
       return { email: data.email, full_name: data.full_name };
     },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries(['allUsers']);
-      await queryClient.invalidateQueries(['clients']);
+    onSuccess: () => {
+      queryClient.invalidateQueries(['allUsers']);
+      queryClient.invalidateQueries(['clients']);
       setShowAddConsultantDialog(false);
       setNewConsultant({ email: '', full_name: '' });
     },
