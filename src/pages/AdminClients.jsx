@@ -165,26 +165,25 @@ export default function AdminClients() {
 
   const convertToConsultantMutation = useMutation({
     mutationFn: async (client) => {
-      // Find the user by email in allUsers
-      const allUsersList = await base44.asServiceRole.entities.User.list();
-      const user = allUsersList.find(u => u.email === client.email);
+      // Find the user by email using filter
+      const users = await base44.asServiceRole.entities.User.filter({ email: client.email });
       
-      if (!user) {
+      if (!users || users.length === 0) {
         throw new Error('משתמש לא נמצא במערכת');
       }
       
+      const user = users[0];
+      
       // Update the user to be a consultant
-      const result = await base44.asServiceRole.entities.User.update(user.id, {
+      await base44.asServiceRole.entities.User.update(user.id, {
         user_type: 'consultant'
       });
       
-      return result;
+      return user;
     },
-    onSuccess: async () => {
-      // Force refresh all queries
-      await queryClient.invalidateQueries(['allUsers']);
-      await queryClient.refetchQueries(['allUsers']);
-      await queryClient.invalidateQueries(['clients']);
+    onSuccess: () => {
+      queryClient.invalidateQueries(['allUsers']);
+      queryClient.invalidateQueries(['clients']);
       setConvertToConsultant(null);
     },
   });
