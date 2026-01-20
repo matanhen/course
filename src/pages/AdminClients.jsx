@@ -165,16 +165,32 @@ export default function AdminClients() {
 
   const addConsultantMutation = useMutation({
     mutationFn: async (data) => {
-      // Create consultant user directly with service role
-      await base44.asServiceRole.entities.User.create({
+      // First, invite the user to create account
+      await base44.users.inviteUser(data.email, 'user');
+      
+      // Create AllowedClient entry so they can access the system
+      await base44.entities.AllowedClient.create({
         email: data.email,
-        full_name: data.full_name,
-        role: 'user',
-        user_type: 'consultant'
+        name: data.full_name
       });
+      
+      // Wait a bit for the user to be created in the system
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Update the user to be a consultant
+      const users = await base44.asServiceRole.entities.User.filter({ email: data.email });
+      if (users && users.length > 0) {
+        await base44.asServiceRole.entities.User.update(users[0].id, {
+          user_type: 'consultant',
+          full_name: data.full_name
+        });
+      }
+      
+      return users[0];
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['allUsers']);
+      queryClient.invalidateQueries(['clients']);
       setShowAddConsultantDialog(false);
       setNewConsultant({ email: '', full_name: '' });
     },
