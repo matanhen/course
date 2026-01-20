@@ -394,10 +394,10 @@ export default function AdminClients() {
             </Button>
           )}
         </Card>
-      ) : (
-        <div className="grid gap-4">
-          <AnimatePresence>
-            {filteredClients.map((client, index) => (
+        ) : (
+          <div className="grid gap-4">
+            <AnimatePresence>
+              {filteredClients.map((client, index) => (
               <motion.div
                 key={client.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -506,10 +506,11 @@ export default function AdminClients() {
                   </div>
                 </Card>
               </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-      )}
+              ))}
+            </AnimatePresence>
+          </div>
+        )
+      }}
 
       {/* Add Client Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
@@ -992,6 +993,150 @@ export default function AdminClients() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Edit Consultant Dialog */}
+      <Dialog open={!!showEditConsultantDialog} onOpenChange={() => setShowEditConsultantDialog(null)}>
+        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+          <DialogHeader>
+            <DialogTitle>עריכת יועץ</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleEditConsultant} className="space-y-6 mt-4">
+            <div className="space-y-2">
+              <Label htmlFor="consultantName">שם מלא</Label>
+              <Input
+                id="consultantName"
+                value={showEditConsultantDialog?.full_name || ''}
+                onChange={(e) => setShowEditConsultantDialog({ ...showEditConsultantDialog, full_name: e.target.value })}
+                placeholder="שם מלא"
+                className="bg-zinc-800 border-zinc-700 text-white"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>אימייל</Label>
+              <Input
+                value={showEditConsultantDialog?.email || ''}
+                disabled
+                className="bg-zinc-800 border-zinc-700 text-gray-500"
+              />
+              <p className="text-gray-600 text-xs">לא ניתן לשנות את האימייל</p>
+            </div>
+            <div className="flex gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowEditConsultantDialog(null)}
+                className="flex-1 border-red-700 text-red-400 hover:bg-red-500/10"
+              >
+                ביטול
+              </Button>
+              <Button
+                type="submit"
+                disabled={updateConsultantMutation.isPending}
+                className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold disabled:opacity-50"
+              >
+                {updateConsultantMutation.isPending ? 'שומר...' : 'שמור שינויים'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function ConsultantsList({ consultants, clients, onEditConsultant, getConsultantClientCount }) {
+  if (consultants.length === 0) {
+    return (
+      <Card className="bg-zinc-900/50 border-zinc-800 p-10 text-center">
+        <User className="w-12 h-12 text-gray-700 mx-auto mb-4" />
+        <p className="text-gray-400">אין יועצים במערכת</p>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="grid gap-4">
+      <AnimatePresence>
+        {consultants.map((consultant, index) => {
+          const clientCount = getConsultantClientCount(consultant.email);
+          
+          return (
+            <motion.div
+              key={consultant.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ delay: index * 0.05 }}
+            >
+              <Card className="bg-zinc-900/50 border-zinc-800 p-5 group hover:border-zinc-700 transition-all">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shrink-0">
+                      <span className="text-white font-bold text-lg">
+                        {(consultant.full_name || consultant.email)[0].toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-white font-medium">
+                        {consultant.full_name || 'ללא שם'}
+                      </h3>
+                      <p className="text-gray-500 text-sm flex items-center gap-1 mb-1">
+                        <Mail className="w-3 h-3" />
+                        {consultant.email}
+                      </p>
+                      <div className="flex items-center gap-3 text-xs text-gray-600">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          נוצר: {format(new Date(consultant.created_date), 'dd/MM/yyyy', { locale: he })}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="text-left">
+                      <p className="text-xs text-gray-500">לקוחות</p>
+                      <p className="text-2xl font-bold text-[#c7af48]">{clientCount}</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onEditConsultant(consultant)}
+                      className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                    >
+                      <Edit className="w-5 h-5" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Clients Summary */}
+                {clientCount > 0 && (
+                  <div className="mt-4 pt-4 border-t border-zinc-800">
+                    <p className="text-gray-500 text-sm mb-2">לקוחות משויכים:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {clients
+                        .filter(c => c.consultant_email === consultant.email)
+                        .slice(0, 5)
+                        .map((client) => (
+                          <div
+                            key={client.id}
+                            className="px-2 py-1 bg-zinc-800/50 rounded text-xs text-gray-400"
+                          >
+                            {client.name || client.email}
+                          </div>
+                        ))}
+                      {clientCount > 5 && (
+                        <div className="px-2 py-1 bg-zinc-800/50 rounded text-xs text-[#c7af48]">
+                          +{clientCount - 5} נוספים
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </Card>
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
     </div>
   );
 }
