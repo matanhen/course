@@ -31,12 +31,21 @@ export default function Layout({ children, currentPageName }) {
         setIsAdmin(currentUser?.role === 'admin');
         
         if (currentUser?.role !== 'admin') {
-          const clientAccess = await base44.entities.ClientCourseAccess.filter({ email: currentUser.email });
-          setIsAllowed(clientAccess.length > 0);
-          
           const clientData = await base44.entities.AllowedClient.filter({ email: currentUser.email });
+          
           if (clientData.length > 0) {
             const client = clientData[0];
+            
+            // Set user_type to consultant if marked in AllowedClient
+            if (client.is_consultant && currentUser.user_type !== 'consultant') {
+              await base44.asServiceRole.entities.User.update(currentUser.id, {
+                user_type: 'consultant'
+              });
+              // Reload user data
+              const updatedUser = await base44.auth.me();
+              setUser(updatedUser);
+            }
+            
             if (client.name) {
               setClientName(client.name);
             }
@@ -48,6 +57,11 @@ export default function Layout({ children, currentPageName }) {
               });
             }
           }
+          
+          // Allow access if consultant or has course access
+          const clientAccess = await base44.entities.ClientCourseAccess.filter({ email: currentUser.email });
+          const isConsultant = clientData.length > 0 && clientData[0].is_consultant;
+          setIsAllowed(clientAccess.length > 0 || isConsultant);
         } else {
           setIsAllowed(true);
         }
