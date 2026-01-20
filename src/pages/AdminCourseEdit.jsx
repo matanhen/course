@@ -532,19 +532,20 @@ export default function AdminCourseEdit() {
                         draggableId={chapter.id}
                         index={chapterIndex}
                       >
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                          >
-                  const chapterLessons = getLessonsForChapter(chapter.id);
-
-                            <motion.div
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: chapterIndex * 0.05 }}
-                              className={snapshot.isDragging ? 'opacity-50' : ''}
+                        {(provided, snapshot) => {
+                          const chapterLessons = getLessonsForChapter(chapter.id);
+                          
+                          return (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
                             >
+                              <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: chapterIndex * 0.05 }}
+                                className={snapshot.isDragging ? 'opacity-50' : ''}
+                              >
                               <Card className="bg-zinc-900/50 border-zinc-800 overflow-hidden">
                                 {/* Chapter Header */}
                                 <div className="p-4 flex items-center justify-between border-b border-zinc-800">
@@ -681,7 +682,8 @@ export default function AdminCourseEdit() {
                               </Card>
                             </motion.div>
                           </div>
-                        )}
+                        );
+                        }}
                       </Draggable>
                     ))}
                     {provided.placeholder}
