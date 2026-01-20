@@ -169,19 +169,22 @@ export default function AdminClients() {
       const allUsersList = await base44.asServiceRole.entities.User.list();
       const user = allUsersList.find(u => u.email === client.email);
       
-      if (user) {
-        // Update the user to be a consultant
-        await base44.asServiceRole.entities.User.update(user.id, {
-          user_type: 'consultant',
-          role: user.role // Keep the existing role
-        });
-      } else {
+      if (!user) {
         throw new Error('משתמש לא נמצא במערכת');
       }
+      
+      // Update the user to be a consultant
+      const result = await base44.asServiceRole.entities.User.update(user.id, {
+        user_type: 'consultant'
+      });
+      
+      return result;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['allUsers']);
-      queryClient.invalidateQueries(['clients']);
+    onSuccess: async () => {
+      // Force refresh all queries
+      await queryClient.invalidateQueries(['allUsers']);
+      await queryClient.refetchQueries(['allUsers']);
+      await queryClient.invalidateQueries(['clients']);
       setConvertToConsultant(null);
     },
   });
