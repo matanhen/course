@@ -61,6 +61,8 @@ export default function AdminClients() {
   const [showAddCourseDialog, setShowAddCourseDialog] = useState(false);
   const [selectedCourseToAdd, setSelectedCourseToAdd] = useState('');
   const [showEditClientDialog, setShowEditClientDialog] = useState(null);
+  const [showEditConsultantDialog, setShowEditConsultantDialog] = useState(null);
+  const [activeTab, setActiveTab] = useState('clients'); // 'clients' or 'consultants'
   
   const queryClient = useQueryClient();
 
@@ -144,6 +146,14 @@ export default function AdminClients() {
     onSuccess: () => {
       queryClient.invalidateQueries(['clients']);
       setShowEditClientDialog(null);
+    },
+  });
+
+  const updateConsultantMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.asServiceRole.entities.User.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['allUsers']);
+      setShowEditConsultantDialog(null);
     },
   });
 
@@ -255,6 +265,22 @@ export default function AdminClients() {
     }
   };
 
+  const handleEditConsultant = (e) => {
+    e.preventDefault();
+    if (showEditConsultantDialog) {
+      updateConsultantMutation.mutate({
+        id: showEditConsultantDialog.id,
+        data: {
+          full_name: showEditConsultantDialog.full_name,
+        }
+      });
+    }
+  };
+
+  const getConsultantClientCount = (consultantEmail) => {
+    return clients.filter(c => c.consultant_email === consultantEmail).length;
+  };
+
   const getConsultantName = (email) => {
     const consultant = allUsers.find(u => u.email === email);
     return consultant?.full_name || email;
@@ -307,18 +333,48 @@ export default function AdminClients() {
         </div>
       </div>
 
-      {/* Search */}
-      <div className="relative mb-8">
-        <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-        <Input
-          placeholder="חיפוש לפי שם או אימייל..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-gray-500 pr-12 py-6"
-        />
-      </div>
+      {/* Tabs - Only for Admin */}
+      {isAdmin && (
+        <div className="flex gap-2 mb-6">
+          <Button
+            variant={activeTab === 'clients' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('clients')}
+            className={activeTab === 'clients' 
+              ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold' 
+              : 'border-zinc-700 text-gray-300 hover:bg-zinc-800'
+            }
+          >
+            <Users className="w-4 h-4 ml-2" />
+            לקוחות
+          </Button>
+          <Button
+            variant={activeTab === 'consultants' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('consultants')}
+            className={activeTab === 'consultants' 
+              ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold' 
+              : 'border-zinc-700 text-gray-300 hover:bg-zinc-800'
+            }
+          >
+            <User className="w-4 h-4 ml-2" />
+            יועצים ({consultants.length})
+          </Button>
+        </div>
+      )}
 
-      {/* Clients List */}
+      {activeTab === 'clients' ? (
+        <>
+          {/* Search */}
+          <div className="relative mb-8">
+            <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <Input
+              placeholder="חיפוש לפי שם או אימייל..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-gray-500 pr-12 py-6"
+            />
+          </div>
+
+          {/* Clients List */}
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
