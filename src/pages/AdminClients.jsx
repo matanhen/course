@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -136,6 +137,7 @@ export default function AdminClients() {
     onSuccess: () => {
       queryClient.invalidateQueries(['clients']);
       queryClient.invalidateQueries(['clientAccess']);
+      queryClient.invalidateQueries(['allUsers']); // Invalidate allUsers to update consultant client counts
       setShowAddDialog(false);
       setNewClient({ email: '', name: '', course_id: '', consultant_email: '' });
     },
@@ -145,6 +147,7 @@ export default function AdminClients() {
     mutationFn: ({ id, data }) => base44.entities.AllowedClient.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries(['clients']);
+      queryClient.invalidateQueries(['allUsers']); // Invalidate allUsers to update consultant client counts
       setShowEditClientDialog(null);
     },
   });
@@ -159,7 +162,6 @@ export default function AdminClients() {
 
   const deleteClientMutation = useMutation({
     mutationFn: async (client) => {
-      // Delete all course access for this client
       const access = clientAccess.filter(a => a.email === client.email);
       for (const a of access) {
         await base44.entities.ClientCourseAccess.delete(a.id);
@@ -169,6 +171,7 @@ export default function AdminClients() {
     onSuccess: () => {
       queryClient.invalidateQueries(['clients']);
       queryClient.invalidateQueries(['clientAccess']);
+      queryClient.invalidateQueries(['allUsers']); // Invalidate allUsers to update consultant client counts
       setDeleteClient(null);
     },
   });
@@ -375,142 +378,150 @@ export default function AdminClients() {
           </div>
 
           {/* Clients List */}
-      {isLoading ? (
-        <div className="flex items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
-        </div>
-      ) : filteredClients.length === 0 ? (
-        <Card className="bg-zinc-900/50 border-zinc-800 p-10 text-center">
-          <Users className="w-12 h-12 text-gray-700 mx-auto mb-4" />
-          <p className="text-gray-400">
-            {searchQuery ? 'לא נמצאו לקוחות' : 'אין לקוחות מורשים עדיין'}
-          </p>
-          {!searchQuery && (
-            <Button 
-              onClick={() => setShowAddDialog(true)}
-              className="mt-4 bg-[#c7af48] hover:bg-[#b39d3d] text-black"
-            >
-              הוסף לקוח ראשון
-            </Button>
-          )}
-        </Card>
-        ) : (
-          <div className="grid gap-4">
-            <AnimatePresence>
-              {filteredClients.map((client, index) => (
-              <motion.div
-                key={client.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ delay: index * 0.05 }}
-              >
-                <Card className="bg-zinc-900/50 border-zinc-800 p-5 group hover:border-zinc-700 transition-all">
-                  <div className="flex items-start justify-between gap-4 mb-4">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#c7af48] to-[#e5d07a] flex items-center justify-center shrink-0">
-                        <span className="text-black font-bold text-lg">
-                          {(client.name || client.email)[0].toUpperCase()}
-                        </span>
-                      </div>
-                      <div>
-                        <h3 className="text-white font-medium">
-                          {client.name || 'ללא שם'}
-                        </h3>
-                        <p className="text-gray-500 text-sm flex items-center gap-1 mb-1">
-                          <Mail className="w-3 h-3" />
-                          {client.email}
-                        </p>
-                        <div className="flex items-center gap-3 text-xs text-gray-600">
-                          <span className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
-                            נרשם: {format(new Date(client.created_date), 'dd/MM/yyyy', { locale: he })}
-                          </span>
-                          {client.first_login_date && (
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-3 h-3" />
-                              כניסה ראשונה: {format(new Date(client.first_login_date), 'dd/MM/yyyy', { locale: he })}
+          {isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
+            </div>
+          ) : filteredClients.length === 0 ? (
+            <Card className="bg-zinc-900/50 border-zinc-800 p-10 text-center">
+              <Users className="w-12 h-12 text-gray-700 mx-auto mb-4" />
+              <p className="text-gray-400">
+                {searchQuery ? 'לא נמצאו לקוחות' : 'אין לקוחות מורשים עדיין'}
+              </p>
+              {!searchQuery && (
+                <Button 
+                  onClick={() => setShowAddDialog(true)}
+                  className="mt-4 bg-[#c7af48] hover:bg-[#b39d3d] text-black"
+                >
+                  הוסף לקוח ראשון
+                </Button>
+              )}
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              <AnimatePresence>
+                {filteredClients.map((client, index) => (
+                  <motion.div
+                    key={client.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <Card className="bg-zinc-900/50 border-zinc-800 p-5 group hover:border-zinc-700 transition-all">
+                      <div className="flex items-start justify-between gap-4 mb-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#c7af48] to-[#e5d07a] flex items-center justify-center shrink-0">
+                            <span className="text-black font-bold text-lg">
+                              {(client.name || client.email)[0].toUpperCase()}
                             </span>
-                          )}
+                          </div>
+                          <div>
+                            <h3 className="text-white font-medium">
+                              {client.name || 'ללא שם'}
+                            </h3>
+                            <p className="text-gray-500 text-sm flex items-center gap-1 mb-1">
+                              <Mail className="w-3 h-3" />
+                              {client.email}
+                            </p>
+                            <div className="flex items-center gap-3 text-xs text-gray-600">
+                              <span className="flex items-center gap-1">
+                                <Calendar className="w-3 h-3" />
+                                נרשם: {format(new Date(client.created_date), 'dd/MM/yyyy', { locale: he })}
+                              </span>
+                              {client.first_login_date && (
+                                <span className="flex items-center gap-1">
+                                  <Clock className="w-3 h-3" />
+                                  כניסה ראשונה: {format(new Date(client.first_login_date), 'dd/MM/yyyy', { locale: he })}
+                                </span>
+                              )}
+                            </div>
+                            {client.consultant_email && (
+                              <p className="text-[#c7af48] text-xs mt-1">
+                                יועץ: {getConsultantName(client.consultant_email)}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                        {client.consultant_email && (
-                          <p className="text-[#c7af48] text-xs mt-1">
-                            יועץ: {getConsultantName(client.consultant_email)}
-                          </p>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {isAdmin && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setShowEditClientDialog(client)}
+                              className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                            >
+                              <Edit className="w-5 h-5" />
+                            </Button>
+                          )}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setDeleteClient(client)}
+                            className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </Button>
+                        </div>
                       </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                      {isAdmin && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setShowEditClientDialog(client)}
-                          className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                    
+                      {/* Progress Stats */}
+                      <div className="flex items-center gap-4 pt-4 border-t border-zinc-800">
+                        <button
+                          onClick={() => setSelectedClientCourses(client)}
+                          className="flex items-center gap-2 hover:bg-zinc-800/50 rounded-lg p-2 transition-colors group/stat"
                         >
-                          <Edit className="w-5 h-5" />
-                        </Button>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setDeleteClient(client)}
-                        className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </Button>
+                          <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center group-hover/stat:bg-blue-500/20 transition-colors">
+                            <PlayCircle className="w-4 h-4 text-blue-400" />
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs text-gray-500 group-hover/stat:text-blue-400 transition-colors">קורסים מורשים</p>
+                            <p className="text-white font-semibold">{getClientCourses(client.email).length}</p>
+                          </div>
+                        </button>
+                        <button
+                          onClick={() => setSelectedClientLessons(client)}
+                          className="flex items-center gap-2 hover:bg-zinc-800/50 rounded-lg p-2 transition-colors group/stat"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center group-hover/stat:bg-green-500/20 transition-colors">
+                            <CheckCircle2 className="w-4 h-4 text-green-400" />
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs text-gray-500 group-hover/stat:text-green-400 transition-colors">שיעורים נצפו</p>
+                            <p className="text-white font-semibold">
+                              {getClientProgress(client.email)}/{getTotalLessons()}
+                            </p>
+                          </div>
+                        </button>
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-lg bg-[#c7af48]/10 flex items-center justify-center">
+                            <TrendingUp className="w-4 h-4 text-[#c7af48]" />
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500">התקדמות</p>
+                            <p className="text-white font-semibold">
+                              {getTotalLessons() > 0 
+                                ? Math.round((getClientProgress(client.email) / getTotalLessons()) * 100)
+                                : 0}%
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                      </div>
-                  
-                  {/* Progress Stats */}
-                  <div className="flex items-center gap-4 pt-4 border-t border-zinc-800">
-                    <button
-                      onClick={() => setSelectedClientCourses(client)}
-                      className="flex items-center gap-2 hover:bg-zinc-800/50 rounded-lg p-2 transition-colors group/stat"
-                    >
-                      <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center group-hover/stat:bg-blue-500/20 transition-colors">
-                        <PlayCircle className="w-4 h-4 text-blue-400" />
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs text-gray-500 group-hover/stat:text-blue-400 transition-colors">קורסים מורשים</p>
-                        <p className="text-white font-semibold">{getClientCourses(client.email).length}</p>
-                      </div>
-                    </button>
-                    <button
-                      onClick={() => setSelectedClientLessons(client)}
-                      className="flex items-center gap-2 hover:bg-zinc-800/50 rounded-lg p-2 transition-colors group/stat"
-                    >
-                      <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center group-hover/stat:bg-green-500/20 transition-colors">
-                        <CheckCircle2 className="w-4 h-4 text-green-400" />
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs text-gray-500 group-hover/stat:text-green-400 transition-colors">שיעורים נצפו</p>
-                        <p className="text-white font-semibold">
-                          {getClientProgress(client.email)}/{getTotalLessons()}
-                        </p>
-                      </div>
-                    </button>
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-[#c7af48]/10 flex items-center justify-center">
-                        <TrendingUp className="w-4 h-4 text-[#c7af48]" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500">התקדמות</p>
-                        <p className="text-white font-semibold">
-                          {getTotalLessons() > 0 
-                            ? Math.round((getClientProgress(client.email) / getTotalLessons()) * 100)
-                            : 0}%
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
-        )
-      }}
+                    </Card>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
+        </>
+      ) : (
+        <ConsultantsList
+          consultants={consultants}
+          clients={clients}
+          onEditConsultant={setShowEditConsultantDialog}
+          getConsultantClientCount={getConsultantClientCount}
+        />
+      )}
 
       {/* Add Client Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
