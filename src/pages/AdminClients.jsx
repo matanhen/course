@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -18,7 +17,9 @@ import {
   ChevronDown,
   Calendar,
   Clock,
-  Edit
+  Edit,
+  UserPlus,
+  UserCog
 } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -63,6 +64,8 @@ export default function AdminClients() {
   const [selectedCourseToAdd, setSelectedCourseToAdd] = useState('');
   const [showEditClientDialog, setShowEditClientDialog] = useState(null);
   const [showEditConsultantDialog, setShowEditConsultantDialog] = useState(null);
+  const [showAssignConsultantDialog, setShowAssignConsultantDialog] = useState(null);
+  const [convertToConsultant, setConvertToConsultant] = useState(null);
   const [activeTab, setActiveTab] = useState('clients'); // 'clients' or 'consultants'
   
   const queryClient = useQueryClient();
@@ -157,6 +160,32 @@ export default function AdminClients() {
     onSuccess: () => {
       queryClient.invalidateQueries(['allUsers']);
       setShowEditConsultantDialog(null);
+    },
+  });
+
+  const convertToConsultantMutation = useMutation({
+    mutationFn: async (client) => {
+      // Find the user by email
+      const user = allUsers.find(u => u.email === client.email);
+      if (user) {
+        await base44.asServiceRole.entities.User.update(user.id, {
+          user_type: 'consultant'
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['allUsers']);
+      queryClient.invalidateQueries(['clients']);
+      setConvertToConsultant(null);
+    },
+  });
+
+  const assignConsultantMutation = useMutation({
+    mutationFn: ({ id, consultant_email }) => 
+      base44.entities.AllowedClient.update(id, { consultant_email }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['clients']);
+      setShowAssignConsultantDialog(null);
     },
   });
 
@@ -276,6 +305,16 @@ export default function AdminClients() {
         data: {
           full_name: showEditConsultantDialog.full_name,
         }
+      });
+    }
+  };
+
+  const handleAssignConsultant = (e) => {
+    e.preventDefault();
+    if (showAssignConsultantDialog) {
+      assignConsultantMutation.mutate({
+        id: showAssignConsultantDialog.client.id,
+        consultant_email: showAssignConsultantDialog.consultant_email
       });
     }
   };
@@ -445,14 +484,34 @@ export default function AdminClients() {
                         </div>
                         <div className="flex items-center gap-2">
                           {isAdmin && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => setShowEditClientDialog(client)}
-                              className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
-                            >
-                              <Edit className="w-5 h-5" />
-                            </Button>
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setShowAssignConsultantDialog({ client, consultant_email: client.consultant_email || '' })}
+                                className="text-gray-500 hover:text-[#c7af48] hover:bg-[#c7af48]/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                                title="שייך יועץ"
+                              >
+                                <UserPlus className="w-5 h-5" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setConvertToConsultant(client)}
+                                className="text-gray-500 hover:text-blue-500 hover:bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                                title="הפוך ליועץ"
+                              >
+                                <UserCog className="w-5 h-5" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setShowEditClientDialog(client)}
+                                className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                              >
+                                <Edit className="w-5 h-5" />
+                              </Button>
+                            </>
                           )}
                           <Button
                             variant="ghost"
@@ -1051,6 +1110,89 @@ export default function AdminClients() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Assign Consultant Dialog */}
+      <Dialog open={!!showAssignConsultantDialog} onOpenChange={() => setShowAssignConsultantDialog(null)}>
+        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+          <DialogHeader>
+            <DialogTitle>שיוך יועץ ללקוח</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleAssignConsultant} className="space-y-6 mt-4">
+            <div className="space-y-2">
+              <Label>לקוח</Label>
+              <Input
+                value={showAssignConsultantDialog?.client?.name || showAssignConsultantDialog?.client?.email || ''}
+                disabled
+                className="bg-zinc-800 border-zinc-700 text-gray-300"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="assignConsultant">בחר יועץ</Label>
+              <Select
+                value={showAssignConsultantDialog?.consultant_email || ''}
+                onValueChange={(value) => setShowAssignConsultantDialog({ 
+                  ...showAssignConsultantDialog, 
+                  consultant_email: value === 'none' ? null : value 
+                })}
+              >
+                <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
+                  <SelectValue placeholder="בחר יועץ" />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-800 border-zinc-700">
+                  <SelectItem value="none" className="text-white">ללא יועץ</SelectItem>
+                  {consultants.map((consultant) => (
+                    <SelectItem key={consultant.id} value={consultant.email} className="text-white">
+                      {consultant.full_name || consultant.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowAssignConsultantDialog(null)}
+                className="flex-1 border-red-700 text-red-400 hover:bg-red-500/10"
+              >
+                ביטול
+              </Button>
+              <Button
+                type="submit"
+                disabled={assignConsultantMutation.isPending}
+                className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold disabled:opacity-50"
+              >
+                {assignConsultantMutation.isPending ? 'משייך...' : 'שייך יועץ'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Convert to Consultant Confirmation */}
+      <AlertDialog open={!!convertToConsultant} onOpenChange={() => setConvertToConsultant(null)}>
+        <AlertDialogContent className="bg-zinc-900 border-zinc-800">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">המרה ליועץ</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400">
+              האם אתה בטוח שברצונך להפוך את {convertToConsultant?.name || convertToConsultant?.email} ליועץ?
+              <br /><br />
+              לאחר ההמרה, המשתמש יקבל הרשאות יועץ ויוכל לנהל לקוחות משלו.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-3">
+            <AlertDialogCancel className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700">
+              ביטול
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => convertToConsultantMutation.mutate(convertToConsultant)}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              כן, המר ליועץ
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
