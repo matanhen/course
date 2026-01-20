@@ -53,12 +53,13 @@ export default function AdminClients() {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [deleteClient, setDeleteClient] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [newClient, setNewClient] = useState({ email: '', name: '', course_id: '' });
+  const [newClient, setNewClient] = useState({ email: '', name: '', course_id: '', consultant_email: '' });
   const [selectedClientCourses, setSelectedClientCourses] = useState(null);
   const [selectedClientLessons, setSelectedClientLessons] = useState(null);
   const [removeAccess, setRemoveAccess] = useState(null);
   const [showAddCourseDialog, setShowAddCourseDialog] = useState(false);
   const [selectedCourseToAdd, setSelectedCourseToAdd] = useState('');
+  const [showEditClientDialog, setShowEditClientDialog] = useState(null);
   
   const queryClient = useQueryClient();
 
@@ -100,9 +101,27 @@ export default function AdminClients() {
     queryFn: () => base44.entities.ClientCourseAccess.list(),
   });
 
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ['allUsers'],
+    queryFn: () => base44.asServiceRole.entities.User.list(),
+    enabled: user?.role === 'admin',
+  });
+
+  const consultants = allUsers.filter(u => u.user_type === 'consultant');
+
   const addClientMutation = useMutation({
     mutationFn: async (data) => {
-      const client = await base44.entities.AllowedClient.create({ email: data.email, name: data.name });
+      const clientData = { 
+        email: data.email, 
+        name: data.name 
+      };
+      if (data.consultant_email) {
+        clientData.consultant_email = data.consultant_email;
+      } else if (user?.user_type === 'consultant') {
+        clientData.consultant_email = user.email;
+      }
+      
+      const client = await base44.entities.AllowedClient.create(clientData);
       if (data.course_id) {
         await base44.entities.ClientCourseAccess.create({
           email: data.email,
@@ -115,7 +134,15 @@ export default function AdminClients() {
       queryClient.invalidateQueries(['clients']);
       queryClient.invalidateQueries(['clientAccess']);
       setShowAddDialog(false);
-      setNewClient({ email: '', name: '', course_id: '' });
+      setNewClient({ email: '', name: '', course_id: '', consultant_email: '' });
+    },
+  });
+
+  const updateClientMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.AllowedClient.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['clients']);
+      setShowEditClientDialog(null);
     },
   });
 
@@ -160,10 +187,21 @@ export default function AdminClients() {
     },
   });
 
-  const filteredClients = clients.filter(client =>
-    client.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    client.name?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const isAdmin = user?.role === 'admin';
+  const isConsultant = user?.user_type === 'consultant';
+
+  const filteredClients = clients
+    .filter(client => {
+      // Consultants only see their own clients
+      if (isConsultant && !isAdmin) {
+        return client.consultant_email === user.email;
+      }
+      return true;
+    })
+    .filter(client =>
+      client.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      client.name?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
   const getClientProgress = (clientEmail) => {
     const clientProgress = allProgress.filter(p => p.user_email === clientEmail && p.completed);
@@ -203,6 +241,24 @@ export default function AdminClients() {
     }
   };
 
+  const handleEditClient = (e) => {
+    e.preventDefault();
+    if (showEditClientDialog) {
+      updateClientMutation.mutate({
+        id: showEditClientDialog.id,
+        data: {
+          name: showEditClientDialog.name,
+          consultant_email: showEditClientDialog.consultant_email || null,
+        }
+      });
+    }
+  };
+
+  const getConsultantName = (email) => {
+    const consultant = allUsers.find(u => u.email === email);
+    return consultant?.full_name || email;
+  };
+
   if (!user) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -211,7 +267,7 @@ export default function AdminClients() {
     );
   }
 
-  if (user.role !== 'admin') {
+  if (user.role !== 'admin' && user.user_type !== 'consultant') {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center" dir="rtl">
         <div className="text-center max-w-md px-6">
@@ -320,17 +376,34 @@ export default function AdminClients() {
                             </span>
                           )}
                         </div>
+                        {client.consultant_email && (
+                          <p className="text-[#c7af48] text-xs mt-1">
+                            יועץ: {getConsultantName(client.consultant_email)}
+                          </p>
+                        )}
                       </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setDeleteClient(client)}
-                      className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </Button>
-                  </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                      {isAdmin && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setShowEditClientDialog(client)}
+                          className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                        >
+                          <Edit className="w-5 h-5" />
+                        </Button>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setDeleteClient(client)}
+                        className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </Button>
+                      </div>
+                      </div>
                   
                   {/* Progress Stats */}
                   <div className="flex items-center gap-4 pt-4 border-t border-zinc-800">
@@ -434,6 +507,27 @@ export default function AdminClients() {
                 </SelectContent>
               </Select>
             </div>
+            {isAdmin && consultants.length > 0 && (
+              <div className="space-y-2">
+                <Label htmlFor="consultant">יועץ (אופציונלי)</Label>
+                <Select
+                  value={newClient.consultant_email}
+                  onValueChange={(value) => setNewClient({ ...newClient, consultant_email: value })}
+                >
+                  <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
+                    <SelectValue placeholder="בחר יועץ" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-800 border-zinc-700">
+                    <SelectItem value={null} className="text-white">ללא יועץ</SelectItem>
+                    {consultants.map((consultant) => (
+                      <SelectItem key={consultant.id} value={consultant.email} className="text-white">
+                        {consultant.full_name || consultant.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="flex gap-3 pt-4">
               <Button
                 type="button"
@@ -782,6 +876,65 @@ export default function AdminClients() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Edit Client Dialog */}
+      <Dialog open={!!showEditClientDialog} onOpenChange={() => setShowEditClientDialog(null)}>
+        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+          <DialogHeader>
+            <DialogTitle>עריכת לקוח</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleEditClient} className="space-y-6 mt-4">
+            <div className="space-y-2">
+              <Label htmlFor="editName">שם</Label>
+              <Input
+                id="editName"
+                value={showEditClientDialog?.name || ''}
+                onChange={(e) => setShowEditClientDialog({ ...showEditClientDialog, name: e.target.value })}
+                placeholder="שם הלקוח"
+                className="bg-zinc-800 border-zinc-700 text-white"
+              />
+            </div>
+            {consultants.length > 0 && (
+              <div className="space-y-2">
+                <Label htmlFor="editConsultant">יועץ</Label>
+                <Select
+                  value={showEditClientDialog?.consultant_email || ''}
+                  onValueChange={(value) => setShowEditClientDialog({ ...showEditClientDialog, consultant_email: value })}
+                >
+                  <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
+                    <SelectValue placeholder="בחר יועץ" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-800 border-zinc-700">
+                    <SelectItem value={null} className="text-white">ללא יועץ</SelectItem>
+                    {consultants.map((consultant) => (
+                      <SelectItem key={consultant.id} value={consultant.email} className="text-white">
+                        {consultant.full_name || consultant.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            <div className="flex gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowEditClientDialog(null)}
+                className="flex-1 border-red-700 text-red-400 hover:bg-red-500/10"
+              >
+                ביטול
+              </Button>
+              <Button
+                type="submit"
+                disabled={updateClientMutation.isPending}
+                className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold disabled:opacity-50"
+              >
+                {updateClientMutation.isPending ? 'שומר...' : 'שמור שינויים'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

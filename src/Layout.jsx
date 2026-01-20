@@ -110,6 +110,8 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
+  const isConsultant = user?.user_type === 'consultant';
+
   const adminLinks = [
     { name: 'לוח בקרה', page: 'AdminDashboard', icon: Home },
     { name: 'ניהול קורסים', page: 'AdminCourses', icon: BookOpen },
@@ -117,11 +119,16 @@ export default function Layout({ children, currentPageName }) {
     { name: 'צפייה בקורסים', page: 'Home', icon: GraduationCap },
   ];
 
+  const consultantLinks = [
+    { name: 'הקורסים שלי', page: 'Home', icon: BookOpen },
+    { name: 'ניהול לקוחות', page: 'AdminClients', icon: Users },
+  ];
+
   const userLinks = [
     { name: 'הקורסים שלי', page: 'Home', icon: BookOpen },
   ];
 
-  const links = isAdmin ? adminLinks : userLinks;
+  const links = isAdmin ? adminLinks : isConsultant ? consultantLinks : userLinks;
 
   return (
     <div className="min-h-screen bg-black" dir="rtl">
@@ -260,7 +267,7 @@ export default function Layout({ children, currentPageName }) {
             </div>
             <div>
               <h1 className="font-bold text-white text-sm">האקדמיה של צעירים מתעשרים</h1>
-              <p className="text-xs text-gray-500">{isAdmin ? 'ניהול' : 'לקוח'}</p>
+              <p className="text-xs text-gray-500">{isAdmin ? 'ניהול' : isConsultant ? 'יועץ' : 'לקוח'}</p>
             </div>
           </div>
         </div>

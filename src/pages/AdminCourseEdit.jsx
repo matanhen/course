@@ -324,7 +324,22 @@ export default function AdminCourseEdit() {
     }
   };
 
-  const handleDragEnd = async (result) => {
+  const handleChapterDragEnd = async (result) => {
+    if (!result.destination) return;
+    
+    const reordered = Array.from(sortedChapters);
+    const [moved] = reordered.splice(result.source.index, 1);
+    reordered.splice(result.destination.index, 0, moved);
+    
+    // Update order for all chapters
+    for (let i = 0; i < reordered.length; i++) {
+      await base44.entities.Chapter.update(reordered[i].id, { order: i + 1 });
+    }
+    
+    queryClient.invalidateQueries(['chapters', courseId]);
+  };
+
+  const handleLessonDragEnd = async (result) => {
     if (!result.destination) return;
 
     const sourceChapterId = result.source.droppableId;
@@ -503,27 +518,48 @@ export default function AdminCourseEdit() {
               </Button>
             </Card>
           ) : (
-            <DragDropContext onDragEnd={handleDragEnd}>
-              <div className="space-y-4">
-                {sortedChapters.map((chapter, chapterIndex) => {
+            <DragDropContext onDragEnd={handleChapterDragEnd}>
+              <Droppable droppableId="chapters-list">
+                {(provided) => (
+                  <div 
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    className="space-y-4"
+                  >
+                    {sortedChapters.map((chapter, chapterIndex) => (
+                      <Draggable
+                        key={chapter.id}
+                        draggableId={chapter.id}
+                        index={chapterIndex}
+                      >
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                          >
                   const chapterLessons = getLessonsForChapter(chapter.id);
 
-                  return (
-                    <motion.div
-                      key={chapter.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: chapterIndex * 0.05 }}
-                    >
-                      <Card className="bg-zinc-900/50 border-zinc-800 overflow-hidden">
-                        {/* Chapter Header */}
-                        <div className="p-4 flex items-center justify-between border-b border-zinc-800">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-[#c7af48]/10 flex items-center justify-center">
-                              <span className="text-[#c7af48] font-bold text-sm">
-                                {chapterIndex + 1}
-                              </span>
-                            </div>
+                            <motion.div
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: chapterIndex * 0.05 }}
+                              className={snapshot.isDragging ? 'opacity-50' : ''}
+                            >
+                              <Card className="bg-zinc-900/50 border-zinc-800 overflow-hidden">
+                                {/* Chapter Header */}
+                                <div className="p-4 flex items-center justify-between border-b border-zinc-800">
+                                  <div className="flex items-center gap-3">
+                                    <div
+                                      {...provided.dragHandleProps}
+                                      className="cursor-grab active:cursor-grabbing"
+                                    >
+                                      <GripVertical className="w-5 h-5 text-gray-600 hover:text-gray-400" />
+                                    </div>
+                                    <div className="w-8 h-8 rounded-lg bg-[#c7af48]/10 flex items-center justify-center">
+                                      <span className="text-[#c7af48] font-bold text-sm">
+                                        {chapterIndex + 1}
+                                      </span>
+                                    </div>
                             <div>
                               <h3 className="text-white font-semibold">{chapter.title}</h3>
                               <p className="text-gray-500 text-sm">{chapterLessons.length} שיעורים</p>
@@ -558,8 +594,9 @@ export default function AdminCourseEdit() {
                           </div>
                         </div>
 
-                        {/* Lessons List */}
-                        <Droppable droppableId={chapter.id}>
+                                {/* Lessons List */}
+                                <DragDropContext onDragEnd={handleLessonDragEnd}>
+                                  <Droppable droppableId={chapter.id}>
                           {(provided, snapshot) => (
                             <div
                               ref={provided.innerRef}
@@ -639,12 +676,18 @@ export default function AdminCourseEdit() {
                               {provided.placeholder}
                             </div>
                           )}
-                        </Droppable>
-                      </Card>
-                    </motion.div>
-                  );
-                })}
-              </div>
+                                  </Droppable>
+                                </DragDropContext>
+                              </Card>
+                            </motion.div>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
             </DragDropContext>
           )}
         </div>
