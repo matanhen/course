@@ -18,8 +18,7 @@ import {
   Calendar,
   Clock,
   Edit,
-  UserPlus,
-  UserCog
+  UserPlus
 } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -65,7 +64,8 @@ export default function AdminClients() {
   const [showEditClientDialog, setShowEditClientDialog] = useState(null);
   const [showEditConsultantDialog, setShowEditConsultantDialog] = useState(null);
   const [showAssignConsultantDialog, setShowAssignConsultantDialog] = useState(null);
-  const [convertToConsultant, setConvertToConsultant] = useState(null);
+  const [showAddConsultantDialog, setShowAddConsultantDialog] = useState(false);
+  const [newConsultant, setNewConsultant] = useState({ email: '', full_name: '' });
   const [activeTab, setActiveTab] = useState('clients'); // 'clients' or 'consultants'
   
   const queryClient = useQueryClient();
@@ -163,28 +163,27 @@ export default function AdminClients() {
     },
   });
 
-  const convertToConsultantMutation = useMutation({
-    mutationFn: async (client) => {
-      // Find the user by email using filter
-      const users = await base44.asServiceRole.entities.User.filter({ email: client.email });
+  const addConsultantMutation = useMutation({
+    mutationFn: async (data) => {
+      // Invite the consultant with user_type consultant
+      await base44.users.inviteUser(data.email, 'user');
       
-      if (!users || users.length === 0) {
-        throw new Error('משתמש לא נמצא במערכת');
+      // Wait a bit for the user to be created
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Find and update the user to be a consultant
+      const users = await base44.asServiceRole.entities.User.filter({ email: data.email });
+      if (users && users.length > 0) {
+        await base44.asServiceRole.entities.User.update(users[0].id, {
+          user_type: 'consultant',
+          full_name: data.full_name
+        });
       }
-      
-      const user = users[0];
-      
-      // Update the user to be a consultant
-      await base44.asServiceRole.entities.User.update(user.id, {
-        user_type: 'consultant'
-      });
-      
-      return user;
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['allUsers']);
-      queryClient.invalidateQueries(['clients']);
-      setConvertToConsultant(null);
+      setShowAddConsultantDialog(false);
+      setNewConsultant({ email: '', full_name: '' });
     },
   });
 
@@ -324,6 +323,13 @@ export default function AdminClients() {
         id: showAssignConsultantDialog.client.id,
         consultant_email: showAssignConsultantDialog.consultant_email
       });
+    }
+  };
+
+  const handleAddConsultant = (e) => {
+    e.preventDefault();
+    if (newConsultant.email && newConsultant.full_name) {
+      addConsultantMutation.mutate(newConsultant);
     }
   };
 
@@ -503,15 +509,6 @@ export default function AdminClients() {
                                 שייך יועץ
                               </Button>
                               <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setConvertToConsultant(client)}
-                                className="text-blue-400 border-blue-400/30 hover:bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
-                              >
-                                <UserCog className="w-4 h-4 ml-1" />
-                                המר ליועץ
-                              </Button>
-                              <Button
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => setShowEditClientDialog(client)}
@@ -582,12 +579,23 @@ export default function AdminClients() {
           )}
         </>
       ) : (
-        <ConsultantsList
-          consultants={consultants}
-          clients={clients}
-          onEditConsultant={setShowEditConsultantDialog}
-          getConsultantClientCount={getConsultantClientCount}
-        />
+        <>
+          <div className="flex justify-end mb-6">
+            <Button 
+              onClick={() => setShowAddConsultantDialog(true)}
+              className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold"
+            >
+              <Plus className="w-5 h-5 ml-2" />
+              הוסף יועץ
+            </Button>
+          </div>
+          <ConsultantsList
+            consultants={consultants}
+            clients={clients}
+            onEditConsultant={setShowEditConsultantDialog}
+            getConsultantClientCount={getConsultantClientCount}
+          />
+        </>
       )}
 
       {/* Add Client Dialog */}
@@ -1177,30 +1185,62 @@ export default function AdminClients() {
         </DialogContent>
       </Dialog>
 
-      {/* Convert to Consultant Confirmation */}
-      <AlertDialog open={!!convertToConsultant} onOpenChange={() => setConvertToConsultant(null)}>
-        <AlertDialogContent className="bg-zinc-900 border-zinc-800">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">המרה ליועץ</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-400">
-              האם אתה בטוח שברצונך להפוך את {convertToConsultant?.name || convertToConsultant?.email} ליועץ?
-              <br /><br />
-              לאחר ההמרה, המשתמש יקבל הרשאות יועץ ויוכל לנהל לקוחות משלו.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="gap-3">
-            <AlertDialogCancel className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700">
-              ביטול
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => convertToConsultantMutation.mutate(convertToConsultant)}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              כן, המר ליועץ
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Add Consultant Dialog */}
+      <Dialog open={showAddConsultantDialog} onOpenChange={setShowAddConsultantDialog}>
+        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+          <DialogHeader>
+            <DialogTitle>הוסף יועץ חדש</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleAddConsultant} className="space-y-6 mt-4">
+            <div className="space-y-2">
+              <Label htmlFor="consultantEmail">אימייל *</Label>
+              <div className="relative">
+                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <Input
+                  id="consultantEmail"
+                  type="email"
+                  required
+                  value={newConsultant.email}
+                  onChange={(e) => setNewConsultant({ ...newConsultant, email: e.target.value })}
+                  placeholder="email@example.com"
+                  className="bg-zinc-800 border-zinc-700 text-white pr-11"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="consultantFullName">שם מלא *</Label>
+              <div className="relative">
+                <User className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <Input
+                  id="consultantFullName"
+                  required
+                  value={newConsultant.full_name}
+                  onChange={(e) => setNewConsultant({ ...newConsultant, full_name: e.target.value })}
+                  placeholder="שם מלא"
+                  className="bg-zinc-800 border-zinc-700 text-white pr-11"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowAddConsultantDialog(false)}
+                className="flex-1 border-red-700 text-red-400 hover:bg-red-500/10"
+              >
+                ביטול
+              </Button>
+              <Button
+                type="submit"
+                disabled={addConsultantMutation.isPending}
+                className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold disabled:opacity-50"
+              >
+                {addConsultantMutation.isPending ? 'מוסיף...' : 'הוסף יועץ'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
