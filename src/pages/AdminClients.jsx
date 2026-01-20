@@ -165,12 +165,18 @@ export default function AdminClients() {
 
   const convertToConsultantMutation = useMutation({
     mutationFn: async (client) => {
-      // Find the user by email
-      const user = allUsers.find(u => u.email === client.email);
+      // Find the user by email in allUsers
+      const allUsersList = await base44.asServiceRole.entities.User.list();
+      const user = allUsersList.find(u => u.email === client.email);
+      
       if (user) {
+        // Update the user to be a consultant
         await base44.asServiceRole.entities.User.update(user.id, {
-          user_type: 'consultant'
+          user_type: 'consultant',
+          role: user.role // Keep the existing role
         });
+      } else {
+        throw new Error('משתמש לא נמצא במערכת');
       }
     },
     onSuccess: () => {
@@ -486,22 +492,22 @@ export default function AdminClients() {
                           {isAdmin && (
                             <>
                               <Button
-                                variant="ghost"
-                                size="icon"
+                                variant="outline"
+                                size="sm"
                                 onClick={() => setShowAssignConsultantDialog({ client, consultant_email: client.consultant_email || '' })}
-                                className="text-gray-500 hover:text-[#c7af48] hover:bg-[#c7af48]/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
-                                title="שייך יועץ"
+                                className="text-[#c7af48] border-[#c7af48]/30 hover:bg-[#c7af48]/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
                               >
-                                <UserPlus className="w-5 h-5" />
+                                <UserPlus className="w-4 h-4 ml-1" />
+                                שייך יועץ
                               </Button>
                               <Button
-                                variant="ghost"
-                                size="icon"
+                                variant="outline"
+                                size="sm"
                                 onClick={() => setConvertToConsultant(client)}
-                                className="text-gray-500 hover:text-blue-500 hover:bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
-                                title="הפוך ליועץ"
+                                className="text-blue-400 border-blue-400/30 hover:bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
                               >
-                                <UserCog className="w-5 h-5" />
+                                <UserCog className="w-4 h-4 ml-1" />
+                                המר ליועץ
                               </Button>
                               <Button
                                 variant="ghost"
