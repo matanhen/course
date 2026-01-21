@@ -144,29 +144,65 @@ export default function AdminClients() {
 
   const addClientMutation = useMutation({
     mutationFn: async (data) => {
-      const clientData = { 
-        email: data.email, 
-        name: data.name 
-      };
-      if (data.consultant_email) {
-        clientData.consultant_email = data.consultant_email;
-      } else if (user?.user_type === 'consultant') {
-        clientData.consultant_email = user.email;
+      // Check if client already exists
+      const existingClients = await base44.entities.AllowedClient.filter({ email: data.email });
+      
+      let client;
+      if (existingClients.length > 0) {
+        // Client exists - use existing record
+        client = existingClients[0];
+        
+        // Update name if current client doesn't have one but new data does
+        if (!client.name && data.name) {
+          await base44.entities.AllowedClient.update(client.id, { name: data.name });
+        }
+        
+        // Update consultant if provided
+        if (data.consultant_email && !client.consultant_email) {
+          await base44.entities.AllowedClient.update(client.id, { 
+            consultant_email: data.consultant_email 
+          });
+        } else if (user?.user_type === 'consultant' && !client.consultant_email) {
+          await base44.entities.AllowedClient.update(client.id, { 
+            consultant_email: user.email 
+          });
+        }
+      } else {
+        // New client - create record
+        const clientData = { 
+          email: data.email, 
+          name: data.name 
+        };
+        if (data.consultant_email) {
+          clientData.consultant_email = data.consultant_email;
+        } else if (user?.user_type === 'consultant') {
+          clientData.consultant_email = user.email;
+        }
+        
+        client = await base44.entities.AllowedClient.create(clientData);
       }
       
-      const client = await base44.entities.AllowedClient.create(clientData);
+      // Add course access if needed
       if (data.course_id) {
-        await base44.entities.ClientCourseAccess.create({
+        const existingAccess = await base44.entities.ClientCourseAccess.filter({
           email: data.email,
           course_id: data.course_id
         });
+        
+        if (existingAccess.length === 0) {
+          await base44.entities.ClientCourseAccess.create({
+            email: data.email,
+            course_id: data.course_id
+          });
+        }
       }
+      
       return client;
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['clients']);
       queryClient.invalidateQueries(['clientAccess']);
-      queryClient.invalidateQueries(['allUsers']); // Invalidate allUsers to update consultant client counts
+      queryClient.invalidateQueries(['allUsers']);
       setShowAddDialog(false);
       setNewClient({ email: '', name: '', course_id: '', consultant_email: '' });
     },
