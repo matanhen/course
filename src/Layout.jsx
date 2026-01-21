@@ -39,12 +39,16 @@ export default function Layout({ children, currentPageName }) {
             
             // Set user_type to consultant if marked in AllowedClient
             if (client.is_consultant && currentUser.user_type !== 'consultant') {
-              await base44.asServiceRole.entities.User.update(currentUser.id, {
-                user_type: 'consultant'
-              });
-              // Reload user data
-              const updatedUser = await base44.auth.me();
-              setUser(updatedUser);
+              try {
+                await base44.asServiceRole.entities.User.update(currentUser.id, {
+                  user_type: 'consultant'
+                });
+                // Reload user data
+                const updatedUser = await base44.auth.me();
+                setUser(updatedUser);
+              } catch (error) {
+                console.error('Failed to update user type:', error);
+              }
             }
             
             if (client.name) {
