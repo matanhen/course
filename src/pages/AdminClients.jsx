@@ -377,8 +377,10 @@ export default function AdminClients() {
     return clientProgress.length;
   };
 
-  const getTotalLessons = () => {
-    return lessons.length;
+  const getTotalLessons = (clientEmail) => {
+    const clientCourses = getClientCourses(clientEmail);
+    const clientCourseIds = clientCourses.map(c => c.id);
+    return lessons.filter(l => clientCourseIds.includes(l.course_id)).length;
   };
 
   const getClientCourses = (clientEmail) => {
@@ -683,8 +685,8 @@ export default function AdminClients() {
                           <div>
                             <p className="text-xs text-gray-500">התקדמות</p>
                             <p className="text-white font-semibold">
-                              {getTotalLessons() > 0 
-                                ? Math.round((getClientProgress(client.email) / getTotalLessons()) * 100)
+                              {getTotalLessons(client.email) > 0 
+                                ? Math.round((getClientProgress(client.email) / getTotalLessons(client.email)) * 100)
                                 : 0}%
                             </p>
                           </div>
