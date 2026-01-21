@@ -674,7 +674,7 @@ export default function AdminClients() {
                           <div className="text-right">
                             <p className="text-xs text-gray-500 group-hover/stat:text-green-400 transition-colors">שיעורים נצפו</p>
                             <p className="text-white font-semibold">
-                              {getClientProgress(client.email)}/{getTotalLessons()}
+                              {getClientProgress(client.email)}/{getTotalLessons(client.email)}
                             </p>
                           </div>
                         </button>
