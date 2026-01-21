@@ -20,6 +20,7 @@ export default function Layout({ children, currentPageName }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isAllowed, setIsAllowed] = useState(null);
+  const [isConsultant, setIsConsultant] = useState(false);
 
   const [clientName, setClientName] = useState('');
 
@@ -34,6 +35,9 @@ export default function Layout({ children, currentPageName }) {
           const clientData = await base44.entities.AllowedClient.filter({ email: currentUser.email });
           const isConsultantUser = clientData.length > 0 && clientData[0].is_consultant;
           
+          // Set consultant status
+          setIsConsultant(isConsultantUser);
+          
           if (clientData.length > 0) {
             const client = clientData[0];
             
@@ -43,9 +47,6 @@ export default function Layout({ children, currentPageName }) {
                 await base44.asServiceRole.entities.User.update(currentUser.id, {
                   user_type: 'consultant'
                 });
-                // Reload user data
-                const updatedUser = await base44.auth.me();
-                setUser(updatedUser);
               } catch (error) {
                 console.error('Failed to update user type:', error);
               }
@@ -72,6 +73,7 @@ export default function Layout({ children, currentPageName }) {
           }
         } else {
           setIsAllowed(true);
+          setIsConsultant(false);
         }
       } catch (e) {
         setUser(null);
@@ -131,8 +133,6 @@ export default function Layout({ children, currentPageName }) {
       </div>
     );
   }
-
-  const isConsultant = user?.user_type === 'consultant';
 
   const adminLinks = [
     { name: 'לוח בקרה', page: 'AdminDashboard', icon: Home },

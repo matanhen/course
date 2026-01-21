@@ -74,6 +74,14 @@ export default function AdminClients() {
     const checkUser = async () => {
       const currentUser = await base44.auth.me();
       setUser(currentUser);
+      
+      // Check if user is consultant from AllowedClient entity
+      if (currentUser?.role !== 'admin') {
+        const clientData = await base44.entities.AllowedClient.filter({ email: currentUser.email });
+        if (clientData.length > 0 && clientData[0].is_consultant) {
+          setUser({ ...currentUser, user_type: 'consultant' });
+        }
+      }
     };
     checkUser();
   }, []);
