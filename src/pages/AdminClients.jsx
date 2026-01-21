@@ -88,7 +88,54 @@ export default function AdminClients() {
 
   const { data: clients = [], isLoading } = useQuery({
     queryKey: ['clients'],
-    queryFn: () => base44.entities.AllowedClient.list('-created_date'),
+    queryFn: async () => {
+      const allClients = await base44.entities.AllowedClient.list('-created_date');
+      
+      // Find and merge duplicates
+      const emailMap = new Map();
+      const duplicatesToDelete = [];
+      
+      for (const client of allClients) {
+        if (emailMap.has(client.email)) {
+          const existing = emailMap.get(client.email);
+          
+          // Keep the one with earlier created_date
+          const keepClient = new Date(existing.created_date) < new Date(client.created_date) ? existing : client;
+          const deleteClient = keepClient === existing ? client : existing;
+          
+          // Merge data - keep non-null values from both
+          const mergedData = {
+            name: keepClient.name || deleteClient.name,
+            consultant_email: keepClient.consultant_email || deleteClient.consultant_email,
+            first_login_date: keepClient.first_login_date && deleteClient.first_login_date
+              ? (new Date(keepClient.first_login_date) < new Date(deleteClient.first_login_date) 
+                  ? keepClient.first_login_date 
+                  : deleteClient.first_login_date)
+              : (keepClient.first_login_date || deleteClient.first_login_date),
+            is_consultant: keepClient.is_consultant || deleteClient.is_consultant
+          };
+          
+          // Update the kept client with merged data
+          await base44.entities.AllowedClient.update(keepClient.id, mergedData);
+          
+          // Mark duplicate for deletion
+          duplicatesToDelete.push(deleteClient.id);
+          
+          // Update map with kept client
+          emailMap.set(client.email, keepClient);
+        } else {
+          emailMap.set(client.email, client);
+        }
+      }
+      
+      // Delete duplicates
+      for (const id of duplicatesToDelete) {
+        await base44.entities.AllowedClient.delete(id);
+      }
+      
+      // Return deduplicated list
+      return Array.from(emailMap.values());
+    },
   });
 
   const { data: courses = [] } = useQuery({
