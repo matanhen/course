@@ -274,12 +274,24 @@ export default function AdminClients() {
 
   const addConsultantMutation = useMutation({
     mutationFn: async (data) => {
-      // Create AllowedClient with consultant flag
-      await base44.entities.AllowedClient.create({
-        email: data.email,
-        name: data.full_name,
-        is_consultant: true
-      });
+      // Check if email already exists as client
+      const existingClients = await base44.entities.AllowedClient.filter({ email: data.email });
+      
+      if (existingClients.length > 0) {
+        // Update existing client to be consultant
+        const client = existingClients[0];
+        await base44.entities.AllowedClient.update(client.id, {
+          is_consultant: true,
+          name: client.name || data.full_name
+        });
+      } else {
+        // Create new AllowedClient with consultant flag
+        await base44.entities.AllowedClient.create({
+          email: data.email,
+          name: data.full_name,
+          is_consultant: true
+        });
+      }
       
       // Invite user to the system
       await base44.users.inviteUser(data.email, 'user');
