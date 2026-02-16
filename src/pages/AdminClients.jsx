@@ -191,8 +191,11 @@ export default function AdminClients() {
 
   const addClientMutation = useMutation({
     mutationFn: async (data) => {
+      // Normalize email to lowercase
+      const normalizedEmail = data.email.toLowerCase();
+      
       // Check if client already exists
-      const existingClients = await base44.entities.AllowedClient.filter({ email: data.email });
+      const existingClients = await base44.entities.AllowedClient.filter({ email: normalizedEmail });
       
       let client;
       if (existingClients.length > 0) {
@@ -217,7 +220,7 @@ export default function AdminClients() {
       } else {
         // New client - create record
         const clientData = { 
-          email: data.email, 
+          email: normalizedEmail, 
           name: data.name 
         };
         if (data.consultant_email) {
@@ -232,13 +235,13 @@ export default function AdminClients() {
       // Add course access if needed
       if (data.course_id) {
         const existingAccess = await base44.entities.ClientCourseAccess.filter({
-          email: data.email,
+          email: normalizedEmail,
           course_id: data.course_id
         });
         
         if (existingAccess.length === 0) {
           await base44.entities.ClientCourseAccess.create({
-            email: data.email,
+            email: normalizedEmail,
             course_id: data.course_id
           });
         }
@@ -274,8 +277,11 @@ export default function AdminClients() {
 
   const addConsultantMutation = useMutation({
     mutationFn: async (data) => {
+      // Normalize email to lowercase
+      const normalizedEmail = data.email.toLowerCase();
+      
       // Check if email already exists as client
-      const existingClients = await base44.entities.AllowedClient.filter({ email: data.email });
+      const existingClients = await base44.entities.AllowedClient.filter({ email: normalizedEmail });
       
       if (existingClients.length > 0) {
         // Update existing client to be consultant
@@ -287,14 +293,14 @@ export default function AdminClients() {
       } else {
         // Create new AllowedClient with consultant flag
         await base44.entities.AllowedClient.create({
-          email: data.email,
+          email: normalizedEmail,
           name: data.full_name,
           is_consultant: true
         });
       }
       
       // Invite user to the system
-      await base44.users.inviteUser(data.email, 'user');
+      await base44.users.inviteUser(normalizedEmail, 'user');
       
       return { email: data.email, full_name: data.full_name };
     },
