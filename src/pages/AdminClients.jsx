@@ -67,6 +67,9 @@ export default function AdminClients() {
   const [showAddConsultantDialog, setShowAddConsultantDialog] = useState(false);
   const [newConsultant, setNewConsultant] = useState({ email: '', full_name: '' });
   const [activeTab, setActiveTab] = useState('clients'); // 'clients' or 'consultants'
+  const [filterType, setFilterType] = useState('all'); // 'all', 'course', 'consultant'
+  const [selectedCourseFilter, setSelectedCourseFilter] = useState('');
+  const [selectedConsultantFilter, setSelectedConsultantFilter] = useState('');
   
   const queryClient = useQueryClient();
 
@@ -373,6 +376,20 @@ export default function AdminClients() {
       }
       return true;
     })
+    .filter(client => {
+      // Admin filter by type
+      if (isAdmin) {
+        if (filterType === 'course' && selectedCourseFilter) {
+          const hasAccess = clientAccess.some(
+            a => a.email === client.email && a.course_id === selectedCourseFilter
+          );
+          if (!hasAccess) return false;
+        } else if (filterType === 'consultant' && selectedConsultantFilter) {
+          if (client.consultant_email !== selectedConsultantFilter) return false;
+        }
+      }
+      return true;
+    })
     .filter(client =>
       client.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       client.name?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -546,6 +563,94 @@ export default function AdminClients() {
 
       {activeTab === 'clients' ? (
         <>
+          {/* Filters - Admin Only */}
+          {isAdmin && (
+            <div className="mb-8 space-y-4">
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  variant={filterType === 'all' ? 'default' : 'outline'}
+                  onClick={() => {
+                    setFilterType('all');
+                    setSelectedCourseFilter('');
+                    setSelectedConsultantFilter('');
+                  }}
+                  className={filterType === 'all' 
+                    ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold' 
+                    : 'border-zinc-700 text-gray-300 hover:bg-zinc-800'
+                  }
+                >
+                  כל הלקוחות ({clients.length})
+                </Button>
+                <Button
+                  variant={filterType === 'course' ? 'default' : 'outline'}
+                  onClick={() => setFilterType('course')}
+                  className={filterType === 'course' 
+                    ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold' 
+                    : 'border-zinc-700 text-gray-300 hover:bg-zinc-800'
+                  }
+                >
+                  לפי קורס
+                </Button>
+                <Button
+                  variant={filterType === 'consultant' ? 'default' : 'outline'}
+                  onClick={() => setFilterType('consultant')}
+                  className={filterType === 'consultant' 
+                    ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold' 
+                    : 'border-zinc-700 text-gray-300 hover:bg-zinc-800'
+                  }
+                >
+                  לפי יועץ
+                </Button>
+              </div>
+
+              {filterType === 'course' && (
+                <Select
+                  value={selectedCourseFilter}
+                  onValueChange={setSelectedCourseFilter}
+                >
+                  <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-white max-w-md">
+                    <SelectValue placeholder="בחר קורס" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-800 border-zinc-700">
+                    {courses.map((course) => {
+                      const courseClientCount = clientAccess.filter(
+                        a => a.course_id === course.id
+                      ).length;
+                      return (
+                        <SelectItem key={course.id} value={course.id} className="text-white">
+                          {course.title} ({courseClientCount} לקוחות)
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              )}
+
+              {filterType === 'consultant' && (
+                <Select
+                  value={selectedConsultantFilter}
+                  onValueChange={setSelectedConsultantFilter}
+                >
+                  <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-white max-w-md">
+                    <SelectValue placeholder="בחר יועץ" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-800 border-zinc-700">
+                    {consultants.map((consultant) => {
+                      const consultantClientCount = clients.filter(
+                        c => c.consultant_email === consultant.email
+                      ).length;
+                      return (
+                        <SelectItem key={consultant.email} value={consultant.email} className="text-white">
+                          {consultant.full_name || consultant.email} ({consultantClientCount} לקוחות)
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+          )}
+
           {/* Search */}
           <div className="relative mb-8">
             <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
