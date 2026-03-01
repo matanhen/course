@@ -19,16 +19,18 @@ export default function Home() {
     getUser();
   }, []);
 
+  const normalizedEmail = user?.email?.toLowerCase();
+
   const { data: clientAccess = [] } = useQuery({
-    queryKey: ['clientAccess', user?.email],
-    queryFn: () => base44.entities.ClientCourseAccess.filter({ email: user?.email }),
-    enabled: !!user?.email,
+    queryKey: ['clientAccess', normalizedEmail],
+    queryFn: () => base44.entities.ClientCourseAccess.filter({ email: normalizedEmail }),
+    enabled: !!normalizedEmail,
   });
 
   const { data: clientData = [] } = useQuery({
-    queryKey: ['clientData', user?.email],
-    queryFn: () => base44.entities.AllowedClient.filter({ email: user?.email }),
-    enabled: !!user?.email,
+    queryKey: ['clientData', normalizedEmail],
+    queryFn: () => base44.entities.AllowedClient.filter({ email: normalizedEmail }),
+    enabled: !!normalizedEmail,
   });
 
   const isAdmin = user?.role === 'admin';
@@ -53,9 +55,9 @@ export default function Home() {
   });
 
   const { data: progress = [] } = useQuery({
-    queryKey: ['progress', user?.email],
-    queryFn: () => base44.entities.LessonProgress.filter({ user_email: user?.email }),
-    enabled: !!user?.email,
+    queryKey: ['progress', normalizedEmail],
+    queryFn: () => base44.entities.LessonProgress.filter({ user_email: normalizedEmail }),
+    enabled: !!normalizedEmail,
   });
 
   const getCourseProgress = (courseId) => {
