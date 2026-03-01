@@ -32,7 +32,8 @@ export default function Layout({ children, currentPageName }) {
         setIsAdmin(currentUser?.role === 'admin');
         
         if (currentUser?.role !== 'admin') {
-          const clientData = await base44.entities.AllowedClient.filter({ email: currentUser.email });
+          const normalizedEmail = currentUser.email?.toLowerCase();
+          const clientData = await base44.entities.AllowedClient.filter({ email: normalizedEmail });
           const isConsultantUser = clientData.length > 0 && clientData[0].is_consultant;
           
           // Set consultant status
@@ -68,7 +69,7 @@ export default function Layout({ children, currentPageName }) {
           if (isConsultantUser) {
             setIsAllowed(true);
           } else {
-            const clientAccess = await base44.entities.ClientCourseAccess.filter({ email: currentUser.email });
+            const clientAccess = await base44.entities.ClientCourseAccess.filter({ email: normalizedEmail });
             setIsAllowed(clientAccess.length > 0);
           }
         } else {
