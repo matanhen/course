@@ -37,11 +37,12 @@ export default function CourseView() {
   }, []);
 
   const isAdmin = user?.role === 'admin';
+  const normalizedEmail = user?.email?.toLowerCase();
 
   const { data: clientAccess = [] } = useQuery({
-    queryKey: ['clientAccess', user?.email],
-    queryFn: () => base44.entities.ClientCourseAccess.filter({ email: user?.email }),
-    enabled: !!user?.email && !isAdmin,
+    queryKey: ['clientAccess', normalizedEmail],
+    queryFn: () => base44.entities.ClientCourseAccess.filter({ email: normalizedEmail }),
+    enabled: !!normalizedEmail && !isAdmin,
   });
 
   const hasAccess = isAdmin || clientAccess.some(access => access.course_id === courseId);
@@ -68,12 +69,12 @@ export default function CourseView() {
   });
 
   const { data: progress = [] } = useQuery({
-    queryKey: ['progress', user?.email, courseId],
+    queryKey: ['progress', normalizedEmail, courseId],
     queryFn: () => base44.entities.LessonProgress.filter({ 
-      user_email: user?.email,
+      user_email: normalizedEmail,
       course_id: courseId 
     }),
-    enabled: !!user?.email && !!courseId && !isAdmin,
+    enabled: !!normalizedEmail && !!courseId && !isAdmin,
   });
 
   const updateProgressMutation = useMutation({
@@ -86,7 +87,7 @@ export default function CourseView() {
         });
       } else {
         await base44.entities.LessonProgress.create({
-          user_email: user?.email,
+          user_email: normalizedEmail,
           lesson_id: lessonId,
           course_id: courseId,
           progress_percent: progressPercent,
@@ -108,7 +109,7 @@ export default function CourseView() {
         }
       } else {
         await base44.entities.LessonProgress.create({
-          user_email: user?.email,
+          user_email: normalizedEmail,
           lesson_id: lessonId,
           course_id: courseId,
           completed: true,
