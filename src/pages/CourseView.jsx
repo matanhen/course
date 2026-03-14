@@ -281,14 +281,14 @@ export default function CourseView() {
             const percent = Math.round((currentTime / duration) * 100);
             setVideoProgress(percent);
             
-            // Auto-complete at 80%
-            if (percent >= 80 && !isLessonCompleted(currentLesson.id)) {
+            // Mark as completed if watched at least 60 seconds (1 minute)
+            if (currentTime >= 60 && !isLessonCompleted(currentLesson.id)) {
               updateProgressMutation.mutate({
                 lessonId: currentLesson.id,
                 progressPercent: percent,
                 completed: true
               });
-            } else if (percent < 80) {
+            } else {
               // Update progress without marking as complete
               updateProgressMutation.mutate({
                 lessonId: currentLesson.id,
