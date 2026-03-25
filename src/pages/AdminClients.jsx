@@ -78,7 +78,6 @@ export default function AdminClients() {
       const currentUser = await base44.auth.me();
       setUser(currentUser);
       
-      // Check if user is consultant from AllowedClient entity
       if (currentUser?.role !== 'admin') {
         const clientData = await base44.entities.AllowedClient.filter({ email: currentUser.email });
         if (clientData.length > 0 && clientData[0].is_consultant) {
@@ -367,6 +366,16 @@ export default function AdminClients() {
 
   const isAdmin = user?.role === 'admin';
   const isConsultant = user?.user_type === 'consultant';
+
+  // Auto-set course for consultant when dialog opens
+  React.useEffect(() => {
+    if (showAddDialog && isConsultant && !isAdmin && courses.length > 0) {
+      const youngCourse = courses.find(c => c.title?.includes('צעירים מתעשרים'));
+      if (youngCourse) {
+        setNewClient(prev => ({ ...prev, course_id: youngCourse.id }));
+      }
+    }
+  }, [showAddDialog, isConsultant, isAdmin, courses]);
 
   const filteredClients = clients
     .filter(client => {
@@ -865,24 +874,34 @@ export default function AdminClients() {
                 />
               </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="course">קורס *</Label>
-              <Select
-                value={newClient.course_id}
-                onValueChange={(value) => setNewClient({ ...newClient, course_id: value })}
-              >
-                <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
-                  <SelectValue placeholder="בחר קורס" />
-                </SelectTrigger>
-                <SelectContent className="bg-zinc-800 border-zinc-700">
-                  {courses.map((course) => (
-                    <SelectItem key={course.id} value={course.id} className="text-white">
-                      {course.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {(!isConsultant || isAdmin) && (
+              <div className="space-y-2">
+                <Label htmlFor="course">קורס *</Label>
+                <Select
+                  value={newClient.course_id}
+                  onValueChange={(value) => setNewClient({ ...newClient, course_id: value })}
+                >
+                  <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
+                    <SelectValue placeholder="בחר קורס" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-800 border-zinc-700">
+                    {courses.map((course) => (
+                      <SelectItem key={course.id} value={course.id} className="text-white">
+                        {course.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            {isConsultant && !isAdmin && (
+              <div className="space-y-2">
+                <Label>קורס</Label>
+                <div className="bg-zinc-800 border border-zinc-700 rounded-md px-3 py-2 text-gray-400 text-sm">
+                  {courses.find(c => c.id === newClient.course_id)?.title || 'צעירים מתעשרים'}
+                </div>
+              </div>
+            )}
             {isAdmin && consultants.length > 0 && (
               <div className="space-y-2">
                 <Label htmlFor="consultant">יועץ (אופציונלי)</Label>
@@ -915,7 +934,7 @@ export default function AdminClients() {
               </Button>
               <Button
                 type="submit"
-                disabled={addClientMutation.isPending || !newClient.course_id}
+                disabled={addClientMutation.isPending || (!newClient.course_id && !isConsultant)}
                 className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold disabled:opacity-50"
               >
                 {addClientMutation.isPending ? 'מוסיף...' : 'הוסף לקוח'}
