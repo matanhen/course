@@ -77,6 +77,7 @@ export default function CourseView() {
     enabled: !!normalizedEmail && !!courseId && !isAdmin,
   });
 
+  const updateProgressMutationRef = useRef(null);
   const updateProgressMutation = useMutation({
     mutationFn: async ({ lessonId, progressPercent, completed }) => {
       const existingProgress = progress.find(p => p.lesson_id === lessonId);
@@ -99,6 +100,7 @@ export default function CourseView() {
       queryClient.invalidateQueries(['progress', user?.email, courseId]);
     },
   });
+  updateProgressMutationRef.current = updateProgressMutation;
 
   const markCompleteMutation = useMutation({
     mutationFn: async (lessonId) => {
@@ -246,61 +248,44 @@ export default function CourseView() {
   useEffect(() => {
     if (!currentLesson || currentLesson.lesson_type === 'external_link') return;
 
+    const lessonId = currentLesson.id;
     const iframe = playerRef.current;
     if (!iframe) return;
 
-    // YouTube API tracking
     const checkProgress = () => {
       if (iframe && iframe.contentWindow) {
         try {
           iframe.contentWindow.postMessage('{"event":"command","func":"getCurrentTime","args":""}', '*');
           iframe.contentWindow.postMessage('{"event":"command","func":"getDuration","args":""}', '*');
-        } catch (e) {
-          // Ignore errors
-        }
+        } catch (e) {}
       }
     };
 
     let currentTime = 0;
     let duration = 0;
+    let lastSavedPercent = -1;
 
     const handleMessage = (event) => {
       if (event.origin !== 'https://www.youtube.com') return;
-      
       try {
         const data = JSON.parse(event.data);
         if (data.event === 'infoDelivery') {
-          if (data.info && data.info.currentTime !== undefined) {
-            currentTime = data.info.currentTime;
-          }
-          if (data.info && data.info.duration !== undefined) {
-            duration = data.info.duration;
-          }
-          
+          if (data.info?.currentTime !== undefined) currentTime = data.info.currentTime;
+          if (data.info?.duration !== undefined) duration = data.info.duration;
+
           if (duration > 0 && currentTime > 0) {
             const percent = Math.round((currentTime / duration) * 100);
             setVideoProgress(percent);
-            
-            // Mark as completed if watched at least 60 seconds (1 minute)
-            if (currentTime >= 60 && !isLessonCompleted(currentLesson.id)) {
-              updateProgressMutation.mutate({
-                lessonId: currentLesson.id,
-                progressPercent: percent,
-                completed: true
-              });
-            } else {
-              // Update progress without marking as complete
-              updateProgressMutation.mutate({
-                lessonId: currentLesson.id,
-                progressPercent: percent,
-                completed: false
-              });
+
+            // Only save if changed by at least 5% to avoid excessive mutations
+            if (Math.abs(percent - lastSavedPercent) >= 5) {
+              lastSavedPercent = percent;
+              const completed = currentTime >= 60;
+              updateProgressMutationRef.current?.mutate({ lessonId, progressPercent: percent, completed });
             }
           }
         }
-      } catch (e) {
-        // Ignore parsing errors
-      }
+      } catch (e) {}
     };
 
     window.addEventListener('message', handleMessage);
@@ -312,7 +297,7 @@ export default function CourseView() {
         clearInterval(progressUpdateInterval.current);
       }
     };
-  }, [currentLesson, progress, updateProgressMutation]);
+  }, [currentLesson]);
 
   const completedCount = progress.filter(p => p.completed).length;
   const totalCount = lessons.length;
