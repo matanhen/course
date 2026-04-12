@@ -33,16 +33,35 @@ export default function Layout({ children, currentPageName }) {
         
         if (currentUser?.role !== 'admin') {
           const normalizedEmail = currentUser.email?.toLowerCase();
+          const originalEmail = currentUser.email;
           
-          // Fetch allowed client data and course access in parallel
-          const [clientData, clientAccess] = await Promise.all([
+          // Fetch allowed client data - try both normalized and original email
+          const [clientDataNorm, clientDataOrig, clientAccess] = await Promise.all([
             base44.entities.AllowedClient.filter({ email: normalizedEmail }),
+            originalEmail !== normalizedEmail
+              ? base44.entities.AllowedClient.filter({ email: originalEmail })
+              : Promise.resolve([]),
             base44.entities.ClientCourseAccess.filter({ email: normalizedEmail })
           ]);
-          
+
+          // Merge results, deduplicate by id
+          const seen = new Set();
+          const clientData = [...clientDataNorm, ...clientDataOrig].filter(c => {
+            if (seen.has(c.id)) return false;
+            seen.add(c.id);
+            return true;
+          });
+
+          // If found with non-normalized email, fix it in the background
+          if (clientDataOrig.length > 0 && clientDataNorm.length === 0) {
+            clientDataOrig.forEach(c => {
+              base44.entities.AllowedClient.update(c.id, { email: normalizedEmail }).catch(() => {});
+            });
+          }
+
           const isConsultantUser = clientData.length > 0 && clientData[0].is_consultant;
           setIsConsultant(isConsultantUser);
-          
+
           if (clientData.length > 0) {
             const client = clientData[0];
             
@@ -66,12 +85,17 @@ export default function Layout({ children, currentPageName }) {
             }
           }
           
-          // Being in AllowedClient is sufficient for app access.
-          // ClientCourseAccess only determines which courses are shown.
+          // Being in AllowedClient OR having any course access is sufficient
           if (isConsultantUser) {
             setIsAllowed(true);
+          } else if (clientData.length > 0) {
+            setIsAllowed(true);
+          } else if (clientAccess.length > 0) {
+            // User has course access but no AllowedClient record - fix it
+            base44.entities.AllowedClient.create({ email: normalizedEmail }).catch(() => {});
+            setIsAllowed(true);
           } else {
-            setIsAllowed(clientData.length > 0);
+            setIsAllowed(false);
           }
         } else {
           setIsAllowed(true);
