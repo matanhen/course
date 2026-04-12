@@ -66,10 +66,12 @@ export default function Layout({ children, currentPageName }) {
             }
           }
           
+          // Being in AllowedClient is sufficient for app access.
+          // ClientCourseAccess only determines which courses are shown.
           if (isConsultantUser) {
             setIsAllowed(true);
           } else {
-            setIsAllowed(clientAccess.length > 0);
+            setIsAllowed(clientData.length > 0);
           }
         } else {
           setIsAllowed(true);
