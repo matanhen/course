@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -124,35 +124,31 @@ export default function CourseView() {
     },
   });
 
-  const sortedChapters = [...chapters].sort((a, b) => a.order - b.order);
+  const sortedChapters = React.useMemo(() => [...chapters].sort((a, b) => a.order - b.order), [chapters]);
   
-  const getLessonsForChapter = (chapterId) => {
+  const getLessonsForChapter = useCallback((chapterId) => {
     return lessons
       .filter(l => l.chapter_id === chapterId)
       .sort((a, b) => a.order - b.order);
-  };
+  }, [lessons]);
 
-  const allSortedLessons = sortedChapters.flatMap(ch => getLessonsForChapter(ch.id));
+  const allSortedLessons = React.useMemo(() => sortedChapters.flatMap(ch => getLessonsForChapter(ch.id)), [sortedChapters, getLessonsForChapter]);
 
   const isLessonCompleted = (lessonId) => {
     return progress.some(p => p.lesson_id === lessonId && p.completed);
   };
 
-  // Set first lesson as default
+  // Set first lesson as default - only when lessons first load
+  const initialLessonSet = useRef(false);
   useEffect(() => {
-    if (allSortedLessons.length > 0 && !currentLesson) {
-      // Find first incomplete lesson or first lesson
-      const firstIncomplete = allSortedLessons.find(l => !isLessonCompleted(l.id));
-      setCurrentLesson(firstIncomplete || allSortedLessons[0]);
-      
-      // Expand the chapter containing the current lesson
+    if (allSortedLessons.length > 0 && !initialLessonSet.current) {
+      initialLessonSet.current = true;
+      const firstIncomplete = allSortedLessons.find(l => !progress.some(p => p.lesson_id === l.id && p.completed));
       const lessonToSelect = firstIncomplete || allSortedLessons[0];
-      setExpandedChapters(prev => ({
-        ...prev,
-        [lessonToSelect.chapter_id]: true,
-      }));
+      setCurrentLesson(lessonToSelect);
+      setExpandedChapters({ [lessonToSelect.chapter_id]: true });
     }
-  }, [allSortedLessons, currentLesson, progress]);
+  }, [allSortedLessons]);
 
   const getNextLesson = useCallback(() => {
     if (!currentLesson) return null;
@@ -277,7 +273,6 @@ export default function CourseView() {
             const percent = Math.round((currentTime / duration) * 100);
             setVideoProgress(percent);
 
-            // Only save if changed by at least 5% to avoid excessive mutations
             if (Math.abs(percent - lastSavedPercent) >= 5) {
               lastSavedPercent = percent;
               const completed = currentTime >= 60;

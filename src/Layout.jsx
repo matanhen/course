@@ -33,23 +33,25 @@ export default function Layout({ children, currentPageName }) {
         
         if (currentUser?.role !== 'admin') {
           const normalizedEmail = currentUser.email?.toLowerCase();
-          const clientData = await base44.entities.AllowedClient.filter({ email: normalizedEmail });
-          const isConsultantUser = clientData.length > 0 && clientData[0].is_consultant;
           
-          // Set consultant status
+          // Fetch allowed client data and course access in parallel
+          const [clientData, clientAccess] = await Promise.all([
+            base44.entities.AllowedClient.filter({ email: normalizedEmail }),
+            base44.entities.ClientCourseAccess.filter({ email: normalizedEmail })
+          ]);
+          
+          const isConsultantUser = clientData.length > 0 && clientData[0].is_consultant;
           setIsConsultant(isConsultantUser);
           
           if (clientData.length > 0) {
             const client = clientData[0];
             
-            // Set user_type to consultant if marked in AllowedClient
+            // Update user_type via updateMe (not asServiceRole) to avoid permission errors
             if (client.is_consultant && currentUser.user_type !== 'consultant') {
               try {
-                await base44.asServiceRole.entities.User.update(currentUser.id, {
-                  user_type: 'consultant'
-                });
+                await base44.auth.updateMe({ user_type: 'consultant' });
               } catch (error) {
-                console.error('Failed to update user type:', error);
+                // non-critical, ignore
               }
             }
             
@@ -57,19 +59,16 @@ export default function Layout({ children, currentPageName }) {
               setClientName(client.name);
             }
             
-            // Update first login date if not set
             if (!client.first_login_date) {
-              await base44.entities.AllowedClient.update(client.id, {
+              base44.entities.AllowedClient.update(client.id, {
                 first_login_date: new Date().toISOString()
-              });
+              }).catch(() => {});
             }
           }
           
-          // Consultants always have access, regular users need course access
           if (isConsultantUser) {
             setIsAllowed(true);
           } else {
-            const clientAccess = await base44.entities.ClientCourseAccess.filter({ email: normalizedEmail });
             setIsAllowed(clientAccess.length > 0);
           }
         } else {
