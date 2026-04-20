@@ -39,7 +39,7 @@ export default function CourseView() {
   const isAdmin = user?.role === 'admin';
   const normalizedEmail = user?.email?.toLowerCase();
 
-  const { data: clientAccess = [] } = useQuery({
+  const { data: clientAccess = [], isLoading: clientAccessLoading } = useQuery({
     queryKey: ['clientAccess', normalizedEmail],
     queryFn: () => base44.entities.ClientCourseAccess.filter({ email: normalizedEmail }),
     enabled: !!normalizedEmail && !isAdmin,
@@ -311,7 +311,7 @@ export default function CourseView() {
   const totalCount = lessons.length;
   const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
-  if (!user) {
+  if (!user || (!isAdmin && clientAccessLoading)) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
