@@ -253,9 +253,10 @@ export default function CourseView() {
     
     // Mark external link as viewed when opened (only for non-admin users)
     if (lesson.lesson_type === 'external_link' && !isAdmin && normalizedEmail) {
+      const lessonId = lesson.id;
       setTimeout(() => {
-        updateProgressMutation.mutate({
-          lessonId: lesson.id,
+        updateProgressMutationRef.current?.mutate({
+          lessonId,
           progressPercent: 100,
           completed: true
         });
@@ -407,6 +408,7 @@ export default function CourseView() {
                 currentLesson.external_url ? (
                   <div className="w-full h-full overflow-auto">
                     <iframe
+                      key={currentLesson.id}
                       ref={playerRef}
                       src={getEmbedUrl(currentLesson.external_url)}
                       className="w-full min-h-screen border-0"
