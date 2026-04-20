@@ -179,8 +179,12 @@ export default function CourseView() {
 
   const extractYouTubeId = (url) => {
     if (!url) return null;
-    const match = url.match(/(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/watch\?.+&v=))([\w-]{11})/);
-    return match ? match[1] : null;
+    try {
+      const match = url.match(/(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/watch\?.+&v=))([\w-]{11})/);
+      return match ? match[1] : null;
+    } catch {
+      return null;
+    }
   };
 
   const getEmbedUrl = (url) => {
@@ -242,13 +246,23 @@ export default function CourseView() {
 
   // Track video progress for YouTube videos
   useEffect(() => {
+    // Clear any previous interval first
+    if (progressUpdateInterval.current) {
+      clearInterval(progressUpdateInterval.current);
+      progressUpdateInterval.current = null;
+    }
+
     if (!currentLesson || currentLesson.lesson_type === 'external_link') return;
+    if (!extractYouTubeId(currentLesson.youtube_url)) return;
 
     const lessonId = currentLesson.id;
-    const iframe = playerRef.current;
-    if (!iframe) return;
+    let currentTime = 0;
+    let duration = 0;
+    let lastSavedPercent = -1;
+    let isActive = true;
 
     const checkProgress = () => {
+      const iframe = playerRef.current;
       if (iframe && iframe.contentWindow) {
         try {
           iframe.contentWindow.postMessage('{"event":"command","func":"getCurrentTime","args":""}', '*');
@@ -257,11 +271,8 @@ export default function CourseView() {
       }
     };
 
-    let currentTime = 0;
-    let duration = 0;
-    let lastSavedPercent = -1;
-
     const handleMessage = (event) => {
+      if (!isActive) return;
       if (event.origin !== 'https://www.youtube.com') return;
       try {
         const data = JSON.parse(event.data);
@@ -287,12 +298,14 @@ export default function CourseView() {
     progressUpdateInterval.current = setInterval(checkProgress, 3000);
 
     return () => {
+      isActive = false;
       window.removeEventListener('message', handleMessage);
       if (progressUpdateInterval.current) {
         clearInterval(progressUpdateInterval.current);
+        progressUpdateInterval.current = null;
       }
     };
-  }, [currentLesson]);
+  }, [currentLesson?.id]);
 
   const completedCount = progress.filter(p => p.completed).length;
   const totalCount = lessons.length;
@@ -371,23 +384,36 @@ export default function CourseView() {
           <div className={`relative bg-zinc-900 ${currentLesson?.lesson_type === 'external_link' ? 'min-h-screen' : 'aspect-video'}`}>
             {currentLesson ? (
               currentLesson.lesson_type === 'external_link' ? (
-                <div className="w-full h-full overflow-auto">
+                currentLesson.external_url ? (
+                  <div className="w-full h-full overflow-auto">
+                    <iframe
+                      ref={playerRef}
+                      src={getEmbedUrl(currentLesson.external_url)}
+                      className="w-full min-h-screen border-0"
+                      style={{ minHeight: '100vh' }}
+                      allowFullScreen
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <p className="text-gray-400">קישור לא זמין לשיעור זה</p>
+                  </div>
+                )
+              ) : (
+                extractYouTubeId(currentLesson.youtube_url) ? (
                   <iframe
+                    key={currentLesson.id}
                     ref={playerRef}
-                    src={getEmbedUrl(currentLesson.external_url)}
-                    className="w-full min-h-screen border-0"
-                    style={{ minHeight: '100vh' }}
+                    src={`https://www.youtube.com/embed/${extractYouTubeId(currentLesson.youtube_url)}?enablejsapi=1&rel=0&modestbranding=1`}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />
-                </div>
-              ) : (
-                <iframe
-                  ref={playerRef}
-                  src={`https://www.youtube.com/embed/${extractYouTubeId(currentLesson.youtube_url)}?enablejsapi=1&rel=0&modestbranding=1`}
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <p className="text-gray-400">סרטון לא זמין לשיעור זה</p>
+                  </div>
+                )
               )
             ) : (
               <div className="w-full h-full flex items-center justify-center">
