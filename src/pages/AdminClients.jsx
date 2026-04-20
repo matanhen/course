@@ -70,6 +70,9 @@ export default function AdminClients() {
   const [filterType, setFilterType] = useState('all'); // 'all', 'course', 'consultant'
   const [selectedCourseFilter, setSelectedCourseFilter] = useState('');
   const [selectedConsultantFilter, setSelectedConsultantFilter] = useState('');
+  const [selectedClientIds, setSelectedClientIds] = useState(new Set());
+  const [showBulkAssignDialog, setShowBulkAssignDialog] = useState(false);
+  const [bulkConsultantEmail, setBulkConsultantEmail] = useState('');
   
   const queryClient = useQueryClient();
 
@@ -367,12 +370,14 @@ export default function AdminClients() {
   const isAdmin = user?.role === 'admin';
   const isConsultant = user?.user_type === 'consultant';
 
-  // Auto-set course for consultant when dialog opens
+  // Auto-set course for consultant when dialog opens — exact match preferred
   React.useEffect(() => {
     if (showAddDialog && isConsultant && !isAdmin && courses.length > 0) {
-      const youngCourse = courses.find(c => c.title?.includes('צעירים מתעשרים'));
-      if (youngCourse) {
-        setNewClient(prev => ({ ...prev, course_id: youngCourse.id }));
+      const exactMatch = courses.find(c => c.title === 'צעירים מתעשרים (ליווי אישי פרימיום)');
+      const partialMatch = courses.find(c => c.title?.includes('צעירים מתעשרים'));
+      const course = exactMatch || partialMatch;
+      if (course) {
+        setNewClient(prev => ({ ...prev, course_id: course.id }));
       }
     }
   }, [showAddDialog, isConsultant, isAdmin, courses]);
@@ -491,8 +496,45 @@ export default function AdminClients() {
   };
 
   const getConsultantName = (email) => {
-    const consultant = allUsers.find(u => u.email === email);
-    return consultant?.full_name || email;
+    if (!email) return '';
+    // Search in allUsers (admin only) first, then in AllowedClient records
+    const userMatch = allUsers.find(u => u.email === email);
+    if (userMatch?.full_name) return userMatch.full_name;
+    const clientMatch = clients.find(c => c.email === email && c.is_consultant);
+    if (clientMatch?.name) return clientMatch.name;
+    return email;
+  };
+
+  const bulkAssignMutation = useMutation({
+    mutationFn: async ({ clientIds, consultant_email }) => {
+      const updates = [...clientIds].map(id =>
+        base44.entities.AllowedClient.update(id, { consultant_email: consultant_email || null })
+      );
+      await Promise.all(updates);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['clients']);
+      setShowBulkAssignDialog(false);
+      setSelectedClientIds(new Set());
+      setBulkConsultantEmail('');
+    },
+  });
+
+  const toggleSelectClient = (id) => {
+    setSelectedClientIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedClientIds.size === filteredClients.length) {
+      setSelectedClientIds(new Set());
+    } else {
+      setSelectedClientIds(new Set(filteredClients.map(c => c.id)));
+    }
   };
 
   if (!user) {
@@ -661,7 +703,7 @@ export default function AdminClients() {
           )}
 
           {/* Search */}
-          <div className="relative mb-8">
+          <div className="relative mb-4">
             <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
             <Input
               placeholder="חיפוש לפי שם או אימייל..."
@@ -670,6 +712,31 @@ export default function AdminClients() {
               className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-gray-500 pr-12 py-6"
             />
           </div>
+
+          {/* Bulk actions toolbar */}
+          {isAdmin && filteredClients.length > 0 && (
+            <div className="flex items-center gap-3 mb-4 px-1">
+              <input
+                type="checkbox"
+                checked={selectedClientIds.size === filteredClients.length && filteredClients.length > 0}
+                onChange={toggleSelectAll}
+                className="w-4 h-4 accent-[#c7af48] cursor-pointer"
+              />
+              <span className="text-gray-400 text-sm">
+                {selectedClientIds.size > 0 ? `${selectedClientIds.size} נבחרו` : 'בחר הכל'}
+              </span>
+              {selectedClientIds.size > 0 && (
+                <Button
+                  size="sm"
+                  onClick={() => setShowBulkAssignDialog(true)}
+                  className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold"
+                >
+                  <UserPlus className="w-4 h-4 ml-1" />
+                  שייך יועץ לנבחרים ({selectedClientIds.size})
+                </Button>
+              )}
+            </div>
+          )}
 
           {/* Clients List */}
           {isLoading ? (
@@ -702,9 +769,18 @@ export default function AdminClients() {
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ delay: index * 0.05 }}
                   >
-                    <Card className="bg-zinc-900/50 border-zinc-800 p-5 group hover:border-zinc-700 transition-all">
+                    <Card className={`bg-zinc-900/50 border-zinc-800 p-5 group hover:border-zinc-700 transition-all ${selectedClientIds.has(client.id) ? 'border-[#c7af48]/40' : ''}`}>
                       <div className="flex items-start justify-between gap-4 mb-4">
                         <div className="flex items-center gap-4">
+                          {isAdmin && (
+                            <input
+                              type="checkbox"
+                              checked={selectedClientIds.has(client.id)}
+                              onChange={() => toggleSelectClient(client.id)}
+                              className="w-4 h-4 accent-[#c7af48] cursor-pointer shrink-0"
+                              onClick={e => e.stopPropagation()}
+                            />
+                          )}
                           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#c7af48] to-[#e5d07a] flex items-center justify-center shrink-0">
                             <span className="text-black font-bold text-lg">
                               {(client.name || client.email)[0].toUpperCase()}
@@ -1433,6 +1509,49 @@ export default function AdminClients() {
               </Button>
             </div>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Assign Consultant Dialog */}
+      <Dialog open={showBulkAssignDialog} onOpenChange={setShowBulkAssignDialog}>
+        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+          <DialogHeader>
+            <DialogTitle>שיוך יועץ ל-{selectedClientIds.size} לקוחות</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6 mt-4">
+            <div className="space-y-2">
+              <Label>בחר יועץ</Label>
+              <Select value={bulkConsultantEmail} onValueChange={setBulkConsultantEmail}>
+                <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
+                  <SelectValue placeholder="בחר יועץ" />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-800 border-zinc-700">
+                  <SelectItem value="none" className="text-white">ללא יועץ (הסרה)</SelectItem>
+                  {consultants.map((consultant) => (
+                    <SelectItem key={consultant.id || consultant.email} value={consultant.email} className="text-white">
+                      {consultant.full_name || consultant.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => { setShowBulkAssignDialog(false); setBulkConsultantEmail(''); }}
+                className="flex-1 border-red-700 text-red-400 hover:bg-red-500/10"
+              >
+                ביטול
+              </Button>
+              <Button
+                disabled={!bulkConsultantEmail || bulkAssignMutation.isPending}
+                onClick={() => bulkAssignMutation.mutate({ clientIds: selectedClientIds, consultant_email: bulkConsultantEmail === 'none' ? null : bulkConsultantEmail })}
+                className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold disabled:opacity-50"
+              >
+                {bulkAssignMutation.isPending ? 'משייך...' : 'שייך יועץ'}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
