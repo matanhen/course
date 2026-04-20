@@ -28,6 +28,11 @@ export default function Layout({ children, currentPageName }) {
     const checkAuth = async () => {
       try {
         const currentUser = await base44.auth.me();
+        if (!currentUser) {
+          // Not logged in — redirect to login
+          base44.auth.redirectToLogin(window.location.pathname + window.location.search);
+          return;
+        }
         setUser(currentUser);
         setIsAdmin(currentUser?.role === 'admin');
         
@@ -67,11 +72,7 @@ export default function Layout({ children, currentPageName }) {
             
             // Update user_type via updateMe (not asServiceRole) to avoid permission errors
             if (client.is_consultant && currentUser.user_type !== 'consultant') {
-              try {
-                await base44.auth.updateMe({ user_type: 'consultant' });
-              } catch (error) {
-                // non-critical, ignore
-              }
+              base44.auth.updateMe({ user_type: 'consultant' }).catch(() => {});
             }
             
             if (client.name) {
@@ -86,12 +87,10 @@ export default function Layout({ children, currentPageName }) {
           }
           
           // Being in AllowedClient OR having any course access is sufficient
-          if (isConsultantUser) {
-            setIsAllowed(true);
-          } else if (clientData.length > 0) {
+          if (isConsultantUser || clientData.length > 0) {
             setIsAllowed(true);
           } else if (clientAccess.length > 0) {
-            // User has course access but no AllowedClient record - fix it
+            // User has course access but no AllowedClient record - fix it silently
             base44.entities.AllowedClient.create({ email: normalizedEmail }).catch(() => {});
             setIsAllowed(true);
           } else {
@@ -102,8 +101,38 @@ export default function Layout({ children, currentPageName }) {
           setIsConsultant(false);
         }
       } catch (e) {
-        setUser(null);
-        setIsAllowed(false);
+        // On network error, retry once after 2 seconds before showing "no access"
+        console.warn('Auth check failed, retrying...', e);
+        setTimeout(async () => {
+          try {
+            const currentUser = await base44.auth.me();
+            if (!currentUser) {
+              base44.auth.redirectToLogin(window.location.pathname + window.location.search);
+              return;
+            }
+            setUser(currentUser);
+            setIsAdmin(currentUser?.role === 'admin');
+            if (currentUser?.role === 'admin') {
+              setIsAllowed(true);
+              setIsConsultant(false);
+              return;
+            }
+            const normalizedEmail = currentUser.email?.toLowerCase();
+            const [clientData, clientAccess] = await Promise.all([
+              base44.entities.AllowedClient.filter({ email: normalizedEmail }),
+              base44.entities.ClientCourseAccess.filter({ email: normalizedEmail })
+            ]);
+            const isConsultantUser = clientData.length > 0 && clientData[0].is_consultant;
+            setIsConsultant(isConsultantUser);
+            if (clientData.length > 0 && clientData[0].name) setClientName(clientData[0].name);
+            setIsAllowed(isConsultantUser || clientData.length > 0 || clientAccess.length > 0);
+          } catch {
+            // After retry failure, still don't show "no access" — show login instead
+            setUser(null);
+            setIsAllowed(null); // Keep loading state, redirect will handle it
+            base44.auth.redirectToLogin(window.location.pathname + window.location.search);
+          }
+        }, 2000);
       }
     };
     checkAuth();
@@ -113,28 +142,10 @@ export default function Layout({ children, currentPageName }) {
     base44.auth.logout();
   };
 
-  if (isAllowed === null) {
+  if (isAllowed === null || !user) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center" dir="rtl">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center" dir="rtl">
-        <div className="text-center">
-          <GraduationCap className="w-20 h-20 text-[#c7af48] mx-auto mb-6" />
-          <h1 className="text-3xl font-bold text-white mb-4">האקדמיה של צעירים מתעשרים</h1>
-          <p className="text-gray-400 mb-8">התחבר כדי לגשת לקורסים</p>
-          <Button 
-            onClick={() => base44.auth.redirectToLogin(createPageUrl('Home'))}
-            className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold px-8 py-3"
-          >
-            התחברות
-          </Button>
-        </div>
       </div>
     );
   }

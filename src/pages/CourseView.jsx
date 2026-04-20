@@ -27,11 +27,25 @@ export default function CourseView() {
   const playerRef = useRef(null);
   const queryClient = useQueryClient();
   const progressUpdateInterval = useRef(null);
+  // Reset initial lesson flag when courseId changes
+  const initialLessonSet = useRef(false);
+  const lastCourseId = useRef(null);
+  if (lastCourseId.current !== courseId) {
+    lastCourseId.current = courseId;
+    initialLessonSet.current = false;
+  }
 
   useEffect(() => {
     const getUser = async () => {
-      const u = await base44.auth.me();
-      setUser(u);
+      try {
+        const u = await base44.auth.me();
+        setUser(u);
+      } catch (e) {
+        // retry once
+        setTimeout(async () => {
+          try { setUser(await base44.auth.me()); } catch {}
+        }, 1500);
+      }
     };
     getUser();
   }, []);
@@ -77,10 +91,15 @@ export default function CourseView() {
     enabled: !!normalizedEmail && !!courseId && !isAdmin,
   });
 
+  // Keep a ref to latest progress so mutations always see fresh data (avoids stale closure)
+  const progressRef = useRef(progress);
+  useEffect(() => { progressRef.current = progress; }, [progress]);
+
   const updateProgressMutationRef = useRef(null);
   const updateProgressMutation = useMutation({
     mutationFn: async ({ lessonId, progressPercent, completed }) => {
-      const existingProgress = progress.find(p => p.lesson_id === lessonId);
+      if (!normalizedEmail) return;
+      const existingProgress = progressRef.current.find(p => p.lesson_id === lessonId);
       if (existingProgress) {
         await base44.entities.LessonProgress.update(existingProgress.id, { 
           progress_percent: progressPercent,
@@ -97,14 +116,15 @@ export default function CourseView() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['progress', user?.email, courseId]);
+      queryClient.invalidateQueries(['progress', normalizedEmail, courseId]);
     },
   });
   updateProgressMutationRef.current = updateProgressMutation;
 
   const markCompleteMutation = useMutation({
     mutationFn: async (lessonId) => {
-      const existingProgress = progress.find(p => p.lesson_id === lessonId);
+      if (!normalizedEmail) return;
+      const existingProgress = progressRef.current.find(p => p.lesson_id === lessonId);
       if (existingProgress) {
         if (!existingProgress.completed) {
           await base44.entities.LessonProgress.update(existingProgress.id, { completed: true, progress_percent: 100 });
@@ -120,7 +140,7 @@ export default function CourseView() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['progress', user?.email, courseId]);
+      queryClient.invalidateQueries(['progress', normalizedEmail, courseId]);
     },
   });
 
@@ -138,12 +158,12 @@ export default function CourseView() {
     return progress.some(p => p.lesson_id === lessonId && p.completed);
   };
 
-  // Set first lesson as default - only when lessons first load
-  const initialLessonSet = useRef(false);
+  // Set first lesson as default - only when lessons first load for this courseId
   useEffect(() => {
     if (allSortedLessons.length > 0 && !initialLessonSet.current) {
       initialLessonSet.current = true;
-      const firstIncomplete = allSortedLessons.find(l => !progress.some(p => p.lesson_id === l.id && p.completed));
+      const currentProgress = progressRef.current;
+      const firstIncomplete = allSortedLessons.find(l => !currentProgress.some(p => p.lesson_id === l.id && p.completed));
       const lessonToSelect = firstIncomplete || allSortedLessons[0];
       setCurrentLesson(lessonToSelect);
       setExpandedChapters({ [lessonToSelect.chapter_id]: true });
@@ -160,7 +180,7 @@ export default function CourseView() {
   }, [currentLesson, allSortedLessons]);
 
   const handleLessonComplete = useCallback(() => {
-    if (currentLesson) {
+    if (currentLesson && !isAdmin) {
       markCompleteMutation.mutate(currentLesson.id);
       
       // Auto-advance to next lesson
@@ -226,14 +246,13 @@ export default function CourseView() {
 
   const selectLesson = (lesson) => {
     setCurrentLesson(lesson);
-    setVideoProgress(0);
     setExpandedChapters(prev => ({
       ...prev,
       [lesson.chapter_id]: true,
     }));
     
-    // Mark external link as viewed when opened
-    if (lesson.lesson_type === 'external_link') {
+    // Mark external link as viewed when opened (only for non-admin users)
+    if (lesson.lesson_type === 'external_link' && !isAdmin && normalizedEmail) {
       setTimeout(() => {
         updateProgressMutation.mutate({
           lessonId: lesson.id,
@@ -244,7 +263,7 @@ export default function CourseView() {
     }
   };
 
-  // Track video progress for YouTube videos
+  // Track video progress for YouTube videos (non-admin only)
   useEffect(() => {
     // Clear any previous interval first
     if (progressUpdateInterval.current) {
@@ -254,6 +273,7 @@ export default function CourseView() {
 
     if (!currentLesson || currentLesson.lesson_type === 'external_link') return;
     if (!extractYouTubeId(currentLesson.youtube_url)) return;
+    if (isAdmin || !normalizedEmail) return;
 
     const lessonId = currentLesson.id;
     let currentTime = 0;
@@ -434,24 +454,26 @@ export default function CourseView() {
                     <p className="text-gray-500">משך: {currentLesson.duration}</p>
                   )}
                 </div>
-                <Button
-                  onClick={handleLessonComplete}
-                  disabled={isLessonCompleted(currentLesson.id)}
-                  className={`shrink-0 ${
-                    isLessonCompleted(currentLesson.id)
-                      ? 'bg-green-600 hover:bg-green-600'
-                      : 'bg-[#c7af48] hover:bg-[#b39d3d]'
-                  } text-black font-semibold`}
-                >
-                  {isLessonCompleted(currentLesson.id) ? (
-                    <>
-                      <CheckCircle2 className="w-4 h-4 ml-2" />
-                      הושלם
-                    </>
-                  ) : (
-                    'סמן כנצפה'
-                  )}
-                </Button>
+                {!isAdmin && (
+                  <Button
+                    onClick={handleLessonComplete}
+                    disabled={isLessonCompleted(currentLesson.id)}
+                    className={`shrink-0 ${
+                      isLessonCompleted(currentLesson.id)
+                        ? 'bg-green-600 hover:bg-green-600'
+                        : 'bg-[#c7af48] hover:bg-[#b39d3d]'
+                    } text-black font-semibold`}
+                  >
+                    {isLessonCompleted(currentLesson.id) ? (
+                      <>
+                        <CheckCircle2 className="w-4 h-4 ml-2" />
+                        הושלם
+                      </>
+                    ) : (
+                      'סמן כנצפה'
+                    )}
+                  </Button>
+                )}
               </div>
 
               {/* Next Lesson Preview */}
