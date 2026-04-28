@@ -370,14 +370,13 @@ export default function AdminClients() {
   const isAdmin = user?.role === 'admin';
   const isConsultant = user?.user_type === 'consultant';
 
-  // Auto-set course for consultant when dialog opens — exact match preferred
+  // Auto-set course for consultant — always use the oldest (first created) course
   React.useEffect(() => {
     if (showAddDialog && isConsultant && !isAdmin && courses.length > 0) {
-      const exactMatch = courses.find(c => c.title === 'צעירים מתעשרים (ליווי אישי פרימיום)');
-      const partialMatch = courses.find(c => c.title?.includes('צעירים מתעשרים'));
-      const course = exactMatch || partialMatch;
-      if (course) {
-        setNewClient(prev => ({ ...prev, course_id: course.id }));
+      const sorted = [...courses].sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
+      const firstCourse = sorted[0];
+      if (firstCourse) {
+        setNewClient(prev => ({ ...prev, course_id: firstCourse.id }));
       }
     }
   }, [showAddDialog, isConsultant, isAdmin, courses]);
@@ -410,13 +409,14 @@ export default function AdminClients() {
     );
 
   const getClientProgress = (clientEmail) => {
-    const clientProgress = allProgress.filter(p => p.user_email === clientEmail && p.completed);
-    return clientProgress.length;
+    const clientCourseIds = getClientCourses(clientEmail).map(c => c.id);
+    return allProgress.filter(
+      p => p.user_email === clientEmail && p.completed && clientCourseIds.includes(p.course_id)
+    ).length;
   };
 
   const getTotalLessons = (clientEmail) => {
-    const clientCourses = getClientCourses(clientEmail);
-    const clientCourseIds = clientCourses.map(c => c.id);
+    const clientCourseIds = getClientCourses(clientEmail).map(c => c.id);
     return lessons.filter(l => clientCourseIds.includes(l.course_id)).length;
   };
 
