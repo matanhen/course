@@ -14,7 +14,7 @@ export default function Landing() {
   // If already logged in, go straight to courses
   useEffect(() => {
     base44.auth.isAuthenticated().then(authed => {
-      if (authed) window.location.href = 'https://academy.matanhen.com/Home';
+      if (authed) window.location.href = '/Home';
     });
   }, []);
 
@@ -37,9 +37,9 @@ export default function Landing() {
       // Check if already logged in — skip login page
       const isAuthed = await base44.auth.isAuthenticated();
       if (isAuthed) {
-        window.location.href = 'https://academy.matanhen.com/Home';
+        window.location.href = '/Home';
       } else {
-        base44.auth.redirectToLogin('https://academy.matanhen.com/Home');
+        base44.auth.redirectToLogin('/Home');
       }
     } catch (err) {
       setError('אירעה שגיאה. נסה שוב.');
