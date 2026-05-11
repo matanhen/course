@@ -27,8 +27,8 @@ export default function Landing() {
         return;
       }
 
-      // Redirect to login with /home as next URL
-      base44.auth.redirectToLogin('/home');
+      // Redirect to login with external academy URL as next URL
+      base44.auth.redirectToLogin('https://academy.matanhen.com/Home');
     } catch (err) {
       setError('אירעה שגיאה. נסה שוב.');
       setLoading(false);
