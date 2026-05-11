@@ -31,15 +31,12 @@ const AuthenticatedApp = () => {
     );
   }
 
-  // Handle authentication errors
+  // Handle authentication errors — only block non-landing routes
   if (authError) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
-    } else if (authError.type === 'auth_required') {
-      // Redirect to login automatically
-      navigateToLogin();
-      return null;
     }
+    // For auth_required, still show Landing (it handles its own flow)
   }
 
   // Render the main app
