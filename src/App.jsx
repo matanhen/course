@@ -1,4 +1,5 @@
 import './App.css'
+import Landing from './pages/Landing'
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
@@ -44,9 +45,15 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
-      <Route path="/" element={
-        <LayoutWrapper currentPageName={mainPageKey}>
-          <MainPage />
+      <Route path="/" element={<Landing />} />
+      <Route path="/home" element={
+        <LayoutWrapper currentPageName="Home">
+          <Pages.Home />
+        </LayoutWrapper>
+      } />
+      <Route path="/Home" element={
+        <LayoutWrapper currentPageName="Home">
+          <Pages.Home />
         </LayoutWrapper>
       } />
       {Object.entries(Pages).map(([path, Page]) => (
