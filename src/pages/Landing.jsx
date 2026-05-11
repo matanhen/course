@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { GraduationCap, Mail, Lock, ArrowLeft } from 'lucide-react';
+import { GraduationCap, Mail, ArrowLeft } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function Landing() {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -86,22 +85,6 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* Password */}
-            <div className="space-y-2">
-              <label className="text-gray-300 text-sm font-medium">סיסמה</label>
-              <div className="relative">
-                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                <Input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="bg-zinc-900/80 border-zinc-700 text-white placeholder:text-gray-600 pr-11 py-6 focus:border-[#c7af48] focus:ring-[#c7af48]/20"
-                  dir="ltr"
-                />
-              </div>
-            </div>
 
             {/* Error */}
             {error && (
