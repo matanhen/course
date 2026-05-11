@@ -27,13 +27,7 @@ export default function Landing() {
         return;
       }
 
-      // Check if already logged in
-      const isAuthed = await base44.auth.isAuthenticated();
-      if (isAuthed) {
-        window.location.href = 'https://academy.matanhen.com/Home';
-      } else {
-        base44.auth.redirectToLogin('https://academy.matanhen.com/Home');
-      }
+      base44.auth.redirectToLogin('https://academy.matanhen.com/Home');
     } catch (err) {
       setError('אירעה שגיאה. נסה שוב.');
       setLoading(false);
