@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { GraduationCap, Mail, ArrowLeft } from 'lucide-react';
+import { GraduationCap, Mail, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -9,7 +8,7 @@ export default function Landing() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [emailSent, setEmailSent] = useState(false);
 
   // If already logged in, go straight to courses
   useEffect(() => {
@@ -24,8 +23,9 @@ export default function Landing() {
     setLoading(true);
 
     try {
-      // Check if email is registered in AllowedClient
       const normalizedEmail = email.trim().toLowerCase();
+
+      // Check if email is registered in AllowedClient
       const clientData = await base44.entities.AllowedClient.filter({ email: normalizedEmail });
 
       if (clientData.length === 0) {
@@ -34,13 +34,8 @@ export default function Landing() {
         return;
       }
 
-      // Check if already logged in — skip login page
-      const isAuthed = await base44.auth.isAuthenticated();
-      if (isAuthed) {
-        window.location.href = '/Home';
-      } else {
-        base44.auth.redirectToLogin('/Home');
-      }
+      // Redirect to platform login — it will send a magic link and return user to /Home
+      base44.auth.redirectToLogin('/Home');
     } catch (err) {
       setError('אירעה שגיאה. נסה שוב.');
       setLoading(false);
