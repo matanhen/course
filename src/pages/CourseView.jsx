@@ -129,6 +129,23 @@ export default function CourseView() {
         });
       }
     },
+    onMutate: async (lessonId) => {
+      await queryClient.cancelQueries(['progress', normalizedEmail, courseId]);
+      const previous = queryClient.getQueryData(['progress', normalizedEmail, courseId]);
+      queryClient.setQueryData(['progress', normalizedEmail, courseId], (old = []) => {
+        const existing = old.find(p => p.lesson_id === lessonId);
+        if (existing) {
+          return old.map(p => p.lesson_id === lessonId ? { ...p, completed: true, progress_percent: 100 } : p);
+        }
+        return [...old, { lesson_id: lessonId, course_id: courseId, user_email: normalizedEmail, completed: true, progress_percent: 100, id: `temp-${lessonId}` }];
+      });
+      return { previous };
+    },
+    onError: (_err, _lessonId, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['progress', normalizedEmail, courseId], context.previous);
+      }
+    },
     onSuccess: () => queryClient.invalidateQueries(['progress', normalizedEmail, courseId]),
   });
 

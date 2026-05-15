@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { BookOpen, Home, User } from 'lucide-react';
 
 const tabs = [
@@ -10,6 +10,20 @@ const tabs = [
 
 export default function MobileBottomNav() {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleTabPress = (tab) => {
+    const isActive =
+      location.pathname === tab.path ||
+      (tab.path === '/Home' && location.pathname === '/home');
+
+    if (isActive) {
+      // Re-tapping active tab resets to its root
+      navigate(tab.path, { replace: true });
+    } else {
+      navigate(tab.path);
+    }
+  };
 
   return (
     <nav
@@ -17,19 +31,20 @@ export default function MobileBottomNav() {
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       {tabs.map((tab) => {
-        const isActive = location.pathname === tab.path || 
+        const isActive =
+          location.pathname === tab.path ||
           (tab.path === '/Home' && location.pathname === '/home');
         return (
-          <Link
+          <button
             key={tab.label}
-            to={tab.path}
-            className={`flex-1 flex flex-col items-center justify-center py-3 gap-1 transition-colors ${
+            onClick={() => handleTabPress(tab)}
+            className={`flex-1 flex flex-col items-center justify-center gap-1 transition-colors min-h-[56px] py-2 ${
               isActive ? 'text-[#c7af48]' : 'text-gray-500'
             }`}
           >
             <tab.icon className="w-5 h-5" />
             <span className="text-xs font-medium">{tab.label}</span>
-          </Link>
+          </button>
         );
       })}
     </nav>

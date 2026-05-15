@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { base44 } from '@/api/base44Client';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import { 
   BookOpen, 
   Users, 
-  Settings, 
   Menu, 
   X, 
   LogOut,
   Home,
-  GraduationCap
+  GraduationCap,
+  ArrowRight
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from 'framer-motion';
@@ -24,6 +24,12 @@ export default function Layout({ children, currentPageName }) {
   const [isConsultant, setIsConsultant] = useState(false);
 
   const [clientName, setClientName] = useState('');
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Root pages (tabs) — no back button on these
+  const rootPaths = ['/Home', '/home', '/Profile', '/AdminDashboard', '/AdminCourses', '/AdminClients'];
+  const isRootPage = rootPaths.some(p => location.pathname === p);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -226,19 +232,30 @@ export default function Layout({ children, currentPageName }) {
       <header className="lg:hidden fixed top-0 left-0 right-0 z-50 glass-effect"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="flex items-center justify-between px-4 py-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSidebarOpen(true)}
-            className="text-[#c7af48]"
-          >
-            <Menu className="w-6 h-6" />
-          </Button>
+          {isRootPage ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSidebarOpen(true)}
+              className="text-[#c7af48] min-w-[44px] min-h-[44px]"
+            >
+              <Menu className="w-6 h-6" />
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate(-1)}
+              className="text-[#c7af48] min-w-[44px] min-h-[44px]"
+            >
+              <ArrowRight className="w-6 h-6" />
+            </Button>
+          )}
           <div className="flex items-center gap-2">
             <GraduationCap className="w-6 h-6 text-[#c7af48]" />
-            <span className="font-bold text-white">האקדמיה של צעירים מתעשרים</span>
+            <span className="font-bold text-white text-sm">האקדמיה של צעירים מתעשרים</span>
           </div>
-          <div className="w-10" />
+          <div className="w-[44px]" />
         </div>
       </header>
 

@@ -22,7 +22,17 @@ export default function Profile() {
   }, []);
 
   const handleDeleteAccount = async () => {
-    // Log out the user — actual deletion requires admin action
+    try {
+      // Send deletion request email to admin
+      await base44.integrations.Core.SendEmail({
+        to: 'admin@youngrichacademy.co.il',
+        subject: `בקשת מחיקת חשבון - ${user?.email}`,
+        body: `המשתמש ${user?.full_name || ''} (${user?.email}) ביקש למחוק את חשבונו.\n\nמזהה משתמש: ${user?.id}\nתאריך: ${new Date().toLocaleString('he-IL')}\n\nנא לטפל בבקשה זו בהקדם.`,
+      });
+    } catch (e) {
+      // Even if email fails, proceed with logout
+      console.warn('Failed to send deletion request email', e);
+    }
     base44.auth.logout('/');
   };
 
