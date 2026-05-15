@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { base44 } from '@/api/base44Client';
+import MobileBottomNav from '@/components/MobileBottomNav';
 import { 
   BookOpen, 
   Users, 
@@ -222,7 +223,8 @@ export default function Layout({ children, currentPageName }) {
       `}</style>
 
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 glass-effect">
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 glass-effect"
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="flex items-center justify-between px-4 py-3">
           <Button
             variant="ghost"
@@ -317,8 +319,12 @@ export default function Layout({ children, currentPageName }) {
         )}
       </AnimatePresence>
 
+      {/* Mobile Bottom Nav */}
+      <MobileBottomNav />
+
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col fixed top-0 right-0 bottom-0 w-56 bg-zinc-950 border-l border-zinc-800">
+      <aside className="hidden lg:flex flex-col fixed top-0 right-0 bottom-0 w-56 bg-zinc-950 border-l border-zinc-800"
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="p-6 border-b border-zinc-800">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center">
@@ -372,7 +378,7 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Main Content */}
-      <main className="lg:mr-56 pt-16 lg:pt-0 min-h-screen">
+      <main className="lg:mr-56 pt-16 lg:pt-0 pb-20 lg:pb-0 min-h-screen">
         {children}
       </main>
     </div>

@@ -1,15 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { BookOpen, PlayCircle, CheckCircle2, Clock } from 'lucide-react';
+import { BookOpen, PlayCircle, CheckCircle2, Clock, RefreshCw } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
 export default function Home() {
   const [user, setUser] = useState(null);
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const touchStartY = useRef(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const getUser = async () => {
@@ -18,6 +22,42 @@ export default function Home() {
     };
     getUser();
   }, []);
+
+  // Pull-to-refresh
+  useEffect(() => {
+    const el = document.documentElement;
+
+    const onTouchStart = (e) => {
+      if (el.scrollTop === 0) touchStartY.current = e.touches[0].clientY;
+    };
+
+    const onTouchMove = (e) => {
+      if (touchStartY.current === null) return;
+      const delta = e.touches[0].clientY - touchStartY.current;
+      if (delta > 0 && el.scrollTop === 0) {
+        setPullDistance(Math.min(delta * 0.4, 70));
+      }
+    };
+
+    const onTouchEnd = async () => {
+      if (pullDistance > 50) {
+        setIsRefreshing(true);
+        await queryClient.invalidateQueries();
+        setTimeout(() => setIsRefreshing(false), 800);
+      }
+      setPullDistance(0);
+      touchStartY.current = null;
+    };
+
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('touchend', onTouchEnd);
+    return () => {
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+    };
+  }, [pullDistance, queryClient]);
 
   const normalizedEmail = user?.email?.toLowerCase();
 
@@ -83,6 +123,16 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black p-6 lg:p-10">
+      {/* Pull-to-refresh indicator */}
+      {(pullDistance > 0 || isRefreshing) && (
+        <div
+          className="flex items-center justify-center transition-all"
+          style={{ height: isRefreshing ? 48 : pullDistance, overflow: 'hidden' }}
+        >
+          <RefreshCw className={`w-5 h-5 text-[#c7af48] ${isRefreshing ? 'animate-spin' : ''}`} />
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-10">
         <motion.h1 
