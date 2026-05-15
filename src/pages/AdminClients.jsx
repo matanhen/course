@@ -42,6 +42,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import MobileSelect from '@/components/MobileSelect';
 import {
   Select,
   SelectContent,
@@ -953,21 +954,14 @@ export default function AdminClients() {
             {(!isConsultant || isAdmin) && (
               <div className="space-y-2">
                 <Label htmlFor="course">קורס *</Label>
-                <Select
+                <MobileSelect
                   value={newClient.course_id}
                   onValueChange={(value) => setNewClient({ ...newClient, course_id: value })}
-                >
-                  <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
-                    <SelectValue placeholder="בחר קורס" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-800 border-zinc-700">
-                    {courses.map((course) => (
-                      <SelectItem key={course.id} value={course.id} className="text-white">
-                        {course.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder="בחר קורס"
+                  title="בחר קורס"
+                  triggerClassName="bg-zinc-800 border-zinc-700 text-white w-full"
+                  options={courses.map(c => ({ value: c.id, label: c.title }))}
+                />
               </div>
             )}
             {isConsultant && !isAdmin && (
@@ -981,22 +975,17 @@ export default function AdminClients() {
             {isAdmin && consultants.length > 0 && (
               <div className="space-y-2">
                 <Label htmlFor="consultant">יועץ (אופציונלי)</Label>
-                <Select
+                <MobileSelect
                   value={newClient.consultant_email}
                   onValueChange={(value) => setNewClient({ ...newClient, consultant_email: value })}
-                >
-                  <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
-                    <SelectValue placeholder="בחר יועץ" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-800 border-zinc-700">
-                    <SelectItem value={null} className="text-white">ללא יועץ</SelectItem>
-                    {consultants.map((consultant) => (
-                      <SelectItem key={consultant.id} value={consultant.email} className="text-white">
-                        {consultant.full_name || consultant.email}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder="בחר יועץ"
+                  title="בחר יועץ"
+                  triggerClassName="bg-zinc-800 border-zinc-700 text-white w-full"
+                  options={[
+                    { value: '__none__', label: 'ללא יועץ' },
+                    ...consultants.map(c => ({ value: c.email, label: c.full_name || c.email })),
+                  ]}
+                />
               </div>
             )}
             <div className="flex gap-3 pt-4">
@@ -1283,21 +1272,14 @@ export default function AdminClients() {
               {getAvailableCoursesForClient(selectedClientCourses?.email).length === 0 ? (
                 <p className="text-gray-400 text-sm py-3">כל הקורסים כבר מורשים ללקוח זה</p>
               ) : (
-                <Select
+                <MobileSelect
                   value={selectedCourseToAdd}
-                  onValueChange={(value) => setSelectedCourseToAdd(value)}
-                >
-                  <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
-                    <SelectValue placeholder="בחר קורס" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-800 border-zinc-700">
-                    {getAvailableCoursesForClient(selectedClientCourses?.email).map((course) => (
-                      <SelectItem key={course.id} value={course.id} className="text-white">
-                        {course.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  onValueChange={setSelectedCourseToAdd}
+                  placeholder="בחר קורס"
+                  title="בחר קורס"
+                  triggerClassName="bg-zinc-800 border-zinc-700 text-white w-full"
+                  options={getAvailableCoursesForClient(selectedClientCourses?.email).map(c => ({ value: c.id, label: c.title }))}
+                />
               )}
             </div>
             <div className="flex gap-3 pt-4">
@@ -1368,22 +1350,17 @@ export default function AdminClients() {
             {consultants.length > 0 && (
               <div className="space-y-2">
                 <Label htmlFor="editConsultant">יועץ</Label>
-                <Select
+                <MobileSelect
                   value={showEditClientDialog?.consultant_email || ''}
                   onValueChange={(value) => setShowEditClientDialog({ ...showEditClientDialog, consultant_email: value })}
-                >
-                  <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
-                    <SelectValue placeholder="בחר יועץ" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-800 border-zinc-700">
-                    <SelectItem value={null} className="text-white">ללא יועץ</SelectItem>
-                    {consultants.map((consultant) => (
-                      <SelectItem key={consultant.id} value={consultant.email} className="text-white">
-                        {consultant.full_name || consultant.email}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder="בחר יועץ"
+                  title="בחר יועץ"
+                  triggerClassName="bg-zinc-800 border-zinc-700 text-white w-full"
+                  options={[
+                    { value: '__none__', label: 'ללא יועץ' },
+                    ...consultants.map(c => ({ value: c.email, label: c.full_name || c.email })),
+                  ]}
+                />
               </div>
             )}
             <div className="flex gap-3 pt-4">
@@ -1471,25 +1448,20 @@ export default function AdminClients() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="assignConsultant">בחר יועץ</Label>
-              <Select
+              <MobileSelect
                 value={showAssignConsultantDialog?.consultant_email || ''}
-                onValueChange={(value) => setShowAssignConsultantDialog({ 
-                  ...showAssignConsultantDialog, 
-                  consultant_email: value === 'none' ? null : value 
+                onValueChange={(value) => setShowAssignConsultantDialog({
+                  ...showAssignConsultantDialog,
+                  consultant_email: value === 'none' ? null : value
                 })}
-              >
-                <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
-                  <SelectValue placeholder="בחר יועץ" />
-                </SelectTrigger>
-                <SelectContent className="bg-zinc-800 border-zinc-700">
-                  <SelectItem value="none" className="text-white">ללא יועץ</SelectItem>
-                  {consultants.map((consultant) => (
-                    <SelectItem key={consultant.id} value={consultant.email} className="text-white">
-                      {consultant.full_name || consultant.email}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                placeholder="בחר יועץ"
+                title="בחר יועץ"
+                triggerClassName="bg-zinc-800 border-zinc-700 text-white w-full"
+                options={[
+                  { value: 'none', label: 'ללא יועץ' },
+                  ...consultants.map(c => ({ value: c.email, label: c.full_name || c.email })),
+                ]}
+              />
             </div>
             <div className="flex gap-3 pt-4">
               <Button
@@ -1521,19 +1493,17 @@ export default function AdminClients() {
           <div className="space-y-6 mt-4">
             <div className="space-y-2">
               <Label>בחר יועץ</Label>
-              <Select value={bulkConsultantEmail} onValueChange={setBulkConsultantEmail}>
-                <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
-                  <SelectValue placeholder="בחר יועץ" />
-                </SelectTrigger>
-                <SelectContent className="bg-zinc-800 border-zinc-700">
-                  <SelectItem value="none" className="text-white">ללא יועץ (הסרה)</SelectItem>
-                  {consultants.map((consultant) => (
-                    <SelectItem key={consultant.id || consultant.email} value={consultant.email} className="text-white">
-                      {consultant.full_name || consultant.email}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <MobileSelect
+                value={bulkConsultantEmail}
+                onValueChange={setBulkConsultantEmail}
+                placeholder="בחר יועץ"
+                title="שיוך יועץ"
+                triggerClassName="bg-zinc-800 border-zinc-700 text-white w-full"
+                options={[
+                  { value: 'none', label: 'ללא יועץ (הסרה)' },
+                  ...consultants.map(c => ({ value: c.email, label: c.full_name || c.email })),
+                ]}
+              />
             </div>
             <div className="flex gap-3 pt-2">
               <Button

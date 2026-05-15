@@ -12,6 +12,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useDarkMode } from '@/hooks/useDarkMode';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -111,6 +112,7 @@ const AuthenticatedApp = () => {
 
 
 function App() {
+  useDarkMode();
 
   return (
     <AuthProvider>

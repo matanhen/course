@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { BookOpen, Home, User } from 'lucide-react';
 
@@ -8,9 +8,25 @@ const tabs = [
   { label: 'פרופיל', icon: User, path: '/Profile' },
 ];
 
+// Tracks scroll position per tab path
+const scrollPositions = {};
+
 export default function MobileBottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Save scroll position when navigating away
+  useEffect(() => {
+    const saveCurrent = () => {
+      scrollPositions[location.pathname] = window.scrollY;
+    };
+    window.addEventListener('scrollend', saveCurrent, { passive: true });
+    return () => {
+      // Save on unmount too
+      scrollPositions[location.pathname] = window.scrollY;
+      window.removeEventListener('scrollend', saveCurrent);
+    };
+  }, [location.pathname]);
 
   const handleTabPress = (tab) => {
     const isActive =
@@ -18,10 +34,19 @@ export default function MobileBottomNav() {
       (tab.path === '/Home' && location.pathname === '/home');
 
     if (isActive) {
-      // Re-tapping active tab resets to its root
+      // Re-tapping active tab: reset to root and scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       navigate(tab.path, { replace: true });
+      scrollPositions[tab.path] = 0;
     } else {
+      // Save current scroll before switching
+      scrollPositions[location.pathname] = window.scrollY;
       navigate(tab.path);
+      // Restore scroll for destination tab after navigation settles
+      requestAnimationFrame(() => {
+        const saved = scrollPositions[tab.path] ?? 0;
+        window.scrollTo({ top: saved, behavior: 'instant' });
+      });
     }
   };
 

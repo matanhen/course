@@ -49,13 +49,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import MobileSelect from '@/components/MobileSelect';
 
 export default function AdminCourseEdit() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -755,47 +749,29 @@ export default function AdminCourseEdit() {
             {editingLesson && (
               <div className="space-y-2">
                 <Label htmlFor="chapterSelect">פרק</Label>
-                <Select
+                <MobileSelect
                   value={selectedChapterId}
-                  onValueChange={(value) => setSelectedChapterId(value)}
-                >
-                  <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
-                    <SelectValue placeholder="בחר פרק" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-800 border-zinc-700">
-                    {sortedChapters.map((chapter) => (
-                      <SelectItem key={chapter.id} value={chapter.id} className="text-white">
-                        {chapter.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  onValueChange={setSelectedChapterId}
+                  placeholder="בחר פרק"
+                  title="בחר פרק"
+                  triggerClassName="bg-zinc-800 border-zinc-700 text-white"
+                  options={sortedChapters.map(ch => ({ value: ch.id, label: ch.title }))}
+                />
               </div>
             )}
             <div className="space-y-2">
               <Label htmlFor="lessonType">סוג השיעור</Label>
-              <Select
+              <MobileSelect
                 value={newLesson.lesson_type}
                 onValueChange={(value) => setNewLesson({ ...newLesson, lesson_type: value })}
-              >
-                <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
-                  <SelectValue placeholder="בחר סוג שיעור" />
-                </SelectTrigger>
-                <SelectContent className="bg-zinc-800 border-zinc-700">
-                  <SelectItem value="video" className="text-white">
-                    <div className="flex items-center gap-2">
-                      <Video className="w-4 h-4" />
-                      <span>וידאו YouTube</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="external_link" className="text-white">
-                    <div className="flex items-center gap-2">
-                      <FileText className="w-4 h-4" />
-                      <span>קישור חיצוני (Docs, Sheets...)</span>
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+                placeholder="בחר סוג שיעור"
+                title="סוג השיעור"
+                triggerClassName="bg-zinc-800 border-zinc-700 text-white"
+                options={[
+                  { value: 'video', label: 'וידאו YouTube' },
+                  { value: 'external_link', label: 'קישור חיצוני (Docs, Sheets...)' },
+                ]}
+              />
             </div>
             
             {newLesson.lesson_type === 'video' ? (
