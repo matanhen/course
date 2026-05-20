@@ -24,6 +24,7 @@ export default function CourseView() {
   const [currentLesson, setCurrentLesson] = useState(null);
   const [expandedChapters, setExpandedChapters] = useState({});
   const [videoProgress, setVideoProgress] = useState(0);
+  const [courseContentOpen, setCourseContentOpen] = useState(false);
 
   const playerRef = useRef(null);
   const queryClient = useQueryClient();
@@ -404,6 +405,108 @@ export default function CourseView() {
       <div className="flex flex-col lg:flex-row">
         {/* Main content area */}
         <div className="flex-1 lg:mr-96">
+          {/* Course content toggle button */}
+          <div className="px-4 py-2 bg-zinc-950 border-b border-zinc-800 flex items-center gap-2">
+            <button
+              onClick={() => setCourseContentOpen(prev => !prev)}
+              className="flex items-center gap-2 text-[#c7af48] hover:text-[#e5d07a] transition-colors font-medium text-sm"
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>תוכן הקורס</span>
+              {courseContentOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+            <span className="text-gray-600 text-xs mr-2">{sortedChapters.length} פרקים • {lessons.length} שיעורים</span>
+          </div>
+
+          {/* Inline course content panel */}
+          <AnimatePresence initial={false}>
+            {courseContentOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="overflow-hidden bg-zinc-950 border-b border-zinc-800"
+              >
+                <div className="divide-y divide-zinc-800 max-h-[60vh] overflow-y-auto">
+                  {sortedChapters.map((chapter, chapterIndex) => {
+                    const chapterLessons = getLessonsForChapter(chapter.id);
+                    const chapterCompletedCount = chapterLessons.filter(l => isLessonCompleted(l.id)).length;
+                    const isExpanded = !!expandedChapters[chapter.id];
+
+                    return (
+                      <div key={chapter.id}>
+                        <button
+                          onClick={() => setExpandedChapters(prev => ({ ...prev, [chapter.id]: !prev[chapter.id] }))}
+                          className="w-full p-4 flex items-center justify-between hover:bg-zinc-900/50 transition-colors"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-7 h-7 rounded-lg bg-[#c7af48]/10 flex items-center justify-center shrink-0">
+                              <span className="text-[#c7af48] font-bold text-xs">{chapterIndex + 1}</span>
+                            </div>
+                            <div className="text-right">
+                              <h4 className="text-white font-medium text-sm">{chapter.title}</h4>
+                              <p className="text-gray-500 text-xs">{chapterCompletedCount}/{chapterLessons.length} הושלמו</p>
+                            </div>
+                          </div>
+                          {isExpanded ? <ChevronUp className="w-4 h-4 text-gray-500 shrink-0" /> : <ChevronDown className="w-4 h-4 text-gray-500 shrink-0" />}
+                        </button>
+
+                        <AnimatePresence initial={false}>
+                          {isExpanded && (
+                            <motion.div
+                              key="content"
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.15 }}
+                              className="overflow-hidden bg-zinc-900/30"
+                            >
+                              {chapterLessons.map((lesson, lessonIndex) => {
+                                const isCompleted = isLessonCompleted(lesson.id);
+                                const isCurrent = currentLesson?.id === lesson.id;
+
+                                return (
+                                  <button
+                                    key={lesson.id}
+                                    onClick={() => { selectLesson(lesson); setCourseContentOpen(false); }}
+                                    className={`w-full p-3 pr-10 flex items-center gap-3 transition-all text-right ${
+                                      isCurrent
+                                        ? 'bg-[#c7af48]/10 border-r-2 border-[#c7af48]'
+                                        : 'hover:bg-zinc-800/50'
+                                    }`}
+                                  >
+                                    <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
+                                      isCompleted ? 'bg-green-500' : isCurrent ? 'bg-[#c7af48]' : 'bg-zinc-800'
+                                    }`}>
+                                      {isCompleted ? (
+                                        <CheckCircle2 className="w-4 h-4 text-white" />
+                                      ) : lesson.lesson_type === 'external_link' ? (
+                                        <FileText className="w-3 h-3 text-white" />
+                                      ) : (
+                                        <span className="text-xs text-white">{lessonIndex + 1}</span>
+                                      )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-gray-300'} break-words text-sm`}>
+                                        {lesson.title}
+                                      </p>
+                                      {lesson.duration && <p className="text-gray-600 text-xs">{lesson.duration}</p>}
+                                    </div>
+                                  </button>
+                                );
+                              })}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Video / Document player */}
           <div className={`relative bg-zinc-900 ${currentLesson?.lesson_type === 'external_link' ? 'min-h-[60vh]' : 'aspect-video'}`}>
             {!currentLesson ? (
