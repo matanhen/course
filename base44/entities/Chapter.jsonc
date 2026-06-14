@@ -1,0 +1,23 @@
+{
+  "name": "Chapter",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "\u05de\u05d6\u05d4\u05d4 \u05d4\u05e7\u05d5\u05e8\u05e1"
+    },
+    "title": {
+      "type": "string",
+      "description": "\u05e9\u05dd \u05d4\u05e4\u05e8\u05e7"
+    },
+    "order": {
+      "type": "number",
+      "description": "\u05e1\u05d3\u05e8 \u05d4\u05e4\u05e8\u05e7"
+    }
+  },
+  "required": [
+    "course_id",
+    "title",
+    "order"
+  ]
+}

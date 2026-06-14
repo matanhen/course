@@ -251,17 +251,14 @@ export default function CourseView() {
     if (isAdmin || !normalizedEmail) return;
 
     const lessonId = currentLesson.id;
-    let currentTime = 0;
-    let duration = 0;
-    let lastSavedPercent = -1;
     let isActive = true;
+    let markedComplete = false;
 
     const checkProgress = () => {
       const iframe = playerRef.current;
       if (iframe?.contentWindow) {
         try {
           iframe.contentWindow.postMessage('{"event":"command","func":"getCurrentTime","args":""}', '*');
-          iframe.contentWindow.postMessage('{"event":"command","func":"getDuration","args":""}', '*');
         } catch {}
       }
     };
@@ -270,23 +267,15 @@ export default function CourseView() {
       if (!isActive || event.origin !== 'https://www.youtube.com') return;
       try {
         const data = JSON.parse(event.data);
-        if (data.event === 'infoDelivery') {
-          if (data.info?.currentTime !== undefined) currentTime = data.info.currentTime;
-          if (data.info?.duration !== undefined) duration = data.info.duration;
-          if (duration > 0 && currentTime > 0) {
-            const percent = Math.round((currentTime / duration) * 100);
-            setVideoProgress(percent);
-            if (Math.abs(percent - lastSavedPercent) >= 5) {
-              lastSavedPercent = percent;
-              updateProgressMutationRef.current?.mutate({ lessonId, progressPercent: percent, completed: currentTime >= 60 });
-            }
-          }
+        if (data.event === 'infoDelivery' && data.info?.currentTime > 0 && !markedComplete) {
+          markedComplete = true;
+          updateProgressMutationRef.current?.mutate({ lessonId, progressPercent: 100, completed: true });
         }
       } catch {}
     };
 
     window.addEventListener('message', handleMessage);
-    progressUpdateInterval.current = setInterval(checkProgress, 3000);
+    progressUpdateInterval.current = setInterval(checkProgress, 1000);
 
     return () => {
       isActive = false;
