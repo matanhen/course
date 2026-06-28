@@ -618,17 +618,15 @@ export default function AdminClients() {
           </motion.h1>
           <p className="text-gray-400">{clients.length} לקוחות מורשים</p>
         </div>
-        {!isManager && (
-          <div className="flex flex-col gap-3">
-            <Button 
-              onClick={() => setShowAddDialog(true)}
-              className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold"
-            >
-              <Plus className="w-5 h-5 ml-2" />
-              הוסף לקוח
-            </Button>
-          </div>
-        )}
+        <div className="flex flex-col gap-3">
+          <Button 
+            onClick={() => setShowAddDialog(true)}
+            className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold"
+          >
+            <Plus className="w-5 h-5 ml-2" />
+            הוסף לקוח
+          </Button>
+        </div>
       </div>
 
       {/* Tabs - Only for Admin (not Manager) */}
@@ -782,7 +780,7 @@ export default function AdminClients() {
               <p className="text-gray-400">
                 {searchQuery ? 'לא נמצאו לקוחות' : 'אין לקוחות מורשים עדיין'}
               </p>
-              {!searchQuery && !isManager && (
+              {!searchQuery && (
                 <Button 
                   onClick={() => setShowAddDialog(true)}
                   className="mt-4 bg-[#c7af48] hover:bg-[#b39d3d] text-black"
@@ -1033,7 +1031,7 @@ export default function AdminClients() {
                 />
               </div>
             </div>
-            {(!isConsultant || hasFullAccess) && (
+            {!isManager && (!isConsultant || hasFullAccess) && (
               <div className="space-y-2">
                 <Label htmlFor="course">קורס *</Label>
                 <MobileSelect
@@ -1054,7 +1052,7 @@ export default function AdminClients() {
                 </div>
               </div>
             )}
-            {hasFullAccess && consultants.length > 0 && (
+            {(isAdmin || isManager) && consultants.length > 0 && (
               <div className="space-y-2">
                 <Label htmlFor="consultant">יועץ (אופציונלי)</Label>
                 <MobileSelect
@@ -1081,7 +1079,7 @@ export default function AdminClients() {
               </Button>
               <Button
                 type="submit"
-                disabled={addClientMutation.isPending || (!newClient.course_id && !isConsultant && !hasFullAccess)}
+                disabled={addClientMutation.isPending || (!newClient.course_id && !isConsultant && !isManager && !isAdmin)}
                 className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold disabled:opacity-50"
               >
                 {addClientMutation.isPending ? 'מוסיף...' : 'הוסף לקוח'}
