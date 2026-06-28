@@ -201,10 +201,15 @@ export default function AdminClients() {
   });
   const consultants = Array.from(consultantsMap.values());
 
+  const MANAGER_DEFAULT_COURSE_ID = '693ffeaa882305c0e5906e4e';
+
   const addClientMutation = useMutation({
     mutationFn: async (data) => {
       // Normalize email to lowercase
       const normalizedEmail = data.email.toLowerCase();
+
+      // Manager always assigns the default course automatically
+      const effectiveCourseId = isManager ? MANAGER_DEFAULT_COURSE_ID : data.course_id;
       
       // Check if client already exists
       const existingClients = await base44.entities.AllowedClient.filter({ email: normalizedEmail });
@@ -235,7 +240,7 @@ export default function AdminClients() {
           email: normalizedEmail, 
           name: data.name 
         };
-        if (data.consultant_email) {
+        if (data.consultant_email && data.consultant_email !== '__none__') {
           clientData.consultant_email = data.consultant_email;
         } else if (user?.user_type === 'consultant') {
           clientData.consultant_email = user.email;
@@ -244,17 +249,17 @@ export default function AdminClients() {
         client = await base44.entities.AllowedClient.create(clientData);
       }
       
-      // Add course access if needed
-      if (data.course_id) {
+      // Always add course access
+      if (effectiveCourseId) {
         const existingAccess = await base44.entities.ClientCourseAccess.filter({
           email: normalizedEmail,
-          course_id: data.course_id
+          course_id: effectiveCourseId
         });
         
         if (existingAccess.length === 0) {
           await base44.entities.ClientCourseAccess.create({
             email: normalizedEmail,
-            course_id: data.course_id
+            course_id: effectiveCourseId
           });
         }
       }
