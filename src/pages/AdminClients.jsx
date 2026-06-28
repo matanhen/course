@@ -84,8 +84,12 @@ export default function AdminClients() {
       
       if (currentUser?.role !== 'admin') {
         const clientData = await base44.entities.AllowedClient.filter({ email: currentUser.email });
-        if (clientData.length > 0 && clientData[0].is_consultant) {
-          setUser({ ...currentUser, user_type: 'consultant' });
+        if (clientData.length > 0) {
+          if (clientData[0].is_manager) {
+            setUser({ ...currentUser, user_type: 'manager' });
+          } else if (clientData[0].is_consultant) {
+            setUser({ ...currentUser, user_type: 'consultant' });
+          }
         }
       }
     };
@@ -172,7 +176,7 @@ export default function AdminClients() {
   const { data: allUsers = [] } = useQuery({
     queryKey: ['allUsers'],
     queryFn: () => base44.asServiceRole.entities.User.list(),
-    enabled: user?.role === 'admin',
+    enabled: user?.role === 'admin' || user?.user_type === 'manager',
   });
 
   // Get consultants from both User entity and AllowedClient entity
@@ -369,11 +373,14 @@ export default function AdminClients() {
   });
 
   const isAdmin = user?.role === 'admin';
+  const isManager = user?.user_type === 'manager';
   const isConsultant = user?.user_type === 'consultant';
+  // Manager has full view like admin but is not a system admin
+  const hasFullAccess = isAdmin || isManager;
 
   // Auto-set course for consultant — always use the oldest (first created) course
   React.useEffect(() => {
-    if (showAddDialog && isConsultant && !isAdmin && courses.length > 0) {
+  if (showAddDialog && isConsultant && !hasFullAccess && courses.length > 0) {
       const sorted = [...courses].sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
       const firstCourse = sorted[0];
       if (firstCourse) {
@@ -384,15 +391,15 @@ export default function AdminClients() {
 
   const filteredClients = clients
     .filter(client => {
-      // Consultants only see their own clients
-      if (isConsultant && !isAdmin) {
+      // Consultants only see their own clients; managers and admins see all
+      if (isConsultant && !hasFullAccess) {
         return client.consultant_email === user.email;
       }
       return true;
     })
     .filter(client => {
-      // Admin filter by type
-      if (isAdmin) {
+      // Admin/Manager filter by type
+      if (hasFullAccess) {
         if (filterType === 'course' && selectedCourseFilter) {
           const hasAccess = clientAccess.some(
             a => a.email === client.email && a.course_id === selectedCourseFilter
@@ -402,6 +409,8 @@ export default function AdminClients() {
           if (client.consultant_email !== selectedConsultantFilter) return false;
         }
       }
+      // Hide consultants and managers from the clients list
+      if (client.is_consultant || client.is_manager) return false;
       return true;
     })
     .filter(client =>
@@ -546,7 +555,7 @@ export default function AdminClients() {
     );
   }
 
-  if (user.role !== 'admin' && user.user_type !== 'consultant') {
+  if (user.role !== 'admin' && user.user_type !== 'consultant' && user.user_type !== 'manager') {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center" dir="rtl">
         <div className="text-center max-w-md px-6">
@@ -585,8 +594,8 @@ export default function AdminClients() {
         </div>
       </div>
 
-      {/* Tabs - Only for Admin */}
-      {isAdmin && (
+      {/* Tabs - Only for Admin/Manager */}
+      {hasFullAccess && (
         <div className="flex gap-2 mb-6">
           <Button
             variant={activeTab === 'clients' ? 'default' : 'outline'}
@@ -615,8 +624,8 @@ export default function AdminClients() {
 
       {activeTab === 'clients' ? (
         <>
-          {/* Filters - Admin Only */}
-          {isAdmin && (
+          {/* Filters - Admin/Manager Only */}
+          {hasFullAccess && (
             <div className="mb-8 space-y-4">
               <div className="flex flex-wrap gap-3">
                 <Button
@@ -715,7 +724,7 @@ export default function AdminClients() {
           </div>
 
           {/* Bulk actions toolbar */}
-          {isAdmin && filteredClients.length > 0 && (
+          {hasFullAccess && filteredClients.length > 0 && (
             <div className="flex items-center gap-3 mb-4 px-1">
               <input
                 type="checkbox"
@@ -773,7 +782,7 @@ export default function AdminClients() {
                     <Card className={`bg-zinc-900/50 border-zinc-800 p-5 group hover:border-zinc-700 transition-all ${selectedClientIds.has(client.id) ? 'border-[#c7af48]/40' : ''}`}>
                       <div className="flex items-start justify-between gap-4 mb-4">
                         <div className="flex items-center gap-4">
-                          {isAdmin && (
+                          {hasFullAccess && (
                             <input
                               type="checkbox"
                               checked={selectedClientIds.has(client.id)}
@@ -815,7 +824,7 @@ export default function AdminClients() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          {isAdmin && (
+                          {hasFullAccess && (
                             <>
                               <Button
                                 variant="outline"
@@ -951,7 +960,7 @@ export default function AdminClients() {
                 />
               </div>
             </div>
-            {(!isConsultant || isAdmin) && (
+            {(!isConsultant || hasFullAccess) && (
               <div className="space-y-2">
                 <Label htmlFor="course">קורס *</Label>
                 <MobileSelect
@@ -964,7 +973,7 @@ export default function AdminClients() {
                 />
               </div>
             )}
-            {isConsultant && !isAdmin && (
+            {isConsultant && !hasFullAccess && (
               <div className="space-y-2">
                 <Label>קורס</Label>
                 <div className="bg-zinc-800 border border-zinc-700 rounded-md px-3 py-2 text-gray-400 text-sm">
@@ -972,7 +981,7 @@ export default function AdminClients() {
                 </div>
               </div>
             )}
-            {isAdmin && consultants.length > 0 && (
+            {hasFullAccess && consultants.length > 0 && (
               <div className="space-y-2">
                 <Label htmlFor="consultant">יועץ (אופציונלי)</Label>
                 <MobileSelect
@@ -999,7 +1008,7 @@ export default function AdminClients() {
               </Button>
               <Button
                 type="submit"
-                disabled={addClientMutation.isPending || (!newClient.course_id && !isConsultant)}
+                disabled={addClientMutation.isPending || (!newClient.course_id && !isConsultant && !hasFullAccess)}
                 className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold disabled:opacity-50"
               >
                 {addClientMutation.isPending ? 'מוסיף...' : 'הוסף לקוח'}

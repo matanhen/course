@@ -71,8 +71,9 @@ export default function Layout({ children, currentPageName }) {
             });
           }
 
+          const isManagerUser = clientData.length > 0 && clientData[0].is_manager;
           const isConsultantUser = clientData.length > 0 && clientData[0].is_consultant;
-          setIsConsultant(isConsultantUser);
+          setIsConsultant(isConsultantUser || isManagerUser);
 
           if (clientData.length > 0) {
             const client = clientData[0];
@@ -129,7 +130,7 @@ export default function Layout({ children, currentPageName }) {
               base44.entities.AllowedClient.filter({ email: normalizedEmail }),
               base44.entities.ClientCourseAccess.filter({ email: normalizedEmail })
             ]);
-            const isConsultantUser = clientData.length > 0 && clientData[0].is_consultant;
+            const isConsultantUser = clientData.length > 0 && (clientData[0].is_consultant || clientData[0].is_manager);
             setIsConsultant(isConsultantUser);
             if (clientData.length > 0 && clientData[0].name) setClientName(clientData[0].name);
             setIsAllowed(isConsultantUser || clientData.length > 0 || clientAccess.length > 0);
