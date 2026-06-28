@@ -194,9 +194,8 @@ export default function Layout({ children, currentPageName }) {
   ];
 
   const managerLinks = [
-    { name: 'לוח בקרה', page: 'AdminDashboard', icon: Home },
+    { name: 'צפייה בקורסים', page: 'Home', icon: GraduationCap },
     { name: 'ניהול לקוחות', page: 'AdminClients', icon: Users },
-    { name: 'קורסים', page: 'AdminCourses', icon: BookOpen },
   ];
 
   const userLinks = [

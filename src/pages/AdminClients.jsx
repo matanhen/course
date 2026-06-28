@@ -434,16 +434,15 @@ export default function AdminClients() {
       return true;
     })
     .filter(client => {
-      // Admin/Manager filter by type
-      if (hasFullAccess) {
+      if (isAdmin) {
         if (filterType === 'course' && selectedCourseFilter) {
-          const hasAccess = clientAccess.some(
-            a => a.email === client.email && a.course_id === selectedCourseFilter
-          );
-          if (!hasAccess) return false;
+          if (!clientAccess.some(a => a.email === client.email && a.course_id === selectedCourseFilter)) return false;
         } else if (filterType === 'consultant' && selectedConsultantFilter) {
           if (client.consultant_email !== selectedConsultantFilter) return false;
         }
+      }
+      if (isManager && selectedConsultantFilter && selectedConsultantFilter !== '__all__') {
+        if (client.consultant_email !== selectedConsultantFilter) return false;
       }
       // Hide consultants and managers from the clients list
       if (client.is_consultant || client.is_manager) return false;
@@ -619,19 +618,21 @@ export default function AdminClients() {
           </motion.h1>
           <p className="text-gray-400">{clients.length} לקוחות מורשים</p>
         </div>
-        <div className="flex flex-col gap-3">
-          <Button 
-            onClick={() => setShowAddDialog(true)}
-            className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold"
-          >
-            <Plus className="w-5 h-5 ml-2" />
-            הוסף לקוח
-          </Button>
-        </div>
+        {!isManager && (
+          <div className="flex flex-col gap-3">
+            <Button 
+              onClick={() => setShowAddDialog(true)}
+              className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold"
+            >
+              <Plus className="w-5 h-5 ml-2" />
+              הוסף לקוח
+            </Button>
+          </div>
+        )}
       </div>
 
-      {/* Tabs - Only for Admin/Manager */}
-      {hasFullAccess && (
+      {/* Tabs - Only for Admin (not Manager) */}
+      {isAdmin && (
         <div className="flex gap-2 mb-6">
           <Button
             variant={activeTab === 'clients' ? 'default' : 'outline'}
@@ -671,88 +672,63 @@ export default function AdminClients() {
 
       {activeTab === 'clients' ? (
         <>
-          {/* Filters - Admin/Manager Only */}
-          {hasFullAccess && (
+          {/* Filters */}
+          {(isAdmin || isManager) && (
             <div className="mb-8 space-y-4">
-              <div className="flex flex-wrap gap-3">
-                <Button
-                  variant={filterType === 'all' ? 'default' : 'outline'}
-                  onClick={() => {
-                    setFilterType('all');
-                    setSelectedCourseFilter('');
-                    setSelectedConsultantFilter('');
-                  }}
-                  className={filterType === 'all' 
-                    ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold' 
-                    : 'border-zinc-700 text-gray-300 hover:bg-zinc-800'
-                  }
-                >
-                  כל הלקוחות ({clients.length})
-                </Button>
-                <Button
-                  variant={filterType === 'course' ? 'default' : 'outline'}
-                  onClick={() => setFilterType('course')}
-                  className={filterType === 'course' 
-                    ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold' 
-                    : 'border-zinc-700 text-gray-300 hover:bg-zinc-800'
-                  }
-                >
-                  לפי קורס
-                </Button>
-                <Button
-                  variant={filterType === 'consultant' ? 'default' : 'outline'}
-                  onClick={() => setFilterType('consultant')}
-                  className={filterType === 'consultant' 
-                    ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold' 
-                    : 'border-zinc-700 text-gray-300 hover:bg-zinc-800'
-                  }
-                >
-                  לפי יועץ
-                </Button>
-              </div>
+              {/* Admin gets all filter buttons; manager gets only consultant filter */}
+              {isAdmin && (
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    variant={filterType === 'all' ? 'default' : 'outline'}
+                    onClick={() => { setFilterType('all'); setSelectedCourseFilter(''); setSelectedConsultantFilter(''); }}
+                    className={filterType === 'all' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold' : 'border-zinc-700 text-gray-300 hover:bg-zinc-800'}
+                  >
+                    כל הלקוחות ({clients.length})
+                  </Button>
+                  <Button
+                    variant={filterType === 'course' ? 'default' : 'outline'}
+                    onClick={() => setFilterType('course')}
+                    className={filterType === 'course' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold' : 'border-zinc-700 text-gray-300 hover:bg-zinc-800'}
+                  >
+                    לפי קורס
+                  </Button>
+                  <Button
+                    variant={filterType === 'consultant' ? 'default' : 'outline'}
+                    onClick={() => setFilterType('consultant')}
+                    className={filterType === 'consultant' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold' : 'border-zinc-700 text-gray-300 hover:bg-zinc-800'}
+                  >
+                    לפי יועץ
+                  </Button>
+                </div>
+              )}
 
-              {filterType === 'course' && (
-                <Select
-                  value={selectedCourseFilter}
-                  onValueChange={setSelectedCourseFilter}
-                >
+              {isAdmin && filterType === 'course' && (
+                <Select value={selectedCourseFilter} onValueChange={setSelectedCourseFilter}>
                   <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-white max-w-md">
                     <SelectValue placeholder="בחר קורס" />
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-800 border-zinc-700">
-                    {courses.map((course) => {
-                      const courseClientCount = clientAccess.filter(
-                        a => a.course_id === course.id
-                      ).length;
-                      return (
-                        <SelectItem key={course.id} value={course.id} className="text-white">
-                          {course.title} ({courseClientCount} לקוחות)
-                        </SelectItem>
-                      );
-                    })}
+                    {courses.map((course) => (
+                      <SelectItem key={course.id} value={course.id} className="text-white">
+                        {course.title} ({clientAccess.filter(a => a.course_id === course.id).length} לקוחות)
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}
 
-              {filterType === 'consultant' && (
-                <Select
-                  value={selectedConsultantFilter}
-                  onValueChange={setSelectedConsultantFilter}
-                >
+              {(isAdmin ? filterType === 'consultant' : true) && (
+                <Select value={selectedConsultantFilter} onValueChange={setSelectedConsultantFilter}>
                   <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-white max-w-md">
-                    <SelectValue placeholder="בחר יועץ" />
+                    <SelectValue placeholder={isManager ? 'סנן לפי יועץ' : 'בחר יועץ'} />
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-800 border-zinc-700">
-                    {consultants.map((consultant) => {
-                      const consultantClientCount = clients.filter(
-                        c => c.consultant_email === consultant.email
-                      ).length;
-                      return (
-                        <SelectItem key={consultant.email} value={consultant.email} className="text-white">
-                          {consultant.full_name || consultant.email} ({consultantClientCount} לקוחות)
-                        </SelectItem>
-                      );
-                    })}
+                    {isManager && <SelectItem value="__all__" className="text-white">כל היועצים</SelectItem>}
+                    {consultants.map((consultant) => (
+                      <SelectItem key={consultant.email} value={consultant.email} className="text-white">
+                        {consultant.full_name || consultant.email} ({clients.filter(c => c.consultant_email === consultant.email).length} לקוחות)
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}
@@ -771,7 +747,7 @@ export default function AdminClients() {
           </div>
 
           {/* Bulk actions toolbar */}
-          {hasFullAccess && filteredClients.length > 0 && (
+          {isAdmin && filteredClients.length > 0 && (
             <div className="flex items-center gap-3 mb-4 px-1">
               <input
                 type="checkbox"
@@ -806,7 +782,7 @@ export default function AdminClients() {
               <p className="text-gray-400">
                 {searchQuery ? 'לא נמצאו לקוחות' : 'אין לקוחות מורשים עדיין'}
               </p>
-              {!searchQuery && (
+              {!searchQuery && !isManager && (
                 <Button 
                   onClick={() => setShowAddDialog(true)}
                   className="mt-4 bg-[#c7af48] hover:bg-[#b39d3d] text-black"
@@ -829,7 +805,7 @@ export default function AdminClients() {
                     <Card className={`bg-zinc-900/50 border-zinc-800 p-5 group hover:border-zinc-700 transition-all ${selectedClientIds.has(client.id) ? 'border-[#c7af48]/40' : ''}`}>
                       <div className="flex items-start justify-between gap-4 mb-4">
                         <div className="flex items-center gap-4">
-                          {hasFullAccess && (
+                          {isAdmin && (
                             <input
                               type="checkbox"
                               checked={selectedClientIds.has(client.id)}
@@ -870,37 +846,35 @@ export default function AdminClients() {
                             )}
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          {hasFullAccess && (
-                            <>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setShowAssignConsultantDialog({ client, consultant_email: client.consultant_email || '' })}
-                                className="text-[#c7af48] border-[#c7af48]/30 hover:bg-[#c7af48]/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
-                              >
-                                <UserPlus className="w-4 h-4 ml-1" />
-                                שייך יועץ
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => setShowEditClientDialog(client)}
-                                className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
-                              >
-                                <Edit className="w-5 h-5" />
-                              </Button>
-                            </>
-                          )}
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setDeleteClient(client)}
-                            className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
-                          >
-                            <Trash2 className="w-5 h-5" />
-                          </Button>
-                        </div>
+                        {isAdmin && (
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setShowAssignConsultantDialog({ client, consultant_email: client.consultant_email || '' })}
+                              className="text-[#c7af48] border-[#c7af48]/30 hover:bg-[#c7af48]/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                            >
+                              <UserPlus className="w-4 h-4 ml-1" />
+                              שייך יועץ
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setShowEditClientDialog(client)}
+                              className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                            >
+                              <Edit className="w-5 h-5" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setDeleteClient(client)}
+                              className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                            >
+                              <Trash2 className="w-5 h-5" />
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     
                       {/* Progress Stats */}
