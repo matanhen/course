@@ -67,7 +67,9 @@ export default function AdminClients() {
   const [showAssignConsultantDialog, setShowAssignConsultantDialog] = useState(null);
   const [showAddConsultantDialog, setShowAddConsultantDialog] = useState(false);
   const [newConsultant, setNewConsultant] = useState({ email: '', full_name: '' });
-  const [activeTab, setActiveTab] = useState('clients'); // 'clients' or 'consultants'
+  const [showAddManagerDialog, setShowAddManagerDialog] = useState(false);
+  const [newManager, setNewManager] = useState({ email: '', full_name: '' });
+  const [activeTab, setActiveTab] = useState('clients'); // 'clients', 'consultants', or 'managers'
   const [filterType, setFilterType] = useState('all'); // 'all', 'course', 'consultant'
   const [selectedCourseFilter, setSelectedCourseFilter] = useState('');
   const [selectedConsultantFilter, setSelectedConsultantFilter] = useState('');
@@ -283,6 +285,40 @@ export default function AdminClients() {
       queryClient.invalidateQueries(['allUsers']);
       setShowEditConsultantDialog(null);
     },
+  });
+
+  const managers = clients.filter(c => c.is_manager);
+
+  const addManagerMutation = useMutation({
+    mutationFn: async (data) => {
+      const normalizedEmail = data.email.toLowerCase();
+      const existing = await base44.entities.AllowedClient.filter({ email: normalizedEmail });
+      if (existing.length > 0) {
+        await base44.entities.AllowedClient.update(existing[0].id, {
+          is_manager: true,
+          name: existing[0].name || data.full_name
+        });
+      } else {
+        await base44.entities.AllowedClient.create({
+          email: normalizedEmail,
+          name: data.full_name,
+          is_manager: true
+        });
+      }
+      await base44.users.inviteUser(normalizedEmail, 'user');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['clients']);
+      setShowAddManagerDialog(false);
+      setNewManager({ email: '', full_name: '' });
+    },
+  });
+
+  const deleteManagerMutation = useMutation({
+    mutationFn: async (manager) => {
+      await base44.entities.AllowedClient.update(manager.id, { is_manager: false });
+    },
+    onSuccess: () => queryClient.invalidateQueries(['clients']),
   });
 
   const addConsultantMutation = useMutation({
@@ -619,6 +655,17 @@ export default function AdminClients() {
             <User className="w-4 h-4 ml-2" />
             יועצים ({consultants.length})
           </Button>
+          <Button
+            variant={activeTab === 'managers' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('managers')}
+            className={activeTab === 'managers' 
+              ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold' 
+              : 'border-zinc-700 text-gray-300 hover:bg-zinc-800'
+            }
+          >
+            <Users className="w-4 h-4 ml-2" />
+            מנהלים ({managers.length})
+          </Button>
         </div>
       )}
 
@@ -905,7 +952,7 @@ export default function AdminClients() {
             </div>
           )}
         </>
-      ) : (
+      ) : activeTab === 'consultants' ? (
         <>
           <div className="flex justify-end mb-6">
             <Button 
@@ -922,6 +969,58 @@ export default function AdminClients() {
             onEditConsultant={setShowEditConsultantDialog}
             getConsultantClientCount={getConsultantClientCount}
           />
+        </>
+      ) : (
+        <>
+          <div className="flex justify-end mb-6">
+            <Button 
+              onClick={() => setShowAddManagerDialog(true)}
+              className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold"
+            >
+              <Plus className="w-5 h-5 ml-2" />
+              הוסף מנהל
+            </Button>
+          </div>
+          {managers.length === 0 ? (
+            <Card className="bg-zinc-900/50 border-zinc-800 p-10 text-center">
+              <Users className="w-12 h-12 text-gray-700 mx-auto mb-4" />
+              <p className="text-gray-400">אין מנהלים במערכת</p>
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              {managers.map((manager, index) => (
+                <motion.div key={manager.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
+                  <Card className="bg-zinc-900/50 border-zinc-800 p-5 group hover:border-zinc-700 transition-all">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shrink-0">
+                          <span className="text-white font-bold text-lg">
+                            {(manager.name || manager.email)[0].toUpperCase()}
+                          </span>
+                        </div>
+                        <div>
+                          <h3 className="text-white font-medium">{manager.name || 'ללא שם'}</h3>
+                          <p className="text-gray-500 text-sm flex items-center gap-1">
+                            <Mail className="w-3 h-3" />
+                            {manager.email}
+                          </p>
+                          <p className="text-emerald-400 text-xs mt-1">מנהל</p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => deleteManagerMutation.mutate(manager)}
+                        className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </Button>
+                    </div>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </>
       )}
 
@@ -1531,6 +1630,50 @@ export default function AdminClients() {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Manager Dialog */}
+      <Dialog open={showAddManagerDialog} onOpenChange={setShowAddManagerDialog}>
+        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+          <DialogHeader>
+            <DialogTitle>הוסף מנהל חדש</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={(e) => { e.preventDefault(); if (newManager.email && newManager.full_name) addManagerMutation.mutate(newManager); }} className="space-y-6 mt-4">
+            <div className="space-y-2">
+              <Label>אימייל *</Label>
+              <div className="relative">
+                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <Input
+                  type="email"
+                  required
+                  value={newManager.email}
+                  onChange={(e) => setNewManager({ ...newManager, email: e.target.value })}
+                  placeholder="email@example.com"
+                  className="bg-zinc-800 border-zinc-700 text-white pr-11"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>שם מלא *</Label>
+              <div className="relative">
+                <User className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <Input
+                  required
+                  value={newManager.full_name}
+                  onChange={(e) => setNewManager({ ...newManager, full_name: e.target.value })}
+                  placeholder="שם מלא"
+                  className="bg-zinc-800 border-zinc-700 text-white pr-11"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 pt-4">
+              <Button type="button" variant="outline" onClick={() => setShowAddManagerDialog(false)} className="flex-1 border-red-700 text-red-400 hover:bg-red-500/10">ביטול</Button>
+              <Button type="submit" disabled={addManagerMutation.isPending} className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold disabled:opacity-50">
+                {addManagerMutation.isPending ? 'מוסיף...' : 'הוסף מנהל'}
+              </Button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
 
