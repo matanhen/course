@@ -22,6 +22,7 @@ export default function Layout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isAllowed, setIsAllowed] = useState(null);
   const [isConsultant, setIsConsultant] = useState(false);
+  const [isManager, setIsManager] = useState(false);
 
   const [clientName, setClientName] = useState('');
   const navigate = useNavigate();
@@ -73,6 +74,7 @@ export default function Layout({ children, currentPageName }) {
 
           const isManagerUser = clientData.length > 0 && clientData[0].is_manager;
           const isConsultantUser = clientData.length > 0 && clientData[0].is_consultant;
+          setIsManager(isManagerUser);
           setIsConsultant(isConsultantUser || isManagerUser);
 
           if (clientData.length > 0) {
@@ -191,11 +193,17 @@ export default function Layout({ children, currentPageName }) {
     { name: 'ניהול לקוחות', page: 'AdminClients', icon: Users },
   ];
 
+  const managerLinks = [
+    { name: 'לוח בקרה', page: 'AdminDashboard', icon: Home },
+    { name: 'ניהול לקוחות', page: 'AdminClients', icon: Users },
+    { name: 'קורסים', page: 'AdminCourses', icon: BookOpen },
+  ];
+
   const userLinks = [
     { name: 'הקורסים שלי', page: 'Home', icon: BookOpen },
   ];
 
-  const links = isAdmin ? adminLinks : isConsultant ? consultantLinks : userLinks;
+  const links = isAdmin ? adminLinks : isManager ? managerLinks : isConsultant ? consultantLinks : userLinks;
 
   return (
     <div className="min-h-screen bg-black" dir="rtl">
@@ -350,7 +358,7 @@ export default function Layout({ children, currentPageName }) {
             </div>
             <div>
               <h1 className="font-bold text-white text-sm">האקדמיה של צעירים מתעשרים</h1>
-              <p className="text-xs text-gray-500">{isAdmin ? 'ניהול' : isConsultant ? 'יועץ' : 'לקוח'}</p>
+              <p className="text-xs text-gray-500">{isAdmin ? 'ניהול' : isManager ? 'מנהל' : isConsultant ? 'יועץ' : 'לקוח'}</p>
             </div>
           </div>
         </div>

@@ -18,11 +18,16 @@ import { Button } from "@/components/ui/button";
 
 export default function AdminDashboard() {
   const [user, setUser] = useState(null);
+  const [isManager, setIsManager] = useState(false);
 
   React.useEffect(() => {
     const checkUser = async () => {
       const currentUser = await base44.auth.me();
       setUser(currentUser);
+      if (currentUser?.role !== 'admin') {
+        const clientData = await base44.entities.AllowedClient.filter({ email: currentUser.email?.toLowerCase() });
+        if (clientData.length > 0 && clientData[0].is_manager) setIsManager(true);
+      }
     };
     checkUser();
   }, []);
@@ -86,7 +91,7 @@ export default function AdminDashboard() {
     );
   }
 
-  if (user.role !== 'admin') {
+  if (user.role !== 'admin' && !isManager) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center" dir="rtl">
         <div className="text-center max-w-md px-6">
@@ -140,22 +145,24 @@ export default function AdminDashboard() {
       <div className="mb-10">
         <h2 className="text-xl font-bold text-white mb-6">פעולות מהירות</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Link to={createPageUrl('AdminCourses')}>
-            <Card className="bg-zinc-900/50 border-zinc-800 hover:border-[#c7af48]/50 p-6 transition-all group">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-xl bg-[#c7af48]/10 flex items-center justify-center">
-                  <Plus className="w-7 h-7 text-[#c7af48]" />
+          {!isManager && (
+            <Link to={createPageUrl('AdminCourses')}>
+              <Card className="bg-zinc-900/50 border-zinc-800 hover:border-[#c7af48]/50 p-6 transition-all group">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-xl bg-[#c7af48]/10 flex items-center justify-center">
+                    <Plus className="w-7 h-7 text-[#c7af48]" />
+                  </div>
+                  <div>
+                    <h3 className="text-white font-semibold group-hover:text-[#c7af48] transition-colors">
+                      הוסף קורס חדש
+                    </h3>
+                    <p className="text-gray-500 text-sm">צור קורס חדש עם פרקים ושיעורים</p>
+                  </div>
+                  <ArrowLeft className="w-5 h-5 text-gray-600 mr-auto group-hover:text-[#c7af48] group-hover:-translate-x-1 transition-all" />
                 </div>
-                <div>
-                  <h3 className="text-white font-semibold group-hover:text-[#c7af48] transition-colors">
-                    הוסף קורס חדש
-                  </h3>
-                  <p className="text-gray-500 text-sm">צור קורס חדש עם פרקים ושיעורים</p>
-                </div>
-                <ArrowLeft className="w-5 h-5 text-gray-600 mr-auto group-hover:text-[#c7af48] group-hover:-translate-x-1 transition-all" />
-              </div>
-            </Card>
-          </Link>
+              </Card>
+            </Link>
+          )}
 
           <Link to={createPageUrl('AdminClients')}>
             <Card className="bg-zinc-900/50 border-zinc-800 hover:border-[#c7af48]/50 p-6 transition-all group">
@@ -196,7 +203,7 @@ export default function AdminDashboard() {
               const courseLessons = lessons.filter(l => l.course_id === course.id);
               
               return (
-                <Link key={course.id} to={createPageUrl(`AdminCourseEdit?id=${course.id}`)}>
+                <Link key={course.id} to={isManager ? '#' : createPageUrl(`AdminCourseEdit?id=${course.id}`)}>
                   <Card className="bg-zinc-900/50 border-zinc-800 hover:border-[#c7af48]/30 transition-all overflow-hidden group">
                     <div className="aspect-video bg-zinc-800 relative overflow-hidden">
                       {course.thumbnail ? (

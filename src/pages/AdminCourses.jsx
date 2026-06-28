@@ -47,6 +47,7 @@ import {
 
 export default function AdminCourses() {
   const [user, setUser] = useState(null);
+  const [isManager, setIsManager] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [deleteCourse, setDeleteCourse] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -64,6 +65,10 @@ export default function AdminCourses() {
     const checkUser = async () => {
       const currentUser = await base44.auth.me();
       setUser(currentUser);
+      if (currentUser?.role !== 'admin') {
+        const clientData = await base44.entities.AllowedClient.filter({ email: currentUser.email?.toLowerCase() });
+        if (clientData.length > 0 && clientData[0].is_manager) setIsManager(true);
+      }
     };
     checkUser();
   }, []);
@@ -215,13 +220,15 @@ export default function AdminCourses() {
           </motion.h1>
           <p className="text-gray-400">{courses.length} קורסים</p>
         </div>
-        <Button 
-          onClick={() => setShowAddDialog(true)}
-          className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold"
-        >
-          <Plus className="w-5 h-5 ml-2" />
-          קורס חדש
-        </Button>
+        {!isManager && (
+          <Button 
+            onClick={() => setShowAddDialog(true)}
+            className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold"
+          >
+            <Plus className="w-5 h-5 ml-2" />
+            קורס חדש
+          </Button>
+        )}
       </div>
 
       {/* Search */}
@@ -246,7 +253,7 @@ export default function AdminCourses() {
           <p className="text-gray-400">
             {searchQuery ? 'לא נמצאו קורסים' : 'אין קורסים עדיין'}
           </p>
-          {!searchQuery && (
+          {!searchQuery && !isManager && (
             <Button 
               onClick={() => setShowAddDialog(true)}
               className="mt-4 bg-[#c7af48] hover:bg-[#b39d3d] text-black"
@@ -304,7 +311,7 @@ export default function AdminCourses() {
                       </div>
 
                       {/* Actions Menu */}
-                      <div className="absolute top-3 left-3">
+                      {!isManager && <div className="absolute top-3 left-3">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button 
@@ -361,11 +368,11 @@ export default function AdminCourses() {
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
-                      </div>
+                      </div>}
                     </div>
 
                     {/* Content */}
-                    <Link to={createPageUrl(`AdminCourseEdit?id=${course.id}`)}>
+                    <Link to={isManager ? '#' : createPageUrl(`AdminCourseEdit?id=${course.id}`)}>
                       <div className="p-5">
                         <h3 className="text-lg font-bold text-white group-hover:text-[#c7af48] transition-colors">
                           {course.title}
