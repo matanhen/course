@@ -239,49 +239,60 @@ export default function CourseView() {
     }
   }, [currentLesson, isAdmin, getNextLesson, markCompleteMutation]);
 
-  // YouTube progress tracking
+  // YouTube progress tracking — uses the official YouTube IFrame Player API
+  // to reliably detect when a video actually starts playing (state PLAYING).
   useEffect(() => {
-    if (progressUpdateInterval.current) {
-      clearInterval(progressUpdateInterval.current);
-      progressUpdateInterval.current = null;
-    }
-
     if (!currentLesson || currentLesson.lesson_type === 'external_link') return;
     if (!extractYouTubeId(currentLesson.youtube_url)) return;
     if (isAdmin || !normalizedEmail) return;
 
     const lessonId = currentLesson.id;
-    let isActive = true;
+    let cancelled = false;
     let markedComplete = false;
+    let ytPlayer = null;
 
-    const checkProgress = () => {
-      const iframe = playerRef.current;
-      if (iframe?.contentWindow) {
-        try {
-          iframe.contentWindow.postMessage('{"event":"command","func":"getCurrentTime","args":""}', '*');
-        } catch {}
+    const markComplete = () => {
+      if (markedComplete) return;
+      markedComplete = true;
+      updateProgressMutationRef.current?.mutate({ lessonId, progressPercent: 100, completed: true });
+    };
+
+    const createPlayer = () => {
+      if (cancelled) return;
+      const el = document.getElementById('yt-iframe-player');
+      if (!el || !window.YT || !window.YT.Player) return;
+      ytPlayer = new window.YT.Player(el, {
+        events: {
+          onStateChange: (event) => {
+            if (event.data === window.YT.PlayerState.PLAYING) {
+              markComplete();
+            }
+          },
+        },
+      });
+    };
+
+    if (window.YT && window.YT.Player) {
+      createPlayer();
+    } else {
+      if (!document.getElementById('youtube-iframe-api-script')) {
+        const tag = document.createElement('script');
+        tag.id = 'youtube-iframe-api-script';
+        tag.src = 'https://www.youtube.com/iframe_api';
+        document.body.appendChild(tag);
       }
-    };
-
-    const handleMessage = (event) => {
-      if (!isActive || event.origin !== 'https://www.youtube.com') return;
-      try {
-        const data = JSON.parse(event.data);
-        if (data.event === 'infoDelivery' && data.info?.currentTime > 0 && !markedComplete) {
-          markedComplete = true;
-          updateProgressMutationRef.current?.mutate({ lessonId, progressPercent: 100, completed: true });
-        }
-      } catch {}
-    };
-
-    window.addEventListener('message', handleMessage);
-    progressUpdateInterval.current = setInterval(checkProgress, 1000);
+      const previousCallback = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => {
+        previousCallback?.();
+        createPlayer();
+      };
+    }
 
     return () => {
-      isActive = false;
-      window.removeEventListener('message', handleMessage);
-      clearInterval(progressUpdateInterval.current);
-      progressUpdateInterval.current = null;
+      cancelled = true;
+      if (ytPlayer && typeof ytPlayer.destroy === 'function') {
+        try { ytPlayer.destroy(); } catch {}
+      }
     };
   }, [currentLesson?.id, isAdmin, normalizedEmail]);
 
@@ -521,8 +532,9 @@ export default function CourseView() {
               extractYouTubeId(currentLesson.youtube_url) ? (
                 <iframe
                   key={currentLesson.id}
+                  id="yt-iframe-player"
                   ref={playerRef}
-                  src={`https://www.youtube.com/embed/${extractYouTubeId(currentLesson.youtube_url)}?enablejsapi=1&rel=0&modestbranding=1`}
+                  src={`https://www.youtube.com/embed/${extractYouTubeId(currentLesson.youtube_url)}?enablejsapi=1&rel=0&modestbranding=1&origin=${encodeURIComponent(window.location.origin)}`}
                   className="w-full h-full"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
