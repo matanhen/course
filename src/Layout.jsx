@@ -89,9 +89,15 @@ export default function Layout({ children, currentPageName }) {
               setClientName(client.name);
             }
             
+            const nowIso = new Date().toISOString();
             if (!client.first_login_date) {
               base44.entities.AllowedClient.update(client.id, {
-                first_login_date: new Date().toISOString()
+                first_login_date: nowIso,
+                last_login_date: nowIso
+              }).catch(() => {});
+            } else {
+              base44.entities.AllowedClient.update(client.id, {
+                last_login_date: nowIso
               }).catch(() => {});
             }
           }

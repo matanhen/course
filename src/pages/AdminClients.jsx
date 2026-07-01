@@ -124,6 +124,11 @@ export default function AdminClients() {
                   ? keepClient.first_login_date 
                   : deleteClient.first_login_date)
               : (keepClient.first_login_date || deleteClient.first_login_date),
+            last_login_date: keepClient.last_login_date && deleteClient.last_login_date
+              ? (new Date(keepClient.last_login_date) > new Date(deleteClient.last_login_date) 
+                  ? keepClient.last_login_date 
+                  : deleteClient.last_login_date)
+              : (keepClient.last_login_date || deleteClient.last_login_date),
             is_consultant: keepClient.is_consultant || deleteClient.is_consultant
           };
           
@@ -839,6 +844,12 @@ export default function AdminClients() {
                                 <span className="flex items-center gap-1">
                                   <Clock className="w-3 h-3" />
                                   כניסה ראשונה: {format(new Date(client.first_login_date), 'dd/MM/yyyy', { locale: he })}
+                                </span>
+                              )}
+                              {client.last_login_date && (
+                                <span className="flex items-center gap-1">
+                                  <Clock className="w-3 h-3" />
+                                  כניסה אחרונה: {format(new Date(client.last_login_date), 'dd/MM/yyyy HH:mm', { locale: he })}
                                 </span>
                               )}
                             </div>
