@@ -4,6 +4,14 @@ const WEBHOOK_URL = 'https://hook.eu2.make.com/vwou9sujl9raypmcsunyp4nhsno4hme1'
 const COURSE_TITLE = 'צעירים מתעשרים';
 const COURSE_DESCRIPTION = 'ליווי אישי פרימיום';
 
+function formatDate(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return null;
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -49,10 +57,11 @@ Deno.serve(async (req) => {
       const payload = {
         name: client?.name || '',
         email: email,
-        registration_date: access.created_date || null,
-        first_login_date: client?.first_login_date || null,
-        last_login_date: client?.last_login_date || null,
-        lessons_watched: `${completedCount} מתוך ${totalLessons}`
+        registration_date: formatDate(access.created_date),
+        first_login_date: formatDate(client?.first_login_date),
+        last_login_date: formatDate(client?.last_login_date),
+        lessons_watched: completedCount,
+        total_lessons: totalLessons
       };
 
       try {
