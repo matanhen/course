@@ -7,6 +7,13 @@ const COURSE_DESCRIPTION = 'ליווי אישי פרימיום';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
+    let testEmail = null;
+    try {
+      const body = await req.json();
+      testEmail = body?.test_email ? body.test_email.toLowerCase() : null;
+    } catch (e) {
+      testEmail = null;
+    }
 
     const courses = await base44.asServiceRole.entities.Course.filter({ title: COURSE_TITLE });
     const course = courses.find((c) => c.description === COURSE_DESCRIPTION) || courses[0];
@@ -33,6 +40,7 @@ Deno.serve(async (req) => {
     for (const access of accesses) {
       const email = (access.email || '').toLowerCase();
       if (!email) continue;
+      if (testEmail && email !== testEmail) continue;
       const client = clientsByEmail[email];
       const completedCount = progress.filter(
         (p) => (p.user_email || '').toLowerCase() === email && p.completed
