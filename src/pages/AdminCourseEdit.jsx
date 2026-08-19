@@ -222,6 +222,8 @@ export default function AdminCourseEdit() {
         description: editingCourse.description,
         thumbnail: editingCourse.thumbnail,
         is_published: editingCourse.is_published,
+        external_button_url: editingCourse.external_button_url || '',
+        external_button_text: editingCourse.external_button_text || '',
       });
     }
   };
@@ -469,6 +471,27 @@ export default function AdminCourseEdit() {
                   checked={editingCourse.is_published}
                   onCheckedChange={(checked) => setEditingCourse({ ...editingCourse, is_published: checked })}
                 />
+              </div>
+              <div className="space-y-3 pt-4 border-t border-zinc-800">
+                <div className="space-y-2">
+                  <Label className="text-gray-300">כפתור חיצוני - קישור</Label>
+                  <Input
+                    value={editingCourse.external_button_url || ''}
+                    onChange={(e) => setEditingCourse({ ...editingCourse, external_button_url: e.target.value })}
+                    placeholder="https://... (ריק = ללא כפתור)"
+                    className="bg-zinc-800 border-zinc-700 text-white"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">כפתור חיצוני - טקסט</Label>
+                  <Input
+                    value={editingCourse.external_button_text || ''}
+                    onChange={(e) => setEditingCourse({ ...editingCourse, external_button_text: e.target.value })}
+                    placeholder="מערכת לניהול הכסף >>"
+                    className="bg-zinc-800 border-zinc-700 text-white"
+                  />
+                </div>
+                <p className="text-gray-500 text-xs">השאר את הקישור ריק כדי שלא יוצג כפתור בקורס.</p>
               </div>
               <Button
                 onClick={handleSaveCourse}

@@ -18,6 +18,14 @@
       "type": "boolean",
       "default": true,
       "description": "\u05d4\u05d0\u05dd \u05d4\u05e7\u05d5\u05e8\u05e1 \u05e4\u05d5\u05e8\u05e1\u05dd"
+    },
+    "external_button_url": {
+      "type": "string",
+      "description": "\u05e7\u05d9\u05e9\u05d5\u05e8 \u05d7\u05d9\u05e6\u05d5\u05e0\u05d9 \u05dc\u05db\u05e4\u05ea\u05d5\u05e8 \u05d1\u05e7\u05d5\u05e8\u05e1 (\u05e8\u05d9\u05e7 = \u05dc\u05dc\u05d0 \u05db\u05e4\u05ea\u05d5\u05e8)"
+    },
+    "external_button_text": {
+      "type": "string",
+      "description": "\u05d8\u05e7\u05e1\u05d8 \u05d4\u05db\u05e4\u05ea\u05d5\u05e8 \u05d4\u05d7\u05d9\u05e6\u05d5\u05e0\u05d9 \u05d1\u05e7\u05d5\u05e8\u05e1"
     }
   },
   "required": [

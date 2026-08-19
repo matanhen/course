@@ -10,7 +10,8 @@ import {
   ArrowLeft,
   Lock,
   BookOpen,
-  FileText
+  FileText,
+  ExternalLink
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
@@ -401,6 +402,20 @@ export default function CourseView() {
           )}
         </div>
       </div>
+
+      {course.external_button_url && (
+        <div className="bg-zinc-950 border-b border-zinc-800 px-4 py-2">
+          <a
+            href={course.external_button_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold rounded-lg px-4 py-2 text-sm transition-colors w-full sm:w-auto sm:mx-auto"
+          >
+            <ExternalLink className="w-4 h-4" />
+            {course.external_button_text || 'מערכת לניהול הכסף >>'}
+          </a>
+        </div>
+      )}
 
       <div className="flex flex-col lg:flex-row">
         {/* Main content area */}
