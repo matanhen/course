@@ -424,7 +424,7 @@ export default function CourseView() {
           <div className="px-4 py-2 bg-zinc-950 border-b border-zinc-800 flex items-center justify-center lg:justify-start gap-2">
             <button
               onClick={() => setCourseContentOpen(prev => !prev)}
-              className="flex items-center gap-2 text-[#105330] lg:text-[#c7af48] hover:text-[#0a3d20] lg:hover:text-[#e5d07a] transition-colors font-medium text-sm"
+              className="flex items-center gap-2 bg-[#105330] text-white hover:bg-[#0a3d20] px-3 py-1.5 rounded-lg lg:bg-transparent lg:text-[#c7af48] lg:hover:text-[#e5d07a] lg:px-0 lg:py-0 lg:rounded-none transition-colors font-medium text-sm"
             >
               <BookOpen className="w-4 h-4" />
               <span>תוכן הקורס</span>
@@ -453,18 +453,18 @@ export default function CourseView() {
                       <div key={chapter.id}>
                         <button
                           onClick={() => setExpandedChapters(prev => ({ ...prev, [chapter.id]: !prev[chapter.id] }))}
-                          className="w-full p-4 flex items-center justify-between hover:bg-zinc-900/50 transition-colors"
+                          className="w-full p-2 lg:p-4 flex items-center justify-between hover:bg-zinc-900/50 transition-colors"
                         >
-                          <div className="flex items-center gap-3">
-                            <div className="w-7 h-7 rounded-lg bg-[#c7af48]/10 flex items-center justify-center shrink-0">
+                          <div className="flex items-center gap-2 lg:gap-3">
+                            <div className="w-6 h-6 lg:w-7 lg:h-7 rounded-lg bg-[#c7af48]/10 flex items-center justify-center shrink-0">
                               <span className="text-[#c7af48] font-bold text-xs">{chapterIndex + 1}</span>
                             </div>
                             <div className="text-right">
-                              <h4 className="text-white font-medium text-sm">{chapter.title}</h4>
-                              <p className="text-gray-500 text-xs">{chapterCompletedCount}/{chapterLessons.length} הושלמו</p>
+                              <h4 className="text-white font-medium text-xs lg:text-sm">{chapter.title}</h4>
+                              <p className="text-gray-500 text-[10px] lg:text-xs">{chapterCompletedCount}/{chapterLessons.length} הושלמו</p>
                             </div>
                           </div>
-                          {isExpanded ? <ChevronUp className="w-4 h-4 text-gray-500 shrink-0" /> : <ChevronDown className="w-4 h-4 text-gray-500 shrink-0" />}
+                          {isExpanded ? <ChevronUp className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-gray-500 shrink-0" /> : <ChevronDown className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-gray-500 shrink-0" />}
                         </button>
 
                         <AnimatePresence initial={false}>
@@ -485,25 +485,25 @@ export default function CourseView() {
                                   <button
                                     key={lesson.id}
                                     onClick={() => { selectLesson(lesson); setCourseContentOpen(false); }}
-                                    className={`w-full p-3 pr-10 flex items-center gap-3 transition-all text-right ${
+                                    className={`w-full p-2 pr-8 lg:p-3 lg:pr-10 flex items-center gap-2 lg:gap-3 transition-all text-right ${
                                       isCurrent
                                         ? 'bg-[#c7af48]/10 border-r-2 border-[#c7af48]'
                                         : 'hover:bg-zinc-800/50'
                                     }`}
                                   >
-                                    <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
+                                    <div className={`w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center shrink-0 ${
                                       isCompleted ? 'bg-green-500' : isCurrent ? 'bg-[#c7af48]' : 'bg-zinc-800'
                                     }`}>
                                       {isCompleted ? (
-                                        <CheckCircle2 className="w-4 h-4 text-white" />
+                                        <CheckCircle2 className="w-3 h-3 lg:w-4 lg:h-4 text-white" />
                                       ) : lesson.lesson_type === 'external_link' ? (
-                                        <FileText className="w-3 h-3 text-white" />
+                                        <FileText className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" />
                                       ) : (
-                                        <span className="text-xs text-white">{lessonIndex + 1}</span>
+                                        <span className="text-[10px] lg:text-xs text-white">{lessonIndex + 1}</span>
                                       )}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                      <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-gray-300'} break-words text-sm`}>
+                                      <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-gray-300'} break-words text-xs lg:text-sm`}>
                                         {lesson.title}
                                       </p>
                                       {lesson.duration && <p className="text-gray-600 text-[10px]">{lesson.duration}</p>}
@@ -565,27 +565,30 @@ export default function CourseView() {
           {/* Lesson info */}
           {currentLesson && (
             <div className="p-6 border-b border-zinc-800">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h2 className="text-xl lg:text-2xl font-bold text-white mb-2">{currentLesson.title}</h2>
-                  {currentLesson.duration && <p className="text-gray-500">משך: {currentLesson.duration}</p>}
+              <div className="p-4 bg-zinc-900/50 rounded-xl border border-white mb-6">
+                <p className="text-white text-sm mb-2">השיעור הנוכחי</p>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h2 className="text-base lg:text-2xl font-bold text-white mb-2">{currentLesson.title}</h2>
+                    {currentLesson.duration && <p className="text-gray-500">משך: {currentLesson.duration}</p>}
+                  </div>
+                  {!isAdmin && (
+                    <Button
+                      onClick={handleLessonComplete}
+                      disabled={isLessonCompleted(currentLesson.id)}
+                      className={`shrink-0 ${isLessonCompleted(currentLesson.id) ? 'bg-green-600 hover:bg-green-600' : 'bg-[#c7af48] hover:bg-[#b39d3d]'} text-black font-semibold`}
+                    >
+                      {isLessonCompleted(currentLesson.id) ? (
+                        <><CheckCircle2 className="w-4 h-4 ml-2" />הושלם</>
+                      ) : 'סמן כנצפה'}
+                    </Button>
+                  )}
                 </div>
-                {!isAdmin && (
-                  <Button
-                    onClick={handleLessonComplete}
-                    disabled={isLessonCompleted(currentLesson.id)}
-                    className={`shrink-0 ${isLessonCompleted(currentLesson.id) ? 'bg-green-600 hover:bg-green-600' : 'bg-[#c7af48] hover:bg-[#b39d3d]'} text-black font-semibold`}
-                  >
-                    {isLessonCompleted(currentLesson.id) ? (
-                      <><CheckCircle2 className="w-4 h-4 ml-2" />הושלם</>
-                    ) : 'סמן כנצפה'}
-                  </Button>
-                )}
               </div>
 
               {nextLesson && (
                 <div className="mt-6 p-4 bg-zinc-900/50 rounded-xl border border-zinc-800">
-                  <p className="text-gray-500 text-sm mb-2">השיעור הבא</p>
+                  <p className="text-white text-sm mb-2">השיעור הבא</p>
                   <button
                     onClick={() => selectLesson(nextLesson)}
                     className="w-full flex items-center gap-3 bg-[#105330] hover:bg-[#0a3d20] text-white font-bold rounded-lg px-4 py-3 transition-colors"
@@ -618,18 +621,18 @@ export default function CourseView() {
                 <div key={chapter.id}>
                   <button
                     onClick={() => setExpandedChapters(prev => ({ ...prev, [chapter.id]: !prev[chapter.id] }))}
-                    className="w-full p-4 flex items-center justify-between hover:bg-zinc-900/50 transition-colors"
+                    className="w-full p-2 lg:p-4 flex items-center justify-between hover:bg-zinc-900/50 transition-colors"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-[#c7af48]/10 flex items-center justify-center">
-                        <span className="text-[#c7af48] font-bold text-sm">{chapterIndex + 1}</span>
+                    <div className="flex items-center gap-2 lg:gap-3">
+                      <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-lg bg-[#c7af48]/10 flex items-center justify-center">
+                        <span className="text-[#c7af48] font-bold text-xs lg:text-sm">{chapterIndex + 1}</span>
                       </div>
                       <div className="text-right">
-                        <h4 className="text-white font-medium">{chapter.title}</h4>
-                        <p className="text-gray-500 text-xs">{chapterCompletedCount}/{chapterLessons.length} הושלמו</p>
+                        <h4 className="text-white font-medium text-xs lg:text-base">{chapter.title}</h4>
+                        <p className="text-gray-500 text-[10px] lg:text-xs">{chapterCompletedCount}/{chapterLessons.length} הושלמו</p>
                       </div>
                     </div>
-                    {isExpanded ? <ChevronUp className="w-5 h-5 text-gray-500" /> : <ChevronDown className="w-5 h-5 text-gray-500" />}
+                    {isExpanded ? <ChevronUp className="w-4 h-4 lg:w-5 lg:h-5 text-gray-500" /> : <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5 text-gray-500" />}
                   </button>
 
                   <AnimatePresence initial={false}>
@@ -650,28 +653,28 @@ export default function CourseView() {
                             <button
                               key={lesson.id}
                               onClick={() => selectLesson(lesson)}
-                              className={`w-full p-4 pr-12 flex items-center gap-3 transition-all text-right ${
+                              className={`w-full p-2 pr-8 lg:p-4 lg:pr-12 flex items-center gap-2 lg:gap-3 transition-all text-right ${
                                 isCurrent
                                   ? 'bg-[#c7af48]/10 border-r-2 border-[#c7af48]'
                                   : 'hover:bg-zinc-800/50'
                               }`}
                             >
-                              <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
+                              <div className={`w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center shrink-0 ${
                                 isCompleted ? 'bg-green-500' : isCurrent ? 'bg-[#c7af48]' : 'bg-zinc-800'
                               }`}>
                                 {isCompleted ? (
-                                  <CheckCircle2 className="w-4 h-4 text-white" />
+                                  <CheckCircle2 className="w-3 h-3 lg:w-4 lg:h-4 text-white" />
                                 ) : lesson.lesson_type === 'external_link' ? (
-                                  <FileText className="w-3 h-3 text-white" />
+                                  <FileText className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" />
                                 ) : (
-                                  <span className="text-xs text-white">{lessonIndex + 1}</span>
+                                  <span className="text-[10px] lg:text-xs text-white">{lessonIndex + 1}</span>
                                 )}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-gray-300'} break-words text-sm`}>
+                                <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-gray-300'} break-words text-xs lg:text-sm`}>
                                   {lesson.title}
                                 </p>
-                                {lesson.duration && <p className="text-gray-600 text-xs">{lesson.duration}</p>}
+                                {lesson.duration && <p className="text-gray-600 text-[10px] lg:text-xs">{lesson.duration}</p>}
                               </div>
                             </button>
                           );
