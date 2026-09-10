@@ -421,16 +421,16 @@ export default function CourseView() {
         {/* Main content area */}
         <div className="flex-1 lg:mr-96">
           {/* Course content toggle button */}
-          <div className="px-4 py-2 bg-zinc-950 border-b border-zinc-800 flex items-center gap-2">
+          <div className="px-4 py-2 bg-zinc-950 border-b border-zinc-800 flex items-center justify-center lg:justify-start gap-2">
             <button
               onClick={() => setCourseContentOpen(prev => !prev)}
-              className="flex items-center gap-2 text-[#c7af48] hover:text-[#e5d07a] transition-colors font-medium text-sm"
+              className="flex items-center gap-2 text-[#105330] lg:text-[#c7af48] hover:text-[#0a3d20] lg:hover:text-[#e5d07a] transition-colors font-medium text-sm"
             >
               <BookOpen className="w-4 h-4" />
               <span>תוכן הקורס</span>
               {courseContentOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
-            <span className="text-gray-600 text-xs mr-2">{sortedChapters.length} פרקים • {lessons.length} שיעורים</span>
+            <span className="hidden lg:inline text-gray-600 text-xs mr-2">{sortedChapters.length} פרקים • {lessons.length} שיעורים</span>
           </div>
 
           {/* Inline course content panel */}
@@ -506,7 +506,7 @@ export default function CourseView() {
                                       <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-gray-300'} break-words text-sm`}>
                                         {lesson.title}
                                       </p>
-                                      {lesson.duration && <p className="text-gray-600 text-xs">{lesson.duration}</p>}
+                                      {lesson.duration && <p className="text-gray-600 text-[10px]">{lesson.duration}</p>}
                                     </div>
                                   </button>
                                 );
@@ -588,10 +588,10 @@ export default function CourseView() {
                   <p className="text-gray-500 text-sm mb-2">השיעור הבא</p>
                   <button
                     onClick={() => selectLesson(nextLesson)}
-                    className="flex items-center gap-3 text-white hover:text-[#c7af48] transition-colors"
+                    className="w-full flex items-center gap-3 bg-[#105330] hover:bg-[#0a3d20] text-white font-bold rounded-lg px-4 py-3 transition-colors"
                   >
-                    <PlayCircle className="w-5 h-5" />
-                    <span className="font-medium">{nextLesson.title}</span>
+                    <PlayCircle className="w-5 h-5 shrink-0" />
+                    <span className="text-right flex-1">{nextLesson.title}</span>
                   </button>
                 </div>
               )}
