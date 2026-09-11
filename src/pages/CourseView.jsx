@@ -33,13 +33,15 @@ export default function CourseView() {
   const ytApiPlayerRef = useRef(null);
   const hostRef = useRef(null);
   const videoWrapperRef = useRef(null);
-  const originalParentRef = useRef(null);
   const seekBarRef = useRef(null);
   const seekingRef = useRef(false);
+  const playbackRateRef = useRef(1);
   const [isPlaying, setIsPlaying] = useState(false);
   const [fsMode, setFsMode] = useState(null);
   const [videoTime, setVideoTime] = useState(0);
   const [videoDuration, setVideoDuration] = useState(0);
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const [speedMenuOpen, setSpeedMenuOpen] = useState(false);
   const queryClient = useQueryClient();
   const progressUpdateInterval = useRef(null);
   const initialLessonSet = useRef(false);
@@ -257,56 +259,33 @@ export default function CourseView() {
   }, []);
 
   const toggleFullscreen = useCallback(() => {
-    const el = videoWrapperRef.current;
-    if (!el) return;
-    if (fsMode === 'native') {
-      if (document.exitFullscreen) document.exitFullscreen();
-      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-      return;
-    }
-    if (fsMode === 'pseudo') {
-      setFsMode(null);
-      return;
-    }
-    if (el.requestFullscreen) {
-      el.requestFullscreen().then(() => setFsMode('native')).catch(() => setFsMode('pseudo'));
-    } else if (el.webkitRequestFullscreen) {
-      el.webkitRequestFullscreen();
-      setFsMode('native');
-    } else {
-      setFsMode('pseudo');
-    }
-  }, [fsMode]);
-
-  // Move the video wrapper to <body> for pseudo-fullscreen (escapes any
-  // transformed ancestor that would break position:fixed), and back on exit.
-  useEffect(() => {
-    const el = videoWrapperRef.current;
-    if (!el) return;
-    if (fsMode === 'pseudo') {
-      if (el.parentElement !== document.body) {
-        originalParentRef.current = el.parentElement;
-        document.body.appendChild(el);
-      }
-    } else if (originalParentRef.current && el.parentElement === document.body) {
-      originalParentRef.current.appendChild(el);
-      originalParentRef.current = null;
-    }
-  }, [fsMode]);
-
-  // Sync native fullscreen state + reset on lesson change
-  useEffect(() => {
-    const onFsChange = () => {
-      const inNative = !!(document.fullscreenElement || document.webkitFullscreenElement);
-      setFsMode(prev => inNative ? 'native' : (prev === 'native' ? null : prev));
-    };
-    document.addEventListener('fullscreenchange', onFsChange);
-    document.addEventListener('webkitfullscreenchange', onFsChange);
-    return () => {
-      document.removeEventListener('fullscreenchange', onFsChange);
-      document.removeEventListener('webkitfullscreenchange', onFsChange);
-    };
+    setFsMode(prev => prev === 'pseudo' ? null : 'pseudo');
   }, []);
+
+  // Pseudo-fullscreen: neutralize transformed ancestors (e.g. framer-motion's
+  // page wrapper) so position:fixed on the wrapper is relative to the viewport,
+  // then style it to cover the screen. No DOM move → the YouTube player stays
+  // alive and the overlay keeps receiving clicks (fixes the mobile freeze).
+  useEffect(() => {
+    if (fsMode !== 'pseudo') return;
+    const neutralized = [];
+    let node = videoWrapperRef.current?.parentElement;
+    while (node && node !== document.body) {
+      const cs = window.getComputedStyle(node);
+      if (cs.transform !== 'none' || cs.willChange === 'transform') {
+        neutralized.push({ el: node, transform: node.style.transform, willChange: node.style.willChange });
+        node.style.transform = 'none';
+        node.style.willChange = 'auto';
+      }
+      node = node.parentElement;
+    }
+    return () => {
+      neutralized.forEach(({ el, transform, willChange }) => {
+        el.style.transform = transform;
+        el.style.willChange = willChange;
+      });
+    };
+  }, [fsMode]);
 
   // Exit pseudo-fullscreen on Escape
   useEffect(() => {
@@ -316,17 +295,7 @@ export default function CourseView() {
     return () => window.removeEventListener('keydown', onKey);
   }, [fsMode]);
 
-  // Restore wrapper to its original parent on unmount
-  useEffect(() => {
-    return () => {
-      const el = videoWrapperRef.current;
-      if (el && el.parentElement === document.body && originalParentRef.current) {
-        originalParentRef.current.appendChild(el);
-      }
-    };
-  }, []);
-
-  useEffect(() => { setFsMode(null); }, [currentLesson?.id]);
+  useEffect(() => { setFsMode(null); setSpeedMenuOpen(false); }, [currentLesson?.id]);
 
   const formatTime = (s) => {
     if (!s || isNaN(s)) return '0:00';
@@ -361,6 +330,14 @@ export default function CourseView() {
 
   const onSeekPointerUp = useCallback(() => {
     seekingRef.current = false;
+  }, []);
+
+  const changeRate = useCallback((rate) => {
+    setPlaybackRate(rate);
+    playbackRateRef.current = rate;
+    setSpeedMenuOpen(false);
+    const p = ytApiPlayerRef.current;
+    if (p && p.setPlaybackRate) p.setPlaybackRate(rate);
   }, []);
 
   // Mark the current lesson as watched as soon as the user opens it
@@ -408,6 +385,7 @@ export default function CourseView() {
         },
         events: {
           onReady: () => {
+            try { ytPlayer.setPlaybackRate?.(playbackRateRef.current); } catch {}
             pollInterval = setInterval(() => {
               if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return;
               try {
@@ -739,9 +717,9 @@ export default function CourseView() {
                         </button>
                       )}
                     </div>
-                    {/* Bottom controls: seek bar + fullscreen */}
+                    {/* Bottom controls: seek bar, speed, fullscreen */}
                     <div className="absolute bottom-0 left-0 right-0 px-2 pb-2 pt-6 flex items-center gap-2 bg-gradient-to-t from-black/80 to-transparent" dir="ltr">
-                      <span className="text-white text-xs tabular-nums w-10 text-right">{formatTime(videoTime)}</span>
+                      <span className="text-white text-xs tabular-nums w-10 text-right shrink-0">{formatTime(videoTime)}</span>
                       <div
                         ref={seekBarRef}
                         className="flex-1 h-2 bg-zinc-700 rounded-full cursor-pointer relative touch-none"
@@ -751,7 +729,31 @@ export default function CourseView() {
                       >
                         <div className="absolute inset-y-0 left-0 bg-[#c7af48] rounded-full" style={{ width: `${videoProgress}%` }} />
                       </div>
-                      <span className="text-white text-xs tabular-nums w-10">{formatTime(videoDuration)}</span>
+                      <span className="text-white text-xs tabular-nums w-10 shrink-0">{formatTime(videoDuration)}</span>
+                      <div className="relative shrink-0">
+                        {speedMenuOpen && <div className="fixed inset-0 z-20" onClick={() => setSpeedMenuOpen(false)} />}
+                        <button
+                          type="button"
+                          onClick={() => setSpeedMenuOpen(o => !o)}
+                          className="h-9 px-2 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors text-white text-xs font-medium"
+                        >
+                          {playbackRate}x
+                        </button>
+                        {speedMenuOpen && (
+                          <div className="absolute bottom-10 right-0 z-30 bg-zinc-900 rounded-lg overflow-hidden border border-zinc-700 shadow-xl min-w-[64px]">
+                            {[1, 1.25, 1.5, 1.75, 2].map(r => (
+                              <button
+                                key={r}
+                                type="button"
+                                onClick={() => changeRate(r)}
+                                className={`block w-full px-3 py-2 text-xs text-white hover:bg-zinc-800 transition-colors text-center ${r === playbackRate ? 'bg-[#c7af48]/20 text-[#c7af48]' : ''}`}
+                              >
+                                {r}x
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                       <button
                         type="button"
                         onClick={toggleFullscreen}
