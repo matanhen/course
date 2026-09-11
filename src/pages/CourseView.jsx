@@ -658,9 +658,12 @@ export default function CourseView() {
                                       )}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                      <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-gray-300'} break-words text-sm`}>
-                                        {lesson.title}
-                                      </p>
+                                      <div className="flex items-center gap-1">
+                                        <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-gray-300'} break-words text-sm`}>
+                                          {lesson.title}
+                                        </p>
+                                        {isCompleted && <CheckCircle2 className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-green-500 shrink-0" />}
+                                      </div>
                                       {lesson.duration && <p className="text-gray-600 text-xs">{lesson.duration}</p>}
                                     </div>
                                   </button>
@@ -881,9 +884,12 @@ export default function CourseView() {
                                 )}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-gray-300'} break-words text-sm`}>
-                                  {lesson.title}
-                                </p>
+                                <div className="flex items-center gap-1">
+                                  <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-gray-300'} break-words text-sm`}>
+                                    {lesson.title}
+                                  </p>
+                                  {isCompleted && <CheckCircle2 className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-green-500 shrink-0" />}
+                                </div>
                                 {lesson.duration && <p className="text-gray-600 text-xs">{lesson.duration}</p>}
                               </div>
                             </button>
