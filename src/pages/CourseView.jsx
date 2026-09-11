@@ -33,8 +33,13 @@ export default function CourseView() {
   const ytApiPlayerRef = useRef(null);
   const hostRef = useRef(null);
   const videoWrapperRef = useRef(null);
+  const originalParentRef = useRef(null);
+  const seekBarRef = useRef(null);
+  const seekingRef = useRef(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [fsMode, setFsMode] = useState(null);
+  const [videoTime, setVideoTime] = useState(0);
+  const [videoDuration, setVideoDuration] = useState(0);
   const queryClient = useQueryClient();
   const progressUpdateInterval = useRef(null);
   const initialLessonSet = useRef(false);
@@ -226,14 +231,7 @@ export default function CourseView() {
     setCurrentLesson(lesson);
     setVideoProgress(0);
     setExpandedChapters(prev => ({ ...prev, [lesson.chapter_id]: true }));
-
-    if (lesson.lesson_type === 'external_link' && !isAdmin && normalizedEmail) {
-      const lessonId = lesson.id;
-      setTimeout(() => {
-        updateProgressMutationRef.current?.mutate({ lessonId, progressPercent: 100, completed: true });
-      }, 1000);
-    }
-  }, [isAdmin, normalizedEmail]);
+  }, []);
 
   const handleLessonComplete = useCallback(() => {
     if (!currentLesson || isAdmin) return;
@@ -271,11 +269,28 @@ export default function CourseView() {
       return;
     }
     if (el.requestFullscreen) {
-      el.requestFullscreen().catch(() => setFsMode('pseudo'));
+      el.requestFullscreen().then(() => setFsMode('native')).catch(() => setFsMode('pseudo'));
     } else if (el.webkitRequestFullscreen) {
       el.webkitRequestFullscreen();
+      setFsMode('native');
     } else {
       setFsMode('pseudo');
+    }
+  }, [fsMode]);
+
+  // Move the video wrapper to <body> for pseudo-fullscreen (escapes any
+  // transformed ancestor that would break position:fixed), and back on exit.
+  useEffect(() => {
+    const el = videoWrapperRef.current;
+    if (!el) return;
+    if (fsMode === 'pseudo') {
+      if (el.parentElement !== document.body) {
+        originalParentRef.current = el.parentElement;
+        document.body.appendChild(el);
+      }
+    } else if (originalParentRef.current && el.parentElement === document.body) {
+      originalParentRef.current.appendChild(el);
+      originalParentRef.current = null;
     }
   }, [fsMode]);
 
@@ -293,7 +308,70 @@ export default function CourseView() {
     };
   }, []);
 
+  // Exit pseudo-fullscreen on Escape
+  useEffect(() => {
+    if (fsMode !== 'pseudo') return;
+    const onKey = (e) => { if (e.key === 'Escape') setFsMode(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [fsMode]);
+
+  // Restore wrapper to its original parent on unmount
+  useEffect(() => {
+    return () => {
+      const el = videoWrapperRef.current;
+      if (el && el.parentElement === document.body && originalParentRef.current) {
+        originalParentRef.current.appendChild(el);
+      }
+    };
+  }, []);
+
   useEffect(() => { setFsMode(null); }, [currentLesson?.id]);
+
+  const formatTime = (s) => {
+    if (!s || isNaN(s)) return '0:00';
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return `${m}:${sec.toString().padStart(2, '0')}`;
+  };
+
+  const seekToClientX = useCallback((clientX) => {
+    const p = ytApiPlayerRef.current;
+    const bar = seekBarRef.current;
+    if (!p || !window.YT || !bar) return;
+    const rect = bar.getBoundingClientRect();
+    const fraction = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    const dur = p.getDuration();
+    if (dur > 0) {
+      p.seekTo(fraction * dur, true);
+      setVideoProgress(Math.round(fraction * 100));
+      setVideoTime(fraction * dur);
+    }
+  }, []);
+
+  const onSeekPointerDown = useCallback((e) => {
+    seekingRef.current = true;
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch {}
+    seekToClientX(e.clientX);
+  }, [seekToClientX]);
+
+  const onSeekPointerMove = useCallback((e) => {
+    if (seekingRef.current) seekToClientX(e.clientX);
+  }, [seekToClientX]);
+
+  const onSeekPointerUp = useCallback(() => {
+    seekingRef.current = false;
+  }, []);
+
+  // Mark the current lesson as watched as soon as the user opens it
+  useEffect(() => {
+    if (!currentLesson || isAdmin || !normalizedEmail) return;
+    updateProgressMutationRef.current?.mutate({
+      lessonId: currentLesson.id,
+      progressPercent: 100,
+      completed: true,
+    });
+  }, [currentLesson?.id, isAdmin, normalizedEmail]);
 
   // YouTube player — uses the official IFrame Player API inside a host div
   // (React never owns the iframe, avoiding reconciliation conflicts) to
@@ -303,17 +381,9 @@ export default function CourseView() {
     const videoId = extractYouTubeId(currentLesson.youtube_url);
     if (!videoId) return;
 
-    const lessonId = currentLesson.id;
     let cancelled = false;
-    let markedComplete = false;
     let ytPlayer = null;
     let pollInterval = null;
-
-    const markComplete = () => {
-      if (markedComplete || isAdmin || !normalizedEmail) return;
-      markedComplete = true;
-      updateProgressMutationRef.current?.mutate({ lessonId, progressPercent: 100, completed: true });
-    };
 
     const createPlayer = () => {
       if (cancelled) return;
@@ -343,7 +413,9 @@ export default function CourseView() {
               try {
                 const cur = ytPlayer.getCurrentTime();
                 const dur = ytPlayer.getDuration();
+                setVideoTime(cur || 0);
                 if (dur > 0) {
+                  setVideoDuration(dur);
                   setVideoProgress(Math.min(100, Math.round((cur / dur) * 100)));
                 }
               } catch {}
@@ -351,7 +423,6 @@ export default function CourseView() {
           },
           onStateChange: (event) => {
             if (event.data === window.YT.PlayerState.PLAYING) {
-              markComplete();
               setIsPlaying(true);
             } else if (event.data === window.YT.PlayerState.PAUSED) {
               setIsPlaying(false);
@@ -387,6 +458,8 @@ export default function CourseView() {
       ytApiPlayerRef.current = null;
       setIsPlaying(false);
       setVideoProgress(0);
+      setVideoTime(0);
+      setVideoDuration(0);
       if (ytPlayer && typeof ytPlayer.destroy === 'function') {
         try { ytPlayer.destroy(); } catch {}
       }
@@ -649,17 +722,13 @@ export default function CourseView() {
               )
             ) : (
               extractYouTubeId(currentLesson.youtube_url) ? (
-                <div ref={videoWrapperRef} className={`relative w-full h-full bg-black ${fsMode === 'pseudo' ? 'fixed inset-0 z-[60]' : ''}`}>
+                <div ref={videoWrapperRef} className={`bg-black ${fsMode === 'pseudo' ? 'fixed inset-0 z-[9999]' : 'relative w-full h-full'}`}>
                   {/* YouTube player host — the IFrame API injects the iframe here */}
                   <div ref={hostRef} className="w-full h-full [&>iframe]:w-full [&>iframe]:h-full" />
                   {/* App control overlay — blocks all direct interaction with the YouTube player */}
-                  <div className="absolute inset-0 z-10 flex flex-col">
-                    {/* Progress bar */}
-                    <div className="h-1 w-full bg-zinc-700/60">
-                      <div className="h-full bg-[#c7af48] transition-all duration-300" style={{ width: `${videoProgress}%` }} />
-                    </div>
-                    {/* Center play/pause */}
-                    <div className="flex-1 flex items-center justify-center" onClick={togglePlayPause}>
+                  <div className="absolute inset-0 z-10">
+                    {/* Center play/pause (exactly centered) */}
+                    <div className="absolute inset-0 flex items-center justify-center" onClick={togglePlayPause}>
                       {!isPlaying && (
                         <button
                           type="button"
@@ -670,12 +739,23 @@ export default function CourseView() {
                         </button>
                       )}
                     </div>
-                    {/* Fullscreen toggle */}
-                    <div className="flex justify-end p-2">
+                    {/* Bottom controls: seek bar + fullscreen */}
+                    <div className="absolute bottom-0 left-0 right-0 px-2 pb-2 pt-6 flex items-center gap-2 bg-gradient-to-t from-black/80 to-transparent" dir="ltr">
+                      <span className="text-white text-xs tabular-nums w-10 text-right">{formatTime(videoTime)}</span>
+                      <div
+                        ref={seekBarRef}
+                        className="flex-1 h-2 bg-zinc-700 rounded-full cursor-pointer relative touch-none"
+                        onPointerDown={onSeekPointerDown}
+                        onPointerMove={onSeekPointerMove}
+                        onPointerUp={onSeekPointerUp}
+                      >
+                        <div className="absolute inset-y-0 left-0 bg-[#c7af48] rounded-full" style={{ width: `${videoProgress}%` }} />
+                      </div>
+                      <span className="text-white text-xs tabular-nums w-10">{formatTime(videoDuration)}</span>
                       <button
                         type="button"
                         onClick={toggleFullscreen}
-                        className="w-9 h-9 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors"
+                        className="w-9 h-9 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors shrink-0"
                       >
                         {fsMode ? <Minimize2 className="w-5 h-5 text-white" /> : <Maximize2 className="w-5 h-5 text-white" />}
                       </button>
