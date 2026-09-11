@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   PlayCircle, 
   CheckCircle2, 
+  Check,
   ChevronDown, 
   ChevronUp,
   ArrowLeft,
@@ -647,23 +648,23 @@ export default function CourseView() {
                                     }`}
                                   >
                                     <div className={`w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center shrink-0 ${
-                                      isCompleted ? 'bg-green-500' : isCurrent ? 'bg-[#c7af48]' : 'bg-zinc-800'
+                                      isCurrent ? 'bg-[#c7af48]' : 'bg-zinc-800'
                                     }`}>
-                                      {isCompleted ? (
-                                        <CheckCircle2 className="w-3 h-3 lg:w-4 lg:h-4 text-white" />
-                                      ) : lesson.lesson_type === 'external_link' ? (
+                                      {lesson.lesson_type === 'external_link' ? (
                                         <FileText className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" />
                                       ) : (
                                         <span className="text-[10px] lg:text-xs text-white">{lessonIndex + 1}</span>
                                       )}
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                      <div className="flex items-center gap-1">
-                                        <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-gray-300'} break-words text-sm`}>
-                                          {lesson.title}
-                                        </p>
-                                        {isCompleted && <CheckCircle2 className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-green-500 shrink-0" />}
+                                    {isCompleted && (
+                                      <div className="w-4 h-4 lg:w-5 lg:h-5 rounded-full bg-[#105330] flex items-center justify-center shrink-0">
+                                        <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" strokeWidth={3} />
                                       </div>
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                      <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-gray-300'} break-words text-sm`}>
+                                        {lesson.title}
+                                      </p>
                                       {lesson.duration && <p className="text-gray-600 text-xs">{lesson.duration}</p>}
                                     </div>
                                   </button>
@@ -873,23 +874,23 @@ export default function CourseView() {
                               }`}
                             >
                               <div className={`w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center shrink-0 ${
-                                isCompleted ? 'bg-green-500' : isCurrent ? 'bg-[#c7af48]' : 'bg-zinc-800'
+                                isCurrent ? 'bg-[#c7af48]' : 'bg-zinc-800'
                               }`}>
-                                {isCompleted ? (
-                                  <CheckCircle2 className="w-3 h-3 lg:w-4 lg:h-4 text-white" />
-                                ) : lesson.lesson_type === 'external_link' ? (
+                                {lesson.lesson_type === 'external_link' ? (
                                   <FileText className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" />
                                 ) : (
                                   <span className="text-[10px] lg:text-xs text-white">{lessonIndex + 1}</span>
                                 )}
                               </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-1">
-                                  <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-gray-300'} break-words text-sm`}>
-                                    {lesson.title}
-                                  </p>
-                                  {isCompleted && <CheckCircle2 className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-green-500 shrink-0" />}
+                              {isCompleted && (
+                                <div className="w-4 h-4 lg:w-5 lg:h-5 rounded-full bg-[#105330] flex items-center justify-center shrink-0">
+                                  <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" strokeWidth={3} />
                                 </div>
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-gray-300'} break-words text-sm`}>
+                                  {lesson.title}
+                                </p>
                                 {lesson.duration && <p className="text-gray-600 text-xs">{lesson.duration}</p>}
                               </div>
                             </button>
