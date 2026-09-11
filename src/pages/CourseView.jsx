@@ -28,6 +28,8 @@ export default function CourseView() {
   const [courseContentOpen, setCourseContentOpen] = useState(false);
 
   const playerRef = useRef(null);
+  const ytApiPlayerRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
   const queryClient = useQueryClient();
   const progressUpdateInterval = useRef(null);
   const initialLessonSet = useRef(false);
@@ -240,6 +242,17 @@ export default function CourseView() {
     }
   }, [currentLesson, isAdmin, getNextLesson, markCompleteMutation]);
 
+  const togglePlayPause = useCallback(() => {
+    const p = ytApiPlayerRef.current;
+    if (!p || !window.YT) return;
+    const state = p.getPlayerState();
+    if (state === window.YT.PlayerState.PLAYING) {
+      p.pauseVideo();
+    } else {
+      p.playVideo();
+    }
+  }, []);
+
   // YouTube progress tracking — uses the official YouTube IFrame Player API
   // to reliably detect when a video actually starts playing (state PLAYING).
   useEffect(() => {
@@ -267,10 +280,14 @@ export default function CourseView() {
           onStateChange: (event) => {
             if (event.data === window.YT.PlayerState.PLAYING) {
               markComplete();
+              setIsPlaying(true);
+            } else if (event.data === window.YT.PlayerState.PAUSED || event.data === window.YT.PlayerState.ENDED) {
+              setIsPlaying(false);
             }
           },
         },
       });
+      ytApiPlayerRef.current = ytPlayer;
     };
 
     if (window.YT && window.YT.Player) {
@@ -291,6 +308,8 @@ export default function CourseView() {
 
     return () => {
       cancelled = true;
+      ytApiPlayerRef.current = null;
+      setIsPlaying(false);
       if (ytPlayer && typeof ytPlayer.destroy === 'function') {
         try { ytPlayer.destroy(); } catch {}
       }
@@ -545,15 +564,32 @@ export default function CourseView() {
               )
             ) : (
               extractYouTubeId(currentLesson.youtube_url) ? (
-                <iframe
-                  key={currentLesson.id}
-                  id="yt-iframe-player"
-                  ref={playerRef}
-                  src={`https://www.youtube.com/embed/${extractYouTubeId(currentLesson.youtube_url)}?enablejsapi=1&rel=0&modestbranding=1&origin=${encodeURIComponent(window.location.origin)}`}
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+                <div className="relative w-full h-full bg-black">
+                  <iframe
+                    key={currentLesson.id}
+                    id="yt-iframe-player"
+                    ref={playerRef}
+                    src={`https://www.youtube.com/embed/${extractYouTubeId(currentLesson.youtube_url)}?enablejsapi=1&rel=0&modestbranding=1&controls=0&disablekb=1&iv_load_policy=3&fs=0&playsinline=1&origin=${encodeURIComponent(window.location.origin)}`}
+                    className="w-full h-full pointer-events-none"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                  {/* Overlay blocks all direct interaction with the YouTube player */}
+                  <div
+                    className="absolute inset-0 z-10 flex items-center justify-center"
+                    onClick={togglePlayPause}
+                  >
+                    {!isPlaying && (
+                      <button
+                        type="button"
+                        className="w-16 h-16 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center hover:bg-black/80 transition-colors"
+                        onClick={(e) => { e.stopPropagation(); togglePlayPause(); }}
+                      >
+                        <PlayCircle className="w-10 h-10 text-white" />
+                      </button>
+                    )}
+                  </div>
+                </div>
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <p className="text-gray-400">סרטון לא זמין לשיעור זה</p>
