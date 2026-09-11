@@ -11,7 +11,9 @@ import {
   Lock,
   BookOpen,
   FileText,
-  ExternalLink
+  ExternalLink,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
@@ -29,7 +31,10 @@ export default function CourseView() {
 
   const playerRef = useRef(null);
   const ytApiPlayerRef = useRef(null);
+  const hostRef = useRef(null);
+  const videoWrapperRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [fsMode, setFsMode] = useState(null);
   const queryClient = useQueryClient();
   const progressUpdateInterval = useRef(null);
   const initialLessonSet = useRef(false);
@@ -253,36 +258,106 @@ export default function CourseView() {
     }
   }, []);
 
-  // YouTube progress tracking — uses the official YouTube IFrame Player API
-  // to reliably detect when a video actually starts playing (state PLAYING).
+  const toggleFullscreen = useCallback(() => {
+    const el = videoWrapperRef.current;
+    if (!el) return;
+    if (fsMode === 'native') {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      return;
+    }
+    if (fsMode === 'pseudo') {
+      setFsMode(null);
+      return;
+    }
+    if (el.requestFullscreen) {
+      el.requestFullscreen().catch(() => setFsMode('pseudo'));
+    } else if (el.webkitRequestFullscreen) {
+      el.webkitRequestFullscreen();
+    } else {
+      setFsMode('pseudo');
+    }
+  }, [fsMode]);
+
+  // Sync native fullscreen state + reset on lesson change
+  useEffect(() => {
+    const onFsChange = () => {
+      const inNative = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      setFsMode(prev => inNative ? 'native' : (prev === 'native' ? null : prev));
+    };
+    document.addEventListener('fullscreenchange', onFsChange);
+    document.addEventListener('webkitfullscreenchange', onFsChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', onFsChange);
+      document.removeEventListener('webkitfullscreenchange', onFsChange);
+    };
+  }, []);
+
+  useEffect(() => { setFsMode(null); }, [currentLesson?.id]);
+
+  // YouTube player — uses the official IFrame Player API inside a host div
+  // (React never owns the iframe, avoiding reconciliation conflicts) to
+  // reliably control playback, track progress, and detect when a video plays.
   useEffect(() => {
     if (!currentLesson || currentLesson.lesson_type === 'external_link') return;
-    if (!extractYouTubeId(currentLesson.youtube_url)) return;
-    if (isAdmin || !normalizedEmail) return;
+    const videoId = extractYouTubeId(currentLesson.youtube_url);
+    if (!videoId) return;
 
     const lessonId = currentLesson.id;
     let cancelled = false;
     let markedComplete = false;
     let ytPlayer = null;
+    let pollInterval = null;
 
     const markComplete = () => {
-      if (markedComplete) return;
+      if (markedComplete || isAdmin || !normalizedEmail) return;
       markedComplete = true;
       updateProgressMutationRef.current?.mutate({ lessonId, progressPercent: 100, completed: true });
     };
 
     const createPlayer = () => {
       if (cancelled) return;
-      const el = document.getElementById('yt-iframe-player');
-      if (!el || !window.YT || !window.YT.Player) return;
-      ytPlayer = new window.YT.Player(el, {
+      const host = hostRef.current;
+      if (!host || !window.YT || !window.YT.Player) return;
+      host.innerHTML = '';
+      const playerDiv = document.createElement('div');
+      host.appendChild(playerDiv);
+      ytPlayer = new window.YT.Player(playerDiv, {
+        width: '100%',
+        height: '100%',
+        videoId,
+        playerVars: {
+          rel: 0,
+          modestbranding: 1,
+          controls: 0,
+          disablekb: 1,
+          iv_load_policy: 3,
+          fs: 0,
+          playsinline: 1,
+          origin: window.location.origin,
+        },
         events: {
+          onReady: () => {
+            pollInterval = setInterval(() => {
+              if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return;
+              try {
+                const cur = ytPlayer.getCurrentTime();
+                const dur = ytPlayer.getDuration();
+                if (dur > 0) {
+                  setVideoProgress(Math.min(100, Math.round((cur / dur) * 100)));
+                }
+              } catch {}
+            }, 500);
+          },
           onStateChange: (event) => {
             if (event.data === window.YT.PlayerState.PLAYING) {
               markComplete();
               setIsPlaying(true);
-            } else if (event.data === window.YT.PlayerState.PAUSED || event.data === window.YT.PlayerState.ENDED) {
+            } else if (event.data === window.YT.PlayerState.PAUSED) {
               setIsPlaying(false);
+            } else if (event.data === window.YT.PlayerState.ENDED) {
+              setIsPlaying(false);
+              setVideoProgress(100);
             }
           },
         },
@@ -308,11 +383,14 @@ export default function CourseView() {
 
     return () => {
       cancelled = true;
+      if (pollInterval) clearInterval(pollInterval);
       ytApiPlayerRef.current = null;
       setIsPlaying(false);
+      setVideoProgress(0);
       if (ytPlayer && typeof ytPlayer.destroy === 'function') {
         try { ytPlayer.destroy(); } catch {}
       }
+      if (hostRef.current) hostRef.current.innerHTML = '';
     };
   }, [currentLesson?.id, isAdmin, normalizedEmail]);
 
@@ -391,6 +469,13 @@ export default function CourseView() {
 
   return (
     <div className="min-h-screen bg-black" dir="rtl">
+      <style>{`
+        :fullscreen, :-webkit-full-screen {
+          width: 100% !important;
+          height: 100% !important;
+          background: #000;
+        }
+      `}</style>
       {/* Header */}
       <div className="sticky top-0 z-40 glass-effect border-b border-zinc-800 px-4 py-3 lg:px-6">
         <div className="flex items-center justify-between">
@@ -564,30 +649,37 @@ export default function CourseView() {
               )
             ) : (
               extractYouTubeId(currentLesson.youtube_url) ? (
-                <div className="relative w-full h-full bg-black">
-                  <iframe
-                    key={currentLesson.id}
-                    id="yt-iframe-player"
-                    ref={playerRef}
-                    src={`https://www.youtube.com/embed/${extractYouTubeId(currentLesson.youtube_url)}?enablejsapi=1&rel=0&modestbranding=1&controls=0&disablekb=1&iv_load_policy=3&fs=0&playsinline=1&origin=${encodeURIComponent(window.location.origin)}`}
-                    className="w-full h-full pointer-events-none"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                  {/* Overlay blocks all direct interaction with the YouTube player */}
-                  <div
-                    className="absolute inset-0 z-10 flex items-center justify-center"
-                    onClick={togglePlayPause}
-                  >
-                    {!isPlaying && (
+                <div ref={videoWrapperRef} className={`relative w-full h-full bg-black ${fsMode === 'pseudo' ? 'fixed inset-0 z-[60]' : ''}`}>
+                  {/* YouTube player host — the IFrame API injects the iframe here */}
+                  <div ref={hostRef} className="w-full h-full [&>iframe]:w-full [&>iframe]:h-full" />
+                  {/* App control overlay — blocks all direct interaction with the YouTube player */}
+                  <div className="absolute inset-0 z-10 flex flex-col">
+                    {/* Progress bar */}
+                    <div className="h-1 w-full bg-zinc-700/60">
+                      <div className="h-full bg-[#c7af48] transition-all duration-300" style={{ width: `${videoProgress}%` }} />
+                    </div>
+                    {/* Center play/pause */}
+                    <div className="flex-1 flex items-center justify-center" onClick={togglePlayPause}>
+                      {!isPlaying && (
+                        <button
+                          type="button"
+                          className="w-16 h-16 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center hover:bg-black/80 transition-colors"
+                          onClick={(e) => { e.stopPropagation(); togglePlayPause(); }}
+                        >
+                          <PlayCircle className="w-10 h-10 text-white" />
+                        </button>
+                      )}
+                    </div>
+                    {/* Fullscreen toggle */}
+                    <div className="flex justify-end p-2">
                       <button
                         type="button"
-                        className="w-16 h-16 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center hover:bg-black/80 transition-colors"
-                        onClick={(e) => { e.stopPropagation(); togglePlayPause(); }}
+                        onClick={toggleFullscreen}
+                        className="w-9 h-9 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors"
                       >
-                        <PlayCircle className="w-10 h-10 text-white" />
+                        {fsMode ? <Minimize2 className="w-5 h-5 text-white" /> : <Maximize2 className="w-5 h-5 text-white" />}
                       </button>
-                    )}
+                    </div>
                   </div>
                 </div>
               ) : (
