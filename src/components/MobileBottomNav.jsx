@@ -115,7 +115,7 @@ export default function MobileBottomNav() {
 
   return (
     <nav
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-zinc-950 border-t border-zinc-800 flex"
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-sidebar border-t border-border flex"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       {tabs.map((tab) => {
@@ -126,7 +126,7 @@ export default function MobileBottomNav() {
             onClick={() => handleTabPress(tab)}
             aria-label={tab.label}
             className={`flex-1 flex flex-col items-center justify-center gap-1 transition-colors min-h-[56px] py-2 ${
-              isActive ? 'text-[#c7af48]' : 'text-gray-500'
+              isActive ? 'text-[#c7af48]' : 'text-muted-foreground'
             }`}
           >
             <tab.icon className="w-5 h-5" />

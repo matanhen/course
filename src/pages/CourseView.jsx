@@ -479,7 +479,7 @@ export default function CourseView() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
       </div>
     );
@@ -489,13 +489,13 @@ export default function CourseView() {
 
   if (!hasAccess) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center" dir="rtl">
+      <div className="min-h-screen bg-background flex items-center justify-center" dir="rtl">
         <div className="text-center max-w-md px-6">
           <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <Lock className="w-10 h-10 text-red-500" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-4">אין לך גישה לקורס זה</h1>
-          <p className="text-gray-400 mb-8">קורס זה אינו זמין עבורך. פנה למנהל המערכת לקבלת גישה.</p>
+          <h1 className="text-2xl font-bold text-foreground mb-4">אין לך גישה לקורס זה</h1>
+          <p className="text-muted-foreground mb-8">קורס זה אינו זמין עבורך. פנה למנהל המערכת לקבלת גישה.</p>
           <Link to={createPageUrl('Home')}>
             <Button className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold">
               חזור לקורסים שלי
@@ -508,7 +508,7 @@ export default function CourseView() {
 
   if (!course) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
       </div>
     );
@@ -520,7 +520,7 @@ export default function CourseView() {
   const nextLesson = getNextLesson();
 
   return (
-    <div className="min-h-screen bg-black" dir="rtl">
+    <div className="min-h-screen bg-background" dir="rtl">
       <style>{`
         :fullscreen, :-webkit-full-screen {
           width: 100% !important;
@@ -529,20 +529,20 @@ export default function CourseView() {
         }
       `}</style>
       {/* Header */}
-      <div className="sticky top-0 z-40 glass-effect border-b border-zinc-800 px-4 py-3 lg:px-6">
+      <div className="sticky top-0 z-40 glass-effect border-b border-border px-4 py-3 lg:px-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to={createPageUrl('Home')}>
-              <Button variant="ghost" size="icon" aria-label="חזרה" className="text-gray-400 hover:text-white min-w-[44px] min-h-[44px]">
+              <Button variant="ghost" size="icon" aria-label="חזרה" className="text-muted-foreground hover:text-foreground min-w-[44px] min-h-[44px]">
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
             <div>
-              <h1 className="text-white font-bold truncate max-w-[200px] lg:max-w-none">
+              <h1 className="text-foreground font-bold truncate max-w-[200px] lg:max-w-none">
                 {course.title}
               </h1>
               {!isAdmin && (
-                <p className="text-gray-500 text-sm">
+                <p className="text-muted-foreground text-sm">
                   {completedCount}/{totalCount} שיעורים הושלמו
                 </p>
               )}
@@ -550,7 +550,7 @@ export default function CourseView() {
           </div>
           {!isAdmin && totalCount > 0 && (
             <div className="hidden lg:flex items-center gap-2">
-              <div className="h-2 w-32 bg-zinc-800 rounded-full overflow-hidden">
+              <div className="h-2 w-32 bg-secondary rounded-full overflow-hidden">
                 <div className="h-full bg-[#c7af48] transition-all duration-500" style={{ width: `${progressPercent}%` }} />
               </div>
               <span className="text-[#c7af48] font-medium text-sm">{progressPercent}%</span>
@@ -560,7 +560,7 @@ export default function CourseView() {
       </div>
 
       {course.external_button_url && (
-        <div className="bg-zinc-950 border-b border-zinc-800 px-4 py-2">
+        <div className="bg-sidebar border-b border-border px-4 py-2">
           <a
             href={course.external_button_url}
             target="_blank"
@@ -577,10 +577,10 @@ export default function CourseView() {
         {/* Main content area */}
         <div className="flex-1 lg:mr-96">
           {/* Course content toggle button */}
-          <div className="px-4 py-2 bg-zinc-950 border-b border-zinc-800 flex items-center justify-center lg:justify-start gap-2">
+          <div className="px-4 py-2 bg-sidebar border-b border-border flex items-center justify-center lg:justify-start gap-2">
             <button
               onClick={() => setCourseContentOpen(prev => !prev)}
-              className="flex items-center gap-2 bg-[#105330] text-white hover:bg-[#0a3d20] px-3 py-1.5 rounded-lg transition-colors font-medium text-sm focus-visible:ring-2 focus-visible:ring-[#c7af48]"
+              className="flex items-center gap-2 bg-[#105330] text-foreground hover:bg-[#0a3d20] px-3 py-1.5 rounded-lg transition-colors font-medium text-sm focus-visible:ring-2 focus-visible:ring-[#c7af48]"
             >
               <BookOpen className="w-4 h-4" />
               <span>תוכן הקורס</span>
@@ -597,7 +597,7 @@ export default function CourseView() {
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.25 }}
-                className="overflow-hidden bg-zinc-950 border-b border-zinc-800"
+                className="overflow-hidden bg-sidebar border-b border-border"
               >
                 <div className="divide-y divide-zinc-800 max-h-[60vh] overflow-y-auto overscroll-behavior-none">
                   {sortedChapters.map((chapter, chapterIndex) => {
@@ -609,18 +609,18 @@ export default function CourseView() {
                       <div key={chapter.id}>
                         <button
                           onClick={() => setExpandedChapters(prev => ({ ...prev, [chapter.id]: !prev[chapter.id] }))}
-                          className="w-full p-2 lg:p-4 flex items-center justify-between hover:bg-zinc-900/50 transition-colors focus-visible:ring-2 focus-visible:ring-[#c7af48]"
+                          className="w-full p-2 lg:p-4 flex items-center justify-between hover:bg-card/50 transition-colors focus-visible:ring-2 focus-visible:ring-[#c7af48]"
                         >
                           <div className="flex items-center gap-2 lg:gap-3">
                             <div className="w-6 h-6 lg:w-7 lg:h-7 rounded-lg bg-[#c7af48]/10 flex items-center justify-center shrink-0">
                               <span className="text-[#c7af48] font-bold text-xs">{chapterIndex + 1}</span>
                             </div>
                             <div className="text-right">
-                              <h4 className="text-white font-medium text-sm">{chapter.title}</h4>
-                              <p className="text-gray-500 text-sm">{chapterCompletedCount}/{chapterLessons.length} הושלמו</p>
+                              <h4 className="text-foreground font-medium text-sm">{chapter.title}</h4>
+                              <p className="text-muted-foreground text-sm">{chapterCompletedCount}/{chapterLessons.length} הושלמו</p>
                             </div>
                           </div>
-                          {isExpanded ? <ChevronUp className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-gray-500 shrink-0" /> : <ChevronDown className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-gray-500 shrink-0" />}
+                          {isExpanded ? <ChevronUp className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-muted-foreground shrink-0" /> : <ChevronDown className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-muted-foreground shrink-0" />}
                         </button>
 
                         <AnimatePresence initial={false}>
@@ -631,7 +631,7 @@ export default function CourseView() {
                               animate={{ height: 'auto', opacity: 1 }}
                               exit={{ height: 0, opacity: 0 }}
                               transition={{ duration: 0.15 }}
-                              className="overflow-hidden bg-zinc-900/30"
+                              className="overflow-hidden bg-card/30"
                             >
                               {chapterLessons.map((lesson, lessonIndex) => {
                                 const isCompleted = isLessonCompleted(lesson.id);
@@ -644,21 +644,21 @@ export default function CourseView() {
                                     className={`w-full p-3 pr-8 lg:p-3 lg:pr-10 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right focus-visible:ring-2 focus-visible:ring-[#c7af48] ${
                                       isCurrent
                                         ? 'bg-[#c7af48]/10 border-r-2 border-[#c7af48]'
-                                        : 'hover:bg-zinc-800/50'
+                                        : 'hover:bg-secondary/50'
                                     }`}
                                   >
                                     <div className={`w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center shrink-0 ${
-                                      isCurrent ? 'bg-[#c7af48]' : 'bg-zinc-800'
+                                      isCurrent ? 'bg-[#c7af48]' : 'bg-secondary'
                                     }`}>
                                       {lesson.lesson_type === 'external_link' ? (
-                                        <FileText className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" />
+                                        <FileText className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-foreground" />
                                       ) : (
-                                        <span className="text-xs text-white">{lessonIndex + 1}</span>
+                                        <span className="text-xs text-foreground">{lessonIndex + 1}</span>
                                       )}
                                     </div>
                                     {isCompleted && (
                                       <div className="w-4 h-4 lg:w-5 lg:h-5 rounded-full bg-[#105330] flex items-center justify-center shrink-0">
-                                        <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" strokeWidth={3} />
+                                        <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-foreground" strokeWidth={3} />
                                       </div>
                                     )}
                                     <div className="flex-1 min-w-0">
@@ -682,7 +682,7 @@ export default function CourseView() {
           </AnimatePresence>
 
           {/* Video / Document player */}
-          <div className={`relative bg-zinc-900 ${currentLesson?.lesson_type === 'external_link' ? 'min-h-[60vh]' : 'aspect-video'}`}>
+          <div className={`relative bg-card ${currentLesson?.lesson_type === 'external_link' ? 'min-h-[60vh]' : 'aspect-video'}`}>
             {!currentLesson ? (
               <div className="w-full h-full flex items-center justify-center">
                 <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#c7af48]"></div>
@@ -699,12 +699,12 @@ export default function CourseView() {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <p className="text-gray-400">קישור לא זמין לשיעור זה</p>
+                  <p className="text-muted-foreground">קישור לא זמין לשיעור זה</p>
                 </div>
               )
             ) : (
               extractYouTubeId(currentLesson.youtube_url) ? (
-                <div ref={videoWrapperRef} className={`bg-black ${fsMode === 'pseudo' ? 'fixed inset-0 z-[9999]' : 'relative w-full h-full'}`}>
+                <div ref={videoWrapperRef} className={`bg-background ${fsMode === 'pseudo' ? 'fixed inset-0 z-[9999]' : 'relative w-full h-full'}`}>
                   {/* YouTube player host — the IFrame API injects the iframe here */}
                   <div ref={hostRef} className="w-full h-full [&>iframe]:w-full [&>iframe]:h-full" />
                   {/* App control overlay — blocks all direct interaction with the YouTube player */}
@@ -715,16 +715,16 @@ export default function CourseView() {
                         <button
                           type="button"
                           aria-label={isPlaying ? "השהה" : "נגן"}
-                          className="w-16 h-16 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center hover:bg-black/80 transition-colors"
+                          className="w-16 h-16 rounded-full bg-background/60 backdrop-blur-sm flex items-center justify-center hover:bg-background/80 transition-colors"
                           onClick={(e) => { e.stopPropagation(); togglePlayPause(); }}
                         >
-                          <PlayCircle className="w-10 h-10 text-white" />
+                          <PlayCircle className="w-10 h-10 text-foreground" />
                         </button>
                       )}
                     </div>
                     {/* Bottom controls: seek bar, speed, fullscreen */}
                     <div className="absolute bottom-0 left-0 right-0 px-2 pb-2 pt-6 flex items-center gap-2 bg-gradient-to-t from-black/80 to-transparent" dir="ltr">
-                      <span className="text-white text-xs tabular-nums w-10 text-right shrink-0">{formatTime(videoTime)}</span>
+                      <span className="text-foreground text-xs tabular-nums w-10 text-right shrink-0">{formatTime(videoTime)}</span>
                       <div
                         ref={seekBarRef}
                         tabIndex={0}
@@ -735,25 +735,25 @@ export default function CourseView() {
                       >
                         <div className="absolute inset-y-0 left-0 bg-[#c7af48] rounded-full" style={{ width: `${videoProgress}%` }} />
                       </div>
-                      <span className="text-white text-xs tabular-nums w-10 shrink-0">{formatTime(videoDuration)}</span>
+                      <span className="text-foreground text-xs tabular-nums w-10 shrink-0">{formatTime(videoDuration)}</span>
                       <div className="relative shrink-0">
                         {speedMenuOpen && <div className="fixed inset-0 z-20" onClick={() => setSpeedMenuOpen(false)} />}
                         <button
                           type="button"
                           onClick={() => setSpeedMenuOpen(o => !o)}
                           aria-label="מהירות נגינה"
-                          className="h-9 px-2 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors text-white text-xs font-medium focus-visible:ring-2 focus-visible:ring-[#c7af48]"
+                          className="h-9 px-2 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors text-foreground text-xs font-medium focus-visible:ring-2 focus-visible:ring-[#c7af48]"
                         >
                           {playbackRate}x
                         </button>
                         {speedMenuOpen && (
-                          <div className="absolute bottom-10 right-0 z-30 bg-zinc-900 rounded-lg overflow-hidden border border-zinc-700 shadow-xl min-w-[64px]">
+                          <div className="absolute bottom-10 right-0 z-30 bg-card rounded-lg overflow-hidden border border-border shadow-xl min-w-[64px]">
                             {[1, 1.25, 1.5, 1.75, 2].map(r => (
                               <button
                                 key={r}
                                 type="button"
                                 onClick={() => changeRate(r)}
-                                className={`block w-full px-3 py-2 text-xs text-white hover:bg-zinc-800 transition-colors text-center ${r === playbackRate ? 'bg-[#c7af48]/20 text-[#c7af48]' : ''}`}
+                                className={`block w-full px-3 py-2 text-xs text-foreground hover:bg-secondary transition-colors text-center ${r === playbackRate ? 'bg-[#c7af48]/20 text-[#c7af48]' : ''}`}
                               >
                                 {r}x
                               </button>
@@ -765,16 +765,16 @@ export default function CourseView() {
                         type="button"
                         aria-label={fsMode ? "צא ממסך מלא" : "מסך מלא"}
                         onClick={toggleFullscreen}
-                        className="w-9 h-9 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[#c7af48]"
+                        className="w-9 h-9 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[#c7af48]"
                       >
-                        {fsMode ? <Minimize2 className="w-5 h-5 text-white" /> : <Maximize2 className="w-5 h-5 text-white" />}
+                        {fsMode ? <Minimize2 className="w-5 h-5 text-foreground" /> : <Maximize2 className="w-5 h-5 text-foreground" />}
                       </button>
                     </div>
                   </div>
                 </div>
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <p className="text-gray-400">סרטון לא זמין לשיעור זה</p>
+                  <p className="text-muted-foreground">סרטון לא זמין לשיעור זה</p>
                 </div>
               )
             )}
@@ -782,13 +782,13 @@ export default function CourseView() {
 
           {/* Lesson info */}
           {currentLesson && (
-            <div className="p-6 border-b border-zinc-800">
-              <div className="p-4 bg-zinc-900/50 rounded-xl border border-white mb-6">
-                <p className="text-white text-sm mb-2">השיעור הנוכחי</p>
+            <div className="p-6 border-b border-border">
+              <div className="p-4 bg-card/50 rounded-xl border border-white mb-6">
+                <p className="text-foreground text-sm mb-2">השיעור הנוכחי</p>
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h2 className="text-base lg:text-2xl font-bold text-white mb-2">{currentLesson.title}</h2>
-                    {currentLesson.duration && <p className="text-gray-500">משך: {currentLesson.duration}</p>}
+                    <h2 className="text-base lg:text-2xl font-bold text-foreground mb-2">{currentLesson.title}</h2>
+                    {currentLesson.duration && <p className="text-muted-foreground">משך: {currentLesson.duration}</p>}
                   </div>
                   {!isAdmin && (
                     <Button
@@ -805,11 +805,11 @@ export default function CourseView() {
               </div>
 
               {nextLesson && (
-                <div className="mt-6 p-4 bg-zinc-900/50 rounded-xl border border-white">
-                  <p className="text-white text-sm mb-2">השיעור הבא</p>
+                <div className="mt-6 p-4 bg-card/50 rounded-xl border border-white">
+                  <p className="text-foreground text-sm mb-2">השיעור הבא</p>
                   <button
                     onClick={() => selectLesson(nextLesson)}
-                    className="w-full flex items-center gap-3 bg-[#105330] hover:bg-[#0a3d20] text-white font-bold rounded-lg px-4 py-3 transition-colors"
+                    className="w-full flex items-center gap-3 bg-[#105330] hover:bg-[#0a3d20] text-foreground font-bold rounded-lg px-4 py-3 transition-colors"
                   >
                     <PlayCircle className="w-5 h-5 shrink-0" />
                     <span className="text-right flex-1">{nextLesson.title}</span>
@@ -821,10 +821,10 @@ export default function CourseView() {
         </div>
 
         {/* Sidebar */}
-        <aside className="lg:fixed lg:right-0 lg:top-[57px] lg:bottom-0 lg:w-96 bg-zinc-950 border-l border-zinc-800 overflow-y-auto overscroll-behavior-none">
-          <div className="p-4 border-b border-zinc-800 sticky top-0 bg-zinc-950 z-10">
-            <h3 className="font-bold text-white">תוכן הקורס</h3>
-            <p className="text-gray-500 text-sm mt-1">
+        <aside className="lg:fixed lg:right-0 lg:top-[57px] lg:bottom-0 lg:w-96 bg-sidebar border-l border-border overflow-y-auto overscroll-behavior-none">
+          <div className="p-4 border-b border-border sticky top-0 bg-sidebar z-10">
+            <h3 className="font-bold text-foreground">תוכן הקורס</h3>
+            <p className="text-muted-foreground text-sm mt-1">
               {sortedChapters.length} פרקים • {lessons.length} שיעורים
             </p>
           </div>
@@ -839,18 +839,18 @@ export default function CourseView() {
                 <div key={chapter.id}>
                   <button
                     onClick={() => setExpandedChapters(prev => ({ ...prev, [chapter.id]: !prev[chapter.id] }))}
-                    className="w-full p-2 lg:p-4 flex items-center justify-between hover:bg-zinc-900/50 transition-colors focus-visible:ring-2 focus-visible:ring-[#c7af48]"
+                    className="w-full p-2 lg:p-4 flex items-center justify-between hover:bg-card/50 transition-colors focus-visible:ring-2 focus-visible:ring-[#c7af48]"
                   >
                     <div className="flex items-center gap-2 lg:gap-3">
                       <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-lg bg-[#c7af48]/10 flex items-center justify-center">
                         <span className="text-[#c7af48] font-bold text-xs lg:text-sm">{chapterIndex + 1}</span>
                       </div>
                       <div className="text-right">
-                        <h4 className="text-white font-medium text-sm lg:text-base">{chapter.title}</h4>
-                        <p className="text-gray-500 text-sm">{chapterCompletedCount}/{chapterLessons.length} הושלמו</p>
+                        <h4 className="text-foreground font-medium text-sm lg:text-base">{chapter.title}</h4>
+                        <p className="text-muted-foreground text-sm">{chapterCompletedCount}/{chapterLessons.length} הושלמו</p>
                       </div>
                     </div>
-                    {isExpanded ? <ChevronUp className="w-4 h-4 lg:w-5 lg:h-5 text-gray-500" /> : <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5 text-gray-500" />}
+                    {isExpanded ? <ChevronUp className="w-4 h-4 lg:w-5 lg:h-5 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5 text-muted-foreground" />}
                   </button>
 
                   <AnimatePresence initial={false}>
@@ -861,7 +861,7 @@ export default function CourseView() {
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="overflow-hidden bg-zinc-900/30"
+                        className="overflow-hidden bg-card/30"
                       >
                         {chapterLessons.map((lesson, lessonIndex) => {
                           const isCompleted = isLessonCompleted(lesson.id);
@@ -874,21 +874,21 @@ export default function CourseView() {
                               className={`w-full p-3 pr-8 lg:p-4 lg:pr-12 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right focus-visible:ring-2 focus-visible:ring-[#c7af48] ${
                                 isCurrent
                                   ? 'bg-[#c7af48]/10 border-r-2 border-[#c7af48]'
-                                  : 'hover:bg-zinc-800/50'
+                                  : 'hover:bg-secondary/50'
                               }`}
                             >
                               <div className={`w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center shrink-0 ${
-                                isCurrent ? 'bg-[#c7af48]' : 'bg-zinc-800'
+                                isCurrent ? 'bg-[#c7af48]' : 'bg-secondary'
                               }`}>
                                 {lesson.lesson_type === 'external_link' ? (
-                                  <FileText className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" />
+                                  <FileText className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-foreground" />
                                 ) : (
-                                  <span className="text-xs text-white">{lessonIndex + 1}</span>
+                                  <span className="text-xs text-foreground">{lessonIndex + 1}</span>
                                 )}
                               </div>
                               {isCompleted && (
                                 <div className="w-4 h-4 lg:w-5 lg:h-5 rounded-full bg-[#105330] flex items-center justify-center shrink-0">
-                                  <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" strokeWidth={3} />
+                                  <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-foreground" strokeWidth={3} />
                                 </div>
                               )}
                               <div className="flex-1 min-w-0">

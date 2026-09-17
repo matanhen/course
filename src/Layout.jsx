@@ -160,7 +160,7 @@ export default function Layout({ children, currentPageName }) {
 
   if (isAllowed === null || !user) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center" dir="rtl">
+      <div className="min-h-screen bg-background flex items-center justify-center" dir="rtl">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
       </div>
     );
@@ -168,13 +168,13 @@ export default function Layout({ children, currentPageName }) {
 
   if (!isAllowed && !isAdmin) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center" dir="rtl">
+      <div className="min-h-screen bg-background flex items-center justify-center" dir="rtl">
         <div className="text-center max-w-md px-6">
           <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <X className="w-10 h-10 text-red-500" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-4">אין לך הרשאה</h1>
-          <p className="text-gray-400 mb-8">אין לך הרשאה לגשת למערכת הקורסים. פנה למנהל המערכת.</p>
+          <h1 className="text-2xl font-bold text-foreground mb-4">אין לך הרשאה</h1>
+          <p className="text-muted-foreground mb-8">אין לך הרשאה לגשת למערכת הקורסים. פנה למנהל המערכת.</p>
           <Button 
             onClick={handleLogout}
             variant="outline"
@@ -211,7 +211,7 @@ export default function Layout({ children, currentPageName }) {
   const links = isAdmin ? adminLinks : isManager ? managerLinks : isConsultant ? consultantLinks : userLinks;
 
   return (
-    <div className="min-h-screen bg-black" dir="rtl">
+    <div className="min-h-screen bg-background" dir="rtl">
       <style>{`
         :root {
           --gold: #c7af48;
@@ -256,7 +256,7 @@ export default function Layout({ children, currentPageName }) {
           )}
           <div className="flex items-center gap-2">
             <GraduationCap className="w-6 h-6 text-[#c7af48]" />
-            <span className="font-bold text-white text-sm">האקדמיה של צעירים מתעשרים</span>
+            <span className="font-bold text-foreground text-sm">האקדמיה של צעירים מתעשרים</span>
           </div>
           <div className="w-[44px]" />
         </div>
@@ -270,7 +270,7 @@ export default function Layout({ children, currentPageName }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/80 z-50 lg:hidden"
+              className="fixed inset-0 bg-background/80 z-50 lg:hidden"
               onClick={() => setSidebarOpen(false)}
             />
             <motion.aside
@@ -278,18 +278,18 @@ export default function Layout({ children, currentPageName }) {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 w-72 bg-zinc-950 z-50 lg:hidden border-l border-zinc-800"
+              className="fixed top-0 right-0 bottom-0 w-72 bg-sidebar z-50 lg:hidden border-l border-border"
             >
-              <div className="flex items-center justify-between p-4 border-b border-zinc-800">
+              <div className="flex items-center justify-between p-4 border-b border-border">
                 <div className="flex items-center gap-2">
                   <GraduationCap className="w-6 h-6 text-[#c7af48]" />
-                  <span className="font-bold text-white">האקדמיה של צעירים מתעשרים</span>
+                  <span className="font-bold text-foreground">האקדמיה של צעירים מתעשרים</span>
                 </div>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setSidebarOpen(false)}
-                  className="text-gray-400 min-w-[44px] min-h-[44px]"
+                  className="text-muted-foreground min-w-[44px] min-h-[44px]"
                 >
                   <X className="w-5 h-5" />
                 </Button>
@@ -304,7 +304,7 @@ export default function Layout({ children, currentPageName }) {
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                       currentPageName === link.page
                         ? 'bg-[#c7af48]/10 text-[#c7af48]'
-                        : 'text-gray-400 hover:text-white hover:bg-zinc-900'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-card'
                     }`}
                   >
                     <link.icon className="w-5 h-5" />
@@ -313,7 +313,7 @@ export default function Layout({ children, currentPageName }) {
                 ))}
               </nav>
 
-              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-zinc-800">
+              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
                 <div className="flex items-center gap-3 mb-4 px-2">
                   <div className="w-10 h-10 rounded-full gold-gradient flex items-center justify-center">
                     <span className="text-black font-bold">
@@ -321,14 +321,14 @@ export default function Layout({ children, currentPageName }) {
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white font-medium truncate">{clientName || user?.full_name || user?.email?.split('@')[0] || 'משתמש'}</p>
-                    <p className="text-gray-500 text-sm truncate">{user?.email}</p>
+                    <p className="text-foreground font-medium truncate">{clientName || user?.full_name || user?.email?.split('@')[0] || 'משתמש'}</p>
+                    <p className="text-muted-foreground text-sm truncate">{user?.email}</p>
                   </div>
                 </div>
                 <Button
                   onClick={handleLogout}
                   variant="ghost"
-                  className="w-full justify-start text-gray-400 hover:text-red-400 hover:bg-red-500/10"
+                  className="w-full justify-start text-muted-foreground hover:text-red-400 hover:bg-red-500/10"
                 >
                   <LogOut className="w-5 h-5 ml-2" />
                   התנתק
@@ -343,16 +343,16 @@ export default function Layout({ children, currentPageName }) {
       <MobileBottomNav />
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col fixed top-0 right-0 bottom-0 w-56 bg-zinc-950 border-l border-zinc-800"
+      <aside className="hidden lg:flex flex-col fixed top-0 right-0 bottom-0 w-56 bg-sidebar border-l border-border"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-        <div className="p-6 border-b border-zinc-800">
+        <div className="p-6 border-b border-border">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center">
               <GraduationCap className="w-6 h-6 text-black" />
             </div>
             <div>
-              <h1 className="font-bold text-white text-sm">האקדמיה של צעירים מתעשרים</h1>
-              <p className="text-xs text-gray-500">{isAdmin ? 'ניהול' : isManager ? 'מנהל' : isConsultant ? 'יועץ' : 'לקוח'}</p>
+              <h1 className="font-bold text-foreground text-sm">האקדמיה של צעירים מתעשרים</h1>
+              <p className="text-xs text-muted-foreground">{isAdmin ? 'ניהול' : isManager ? 'מנהל' : isConsultant ? 'יועץ' : 'לקוח'}</p>
             </div>
           </div>
         </div>
@@ -365,7 +365,7 @@ export default function Layout({ children, currentPageName }) {
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 currentPageName === link.page
                   ? 'bg-[#c7af48]/10 text-[#c7af48] border border-[#c7af48]/20'
-                  : 'text-gray-400 hover:text-white hover:bg-zinc-900'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-card'
               }`}
             >
               <link.icon className="w-5 h-5" />
@@ -374,7 +374,7 @@ export default function Layout({ children, currentPageName }) {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-zinc-800">
+        <div className="p-4 border-t border-border">
           <div className="flex items-center gap-3 mb-4 px-2">
             <div className="w-10 h-10 rounded-full gold-gradient flex items-center justify-center">
               <span className="text-black font-bold">
@@ -382,14 +382,14 @@ export default function Layout({ children, currentPageName }) {
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-white font-medium truncate">{clientName || user?.full_name || user?.email?.split('@')[0] || 'משתמש'}</p>
-              <p className="text-gray-500 text-sm truncate">{user?.email}</p>
+              <p className="text-foreground font-medium truncate">{clientName || user?.full_name || user?.email?.split('@')[0] || 'משתמש'}</p>
+              <p className="text-muted-foreground text-sm truncate">{user?.email}</p>
             </div>
           </div>
           <Button
             onClick={handleLogout}
             variant="ghost"
-            className="w-full justify-start text-gray-400 hover:text-red-400 hover:bg-red-500/10"
+            className="w-full justify-start text-muted-foreground hover:text-red-400 hover:bg-red-500/10"
           >
             <LogOut className="w-5 h-5 ml-2" />
             התנתק

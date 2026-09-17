@@ -212,7 +212,7 @@ export default function AdminCourses() {
   };
 
   return (
-    <div className="min-h-screen bg-black p-6 lg:p-10">
+    <div className="min-h-screen bg-background p-6 lg:p-10">
       {/* Pull-to-refresh indicator */}
       {(pullDistance > 0 || isRefreshing) && (
         <div
@@ -229,11 +229,11 @@ export default function AdminCourses() {
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-3xl lg:text-4xl font-bold text-white mb-2"
+            className="text-3xl lg:text-4xl font-bold text-foreground mb-2"
           >
             ניהול קורסים
           </motion.h1>
-          <p className="text-gray-400">{courses.length} קורסים</p>
+          <p className="text-muted-foreground">{courses.length} קורסים</p>
         </div>
         {!isManager && (
           <Button 
@@ -248,12 +248,12 @@ export default function AdminCourses() {
 
       {/* Search */}
       <div className="relative mb-8">
-        <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+        <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
         <Input
           placeholder="חיפוש קורס..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-gray-500 pr-12 py-6"
+          className="bg-card/50 border-border text-foreground placeholder:text-muted-foreground pr-12 py-6"
         />
       </div>
 
@@ -263,9 +263,9 @@ export default function AdminCourses() {
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
         </div>
       ) : filteredCourses.length === 0 ? (
-        <Card className="bg-zinc-900/50 border-zinc-800 p-10 text-center">
+        <Card className="bg-card/50 border-border p-10 text-center">
           <BookOpen className="w-12 h-12 text-gray-700 mx-auto mb-4" />
-          <p className="text-gray-400">
+          <p className="text-muted-foreground">
             {searchQuery ? 'לא נמצאו קורסים' : 'אין קורסים עדיין'}
           </p>
           {!searchQuery && !isManager && (
@@ -292,9 +292,9 @@ export default function AdminCourses() {
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  <Card className="bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 transition-all overflow-hidden group">
+                  <Card className="bg-card/50 border-border hover:border-border transition-all overflow-hidden group">
                     {/* Thumbnail */}
-                    <div className="relative aspect-video bg-zinc-800 overflow-hidden">
+                    <div className="relative aspect-video bg-secondary overflow-hidden">
                       {course.thumbnail ? (
                         <img 
                           src={course.thumbnail} 
@@ -312,7 +312,7 @@ export default function AdminCourses() {
                         <div className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 ${
                           course.is_published 
                             ? 'bg-green-500/20 text-green-400' 
-                            : 'bg-gray-500/20 text-gray-400'
+                            : 'bg-gray-500/20 text-muted-foreground'
                         }`}>
                           {course.is_published ? (
                             <Eye className="w-3 h-3" />
@@ -333,16 +333,16 @@ export default function AdminCourses() {
                               variant="ghost" 
                               size="icon"
                               aria-label="פעולות קורס"
-                              className="bg-black/50 hover:bg-black/70 text-white min-w-[44px] min-h-[44px]"
+                              className="bg-background/50 hover:bg-background/70 text-foreground min-w-[44px] min-h-[44px]"
                             >
                               <MoreVertical className="w-4 h-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="start" className="bg-zinc-900 border-zinc-800">
+                          <DropdownMenuContent align="start" className="bg-card border-border">
                             <DropdownMenuItem asChild>
                               <Link 
                                 to={createPageUrl(`AdminCourseEdit?id=${course.id}`)}
-                                className="flex items-center gap-2 text-white"
+                                className="flex items-center gap-2 text-foreground"
                               >
                                 <Edit className="w-4 h-4" />
                                 ערוך קורס
@@ -351,7 +351,7 @@ export default function AdminCourses() {
                             <DropdownMenuItem
                               onClick={() => duplicateCourseMutation.mutate(course.id)}
                               disabled={duplicateCourseMutation.isPending}
-                              className="flex items-center gap-2 text-white"
+                              className="flex items-center gap-2 text-foreground"
                             >
                               <Copy className="w-4 h-4" />
                               שכפל קורס
@@ -361,7 +361,7 @@ export default function AdminCourses() {
                                 id: course.id,
                                 is_published: !course.is_published
                               })}
-                              className="flex items-center gap-2 text-white"
+                              className="flex items-center gap-2 text-foreground"
                             >
                               {course.is_published ? (
                                 <>
@@ -390,15 +390,15 @@ export default function AdminCourses() {
                     {/* Content */}
                     <Link to={isManager ? '#' : createPageUrl(`AdminCourseEdit?id=${course.id}`)}>
                       <div className="p-5">
-                        <h3 className="text-lg font-bold text-white group-hover:text-[#c7af48] transition-colors">
+                        <h3 className="text-lg font-bold text-foreground group-hover:text-[#c7af48] transition-colors">
                           {course.title}
                         </h3>
                         {course.description && (
-                          <p className="text-gray-400 text-sm line-clamp-2 mt-2">
+                          <p className="text-muted-foreground text-sm line-clamp-2 mt-2">
                             {course.description}
                           </p>
                         )}
-                        <div className="flex items-center gap-4 mt-4 text-sm text-gray-500">
+                        <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
                           <span>{courseChapters.length} פרקים</span>
                           <span>{courseLessons.length} שיעורים</span>
                         </div>
@@ -414,7 +414,7 @@ export default function AdminCourses() {
 
       {/* Add Course Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="bg-zinc-900 border-zinc-800 text-white max-w-lg">
+        <DialogContent className="bg-card border-border text-foreground max-w-lg">
           <DialogHeader>
             <DialogTitle>קורס חדש</DialogTitle>
           </DialogHeader>
@@ -427,7 +427,7 @@ export default function AdminCourses() {
                 value={newCourse.title}
                 onChange={(e) => setNewCourse({ ...newCourse, title: e.target.value })}
                 placeholder="שם הקורס"
-                className="bg-zinc-800 border-zinc-700 text-white"
+                className="bg-secondary border-border text-foreground"
               />
             </div>
             <div className="space-y-2">
@@ -437,14 +437,14 @@ export default function AdminCourses() {
                 value={newCourse.description}
                 onChange={(e) => setNewCourse({ ...newCourse, description: e.target.value })}
                 placeholder="תיאור הקורס..."
-                className="bg-zinc-800 border-zinc-700 text-white min-h-[100px]"
+                className="bg-secondary border-border text-foreground min-h-[100px]"
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="thumbnail">תמונת קורס</Label>
               <div className="space-y-3">
                 {newCourse.thumbnail && (
-                  <div className="relative aspect-video rounded-lg overflow-hidden bg-zinc-800">
+                  <div className="relative aspect-video rounded-lg overflow-hidden bg-secondary">
                     <img 
                       src={newCourse.thumbnail} 
                       alt="Preview"
@@ -456,7 +456,7 @@ export default function AdminCourses() {
                       size="icon"
                       aria-label="הסרת תמונה"
                       onClick={() => setNewCourse({ ...newCourse, thumbnail: '' })}
-                      className="absolute top-2 left-2 bg-black/50 hover:bg-black/70 text-white min-w-[44px] min-h-[44px]"
+                      className="absolute top-2 left-2 bg-background/50 hover:bg-background/70 text-foreground min-w-[44px] min-h-[44px]"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -468,7 +468,7 @@ export default function AdminCourses() {
                     variant="outline"
                     onClick={() => document.getElementById('image-upload').click()}
                     disabled={uploadingImage}
-                    className="flex-1 border-zinc-700 text-gray-300 hover:bg-zinc-800"
+                    className="flex-1 border-border text-gray-300 hover:bg-secondary"
                   >
                     {uploadingImage ? 'מעלה...' : 'העלה תמונה'}
                   </Button>
@@ -485,7 +485,7 @@ export default function AdminCourses() {
                   value={newCourse.thumbnail}
                   onChange={(e) => setNewCourse({ ...newCourse, thumbnail: e.target.value })}
                   placeholder="או הזן קישור ישיר: https://..."
-                  className="bg-zinc-800 border-zinc-700 text-white"
+                  className="bg-secondary border-border text-foreground"
                 />
               </div>
             </div>
@@ -502,7 +502,7 @@ export default function AdminCourses() {
                 type="button"
                 variant="outline"
                 onClick={() => setShowAddDialog(false)}
-                className="flex-1 border-zinc-700 text-gray-300 hover:bg-zinc-800"
+                className="flex-1 border-border text-gray-300 hover:bg-secondary"
               >
                 ביטול
               </Button>
@@ -520,21 +520,21 @@ export default function AdminCourses() {
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteCourse} onOpenChange={() => setDeleteCourse(null)}>
-        <AlertDialogContent className="bg-zinc-900 border-zinc-800">
+        <AlertDialogContent className="bg-card border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">מחיקת קורס</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-400">
+            <AlertDialogTitle className="text-foreground">מחיקת קורס</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
               האם אתה בטוח שברצונך למחוק את "{deleteCourse?.title}"? 
               כל הפרקים והשיעורים בקורס זה יימחקו גם כן. פעולה זו לא ניתנת לביטול.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3">
-            <AlertDialogCancel className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700">
+            <AlertDialogCancel className="bg-secondary border-border text-foreground hover:bg-zinc-700">
               ביטול
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteCourseMutation.mutate(deleteCourse?.id)}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-red-600 hover:bg-red-700 text-foreground"
             >
               {deleteCourseMutation.isPending ? 'מוחק...' : 'מחק'}
             </AlertDialogAction>

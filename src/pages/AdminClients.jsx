@@ -612,7 +612,7 @@ export default function AdminClients() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
       </div>
     );
@@ -620,20 +620,20 @@ export default function AdminClients() {
 
   if (user.role !== 'admin' && user.user_type !== 'consultant' && user.user_type !== 'manager') {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center" dir="rtl">
+      <div className="min-h-screen bg-background flex items-center justify-center" dir="rtl">
         <div className="text-center max-w-md px-6">
           <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <X className="w-10 h-10 text-red-500" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-4">אין לך הרשאה</h1>
-          <p className="text-gray-400 mb-8">אין לך הרשאה לגשת לדף זה.</p>
+          <h1 className="text-2xl font-bold text-foreground mb-4">אין לך הרשאה</h1>
+          <p className="text-muted-foreground mb-8">אין לך הרשאה לגשת לדף זה.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black p-6 lg:p-10">
+    <div className="min-h-screen bg-background p-6 lg:p-10">
       {/* Pull-to-refresh indicator */}
       {(pullDistance > 0 || isRefreshing) && (
         <div
@@ -650,11 +650,11 @@ export default function AdminClients() {
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-3xl lg:text-4xl font-bold text-white mb-2"
+            className="text-3xl lg:text-4xl font-bold text-foreground mb-2"
           >
             ניהול לקוחות
           </motion.h1>
-          <p className="text-gray-400">{clients.length} לקוחות מורשים</p>
+          <p className="text-muted-foreground">{clients.length} לקוחות מורשים</p>
         </div>
         <div className="flex flex-col gap-3">
           <Button 
@@ -675,7 +675,7 @@ export default function AdminClients() {
             onClick={() => setActiveTab('clients')}
             className={activeTab === 'clients' 
               ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' 
-              : 'border-zinc-700 text-gray-300 hover:bg-zinc-800 min-w-[44px] min-h-[44px]'
+              : 'border-border text-gray-300 hover:bg-secondary min-w-[44px] min-h-[44px]'
             }
           >
             <Users className="w-4 h-4 ml-2" />
@@ -686,7 +686,7 @@ export default function AdminClients() {
             onClick={() => setActiveTab('consultants')}
             className={activeTab === 'consultants' 
               ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' 
-              : 'border-zinc-700 text-gray-300 hover:bg-zinc-800 min-w-[44px] min-h-[44px]'
+              : 'border-border text-gray-300 hover:bg-secondary min-w-[44px] min-h-[44px]'
             }
           >
             <User className="w-4 h-4 ml-2" />
@@ -697,7 +697,7 @@ export default function AdminClients() {
             onClick={() => setActiveTab('managers')}
             className={activeTab === 'managers' 
               ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' 
-              : 'border-zinc-700 text-gray-300 hover:bg-zinc-800 min-w-[44px] min-h-[44px]'
+              : 'border-border text-gray-300 hover:bg-secondary min-w-[44px] min-h-[44px]'
             }
           >
             <Users className="w-4 h-4 ml-2" />
@@ -717,21 +717,21 @@ export default function AdminClients() {
                   <Button
                     variant={filterType === 'all' ? 'default' : 'outline'}
                     onClick={() => { setFilterType('all'); setSelectedCourseFilter(''); setSelectedConsultantFilter(''); }}
-                    className={filterType === 'all' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-zinc-700 text-gray-300 hover:bg-zinc-800 min-w-[44px] min-h-[44px]'}
+                    className={filterType === 'all' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-border text-gray-300 hover:bg-secondary min-w-[44px] min-h-[44px]'}
                   >
                     כל הלקוחות ({clients.length})
                   </Button>
                   <Button
                     variant={filterType === 'course' ? 'default' : 'outline'}
                     onClick={() => setFilterType('course')}
-                    className={filterType === 'course' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-zinc-700 text-gray-300 hover:bg-zinc-800 min-w-[44px] min-h-[44px]'}
+                    className={filterType === 'course' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-border text-gray-300 hover:bg-secondary min-w-[44px] min-h-[44px]'}
                   >
                     לפי קורס
                   </Button>
                   <Button
                     variant={filterType === 'consultant' ? 'default' : 'outline'}
                     onClick={() => setFilterType('consultant')}
-                    className={filterType === 'consultant' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-zinc-700 text-gray-300 hover:bg-zinc-800 min-w-[44px] min-h-[44px]'}
+                    className={filterType === 'consultant' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-border text-gray-300 hover:bg-secondary min-w-[44px] min-h-[44px]'}
                   >
                     לפי יועץ
                   </Button>
@@ -744,7 +744,7 @@ export default function AdminClients() {
                   onValueChange={setSelectedCourseFilter}
                   placeholder="בחר קורס"
                   title="בחר קורס"
-                  triggerClassName="bg-zinc-900/50 border-zinc-800 text-white max-w-md"
+                  triggerClassName="bg-card/50 border-border text-foreground max-w-md"
                   options={courses.map((course) => ({
                     value: course.id,
                     label: `${course.title} (${clientAccess.filter(a => a.course_id === course.id).length} לקוחות)`,
@@ -758,7 +758,7 @@ export default function AdminClients() {
                   onValueChange={setSelectedConsultantFilter}
                   placeholder={isManager ? 'סנן לפי יועץ' : 'בחר יועץ'}
                   title={isManager ? 'סינון לפי יועץ' : 'בחר יועץ'}
-                  triggerClassName="bg-zinc-900/50 border-zinc-800 text-white max-w-md"
+                  triggerClassName="bg-card/50 border-border text-foreground max-w-md"
                   options={[
                     ...(isManager ? [{ value: '__all__', label: 'כל היועצים' }] : []),
                     ...consultants.map((consultant) => ({
@@ -773,12 +773,12 @@ export default function AdminClients() {
 
           {/* Search */}
           <div className="relative mb-4">
-            <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
               placeholder="חיפוש לפי שם או אימייל..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-gray-500 pr-12 py-6"
+              className="bg-card/50 border-border text-foreground placeholder:text-muted-foreground pr-12 py-6"
             />
           </div>
 
@@ -791,7 +791,7 @@ export default function AdminClients() {
                 onChange={toggleSelectAll}
                 className="w-5 h-5 accent-[#c7af48] cursor-pointer"
               />
-              <span className="text-gray-400 text-sm">
+              <span className="text-muted-foreground text-sm">
                 {selectedClientIds.size > 0 ? `${selectedClientIds.size} נבחרו` : 'בחר הכל'}
               </span>
               {selectedClientIds.size > 0 && (
@@ -813,9 +813,9 @@ export default function AdminClients() {
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
             </div>
           ) : filteredClients.length === 0 ? (
-            <Card className="bg-zinc-900/50 border-zinc-800 p-10 text-center">
+            <Card className="bg-card/50 border-border p-10 text-center">
               <Users className="w-12 h-12 text-gray-700 mx-auto mb-4" />
-              <p className="text-gray-400">
+              <p className="text-muted-foreground">
                 {searchQuery ? 'לא נמצאו לקוחות' : 'אין לקוחות מורשים עדיין'}
               </p>
               {!searchQuery && (
@@ -838,7 +838,7 @@ export default function AdminClients() {
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ delay: index * 0.05 }}
                   >
-                    <Card className={`bg-zinc-900/50 border-zinc-800 p-5 group hover:border-zinc-700 transition-all ${selectedClientIds.has(client.id) ? 'border-[#c7af48]/40' : ''}`}>
+                    <Card className={`bg-card/50 border-border p-5 group hover:border-border transition-all ${selectedClientIds.has(client.id) ? 'border-[#c7af48]/40' : ''}`}>
                       <div className="flex items-start justify-between gap-4 mb-4">
                         <div className="flex items-center gap-4">
                           {isAdmin && (
@@ -856,10 +856,10 @@ export default function AdminClients() {
                             </span>
                           </div>
                           <div>
-                            <h3 className="text-white font-medium">
+                            <h3 className="text-foreground font-medium">
                               {client.name || 'ללא שם'}
                             </h3>
-                            <p className="text-gray-500 text-sm flex items-center gap-1 mb-1">
+                            <p className="text-muted-foreground text-sm flex items-center gap-1 mb-1">
                               <Mail className="w-3 h-3" />
                               {client.email}
                             </p>
@@ -904,7 +904,7 @@ export default function AdminClients() {
                               size="icon"
                               aria-label="עריכה"
                               onClick={() => setShowEditClientDialog(client)}
-                              className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-70 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity shrink-0 min-w-[44px] min-h-[44px]"
+                              className="text-muted-foreground hover:text-foreground hover:bg-secondary opacity-70 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity shrink-0 min-w-[44px] min-h-[44px]"
                             >
                               <Edit className="w-5 h-5" />
                             </Button>
@@ -913,7 +913,7 @@ export default function AdminClients() {
                               size="icon"
                               aria-label="מחיקה"
                               onClick={() => setDeleteClient(client)}
-                              className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 opacity-70 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity shrink-0 min-w-[44px] min-h-[44px]"
+                              className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 opacity-70 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity shrink-0 min-w-[44px] min-h-[44px]"
                             >
                               <Trash2 className="w-5 h-5" />
                             </Button>
@@ -922,29 +922,29 @@ export default function AdminClients() {
                       </div>
                     
                       {/* Progress Stats */}
-                      <div className="flex items-center gap-4 pt-4 border-t border-zinc-800">
+                      <div className="flex items-center gap-4 pt-4 border-t border-border">
                         <button
                           onClick={() => setSelectedClientCourses(client)}
-                          className="flex items-center gap-2 hover:bg-zinc-800/50 rounded-lg p-2 transition-colors group/stat"
+                          className="flex items-center gap-2 hover:bg-secondary/50 rounded-lg p-2 transition-colors group/stat"
                         >
                           <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center group-hover/stat:bg-blue-500/20 transition-colors">
                             <PlayCircle className="w-4 h-4 text-blue-400" />
                           </div>
                           <div className="text-right">
-                            <p className="text-sm text-gray-500 group-hover/stat:text-blue-400 transition-colors">קורסים מורשים</p>
-                            <p className="text-white font-semibold">{getClientCourses(client.email).length}</p>
+                            <p className="text-sm text-muted-foreground group-hover/stat:text-blue-400 transition-colors">קורסים מורשים</p>
+                            <p className="text-foreground font-semibold">{getClientCourses(client.email).length}</p>
                           </div>
                         </button>
                         <button
                           onClick={() => setSelectedClientLessons(client)}
-                          className="flex items-center gap-2 hover:bg-zinc-800/50 rounded-lg p-2 transition-colors group/stat"
+                          className="flex items-center gap-2 hover:bg-secondary/50 rounded-lg p-2 transition-colors group/stat"
                         >
                           <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center group-hover/stat:bg-green-500/20 transition-colors">
                             <CheckCircle2 className="w-4 h-4 text-green-400" />
                           </div>
                           <div className="text-right">
-                            <p className="text-sm text-gray-500 group-hover/stat:text-green-400 transition-colors">שיעורים נצפו</p>
-                            <p className="text-white font-semibold">
+                            <p className="text-sm text-muted-foreground group-hover/stat:text-green-400 transition-colors">שיעורים נצפו</p>
+                            <p className="text-foreground font-semibold">
                               {getClientProgress(client.email)}/{getTotalLessons(client.email)}
                             </p>
                           </div>
@@ -954,8 +954,8 @@ export default function AdminClients() {
                             <TrendingUp className="w-4 h-4 text-[#c7af48]" />
                           </div>
                           <div>
-                            <p className="text-sm text-gray-500">התקדמות</p>
-                            <p className="text-white font-semibold">
+                            <p className="text-sm text-muted-foreground">התקדמות</p>
+                            <p className="text-foreground font-semibold">
                               {getTotalLessons(client.email) > 0 
                                 ? Math.round((getClientProgress(client.email) / getTotalLessons(client.email)) * 100)
                                 : 0}%
@@ -1000,25 +1000,25 @@ export default function AdminClients() {
             </Button>
           </div>
           {managers.length === 0 ? (
-            <Card className="bg-zinc-900/50 border-zinc-800 p-10 text-center">
+            <Card className="bg-card/50 border-border p-10 text-center">
               <Users className="w-12 h-12 text-gray-700 mx-auto mb-4" />
-              <p className="text-gray-400">אין מנהלים במערכת</p>
+              <p className="text-muted-foreground">אין מנהלים במערכת</p>
             </Card>
           ) : (
             <div className="grid gap-4">
               {managers.map((manager, index) => (
                 <motion.div key={manager.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
-                  <Card className="bg-zinc-900/50 border-zinc-800 p-5 group hover:border-zinc-700 transition-all">
+                  <Card className="bg-card/50 border-border p-5 group hover:border-border transition-all">
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shrink-0">
-                          <span className="text-white font-bold text-lg">
+                          <span className="text-foreground font-bold text-lg">
                             {(manager.name || manager.email)[0].toUpperCase()}
                           </span>
                         </div>
                         <div>
-                          <h3 className="text-white font-medium">{manager.name || 'ללא שם'}</h3>
-                          <p className="text-gray-500 text-sm flex items-center gap-1">
+                          <h3 className="text-foreground font-medium">{manager.name || 'ללא שם'}</h3>
+                          <p className="text-muted-foreground text-sm flex items-center gap-1">
                             <Mail className="w-3 h-3" />
                             {manager.email}
                           </p>
@@ -1030,7 +1030,7 @@ export default function AdminClients() {
                         size="icon"
                         aria-label="מחיקה"
                         onClick={() => deleteManagerMutation.mutate(manager)}
-                        className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 opacity-70 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity min-w-[44px] min-h-[44px]"
+                        className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 opacity-70 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity min-w-[44px] min-h-[44px]"
                       >
                         <Trash2 className="w-5 h-5" />
                       </Button>
@@ -1045,7 +1045,7 @@ export default function AdminClients() {
 
       {/* Add Client Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+        <DialogContent className="bg-card border-border text-foreground">
           <DialogHeader>
             <DialogTitle>הוסף לקוח חדש</DialogTitle>
           </DialogHeader>
@@ -1053,7 +1053,7 @@ export default function AdminClients() {
             <div className="space-y-2">
               <Label htmlFor="email">אימייל *</Label>
               <div className="relative">
-                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
@@ -1061,20 +1061,20 @@ export default function AdminClients() {
                   value={newClient.email}
                   onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
                   placeholder="email@example.com"
-                  className="bg-zinc-800 border-zinc-700 text-white pr-11"
+                  className="bg-secondary border-border text-foreground pr-11"
                 />
               </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="name">שם (אופציונלי)</Label>
               <div className="relative">
-                <User className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <User className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   id="name"
                   value={newClient.name}
                   onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
                   placeholder="שם הלקוח"
-                  className="bg-zinc-800 border-zinc-700 text-white pr-11"
+                  className="bg-secondary border-border text-foreground pr-11"
                 />
               </div>
             </div>
@@ -1086,7 +1086,7 @@ export default function AdminClients() {
                   onValueChange={(value) => setNewClient({ ...newClient, course_id: value })}
                   placeholder="בחר קורס"
                   title="בחר קורס"
-                  triggerClassName="bg-zinc-800 border-zinc-700 text-white w-full"
+                  triggerClassName="bg-secondary border-border text-foreground w-full"
                   options={courses.map(c => ({ value: c.id, label: c.title }))}
                 />
               </div>
@@ -1094,7 +1094,7 @@ export default function AdminClients() {
             {isConsultant && !hasFullAccess && (
               <div className="space-y-2">
                 <Label>קורס</Label>
-                <div className="bg-zinc-800 border border-zinc-700 rounded-md px-3 py-2 text-gray-400 text-sm">
+                <div className="bg-secondary border border-border rounded-md px-3 py-2 text-muted-foreground text-sm">
                   {courses.find(c => c.id === newClient.course_id)?.title || 'צעירים מתעשרים'}
                 </div>
               </div>
@@ -1107,7 +1107,7 @@ export default function AdminClients() {
                   onValueChange={(value) => setNewClient({ ...newClient, consultant_email: value })}
                   placeholder="בחר יועץ"
                   title="בחר יועץ"
-                  triggerClassName="bg-zinc-800 border-zinc-700 text-white w-full"
+                  triggerClassName="bg-secondary border-border text-foreground w-full"
                   options={[
                     { value: '__none__', label: 'ללא יועץ' },
                     ...consultants.map(c => ({ value: c.email, label: c.full_name || c.email })),
@@ -1138,7 +1138,7 @@ export default function AdminClients() {
 
       {/* Courses Dialog */}
       <Dialog open={!!selectedClientCourses} onOpenChange={() => setSelectedClientCourses(null)}>
-        <DialogContent className="bg-zinc-900 border-zinc-800 text-white max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="bg-card border-border text-foreground max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <div className="flex items-center justify-between">
               <DialogTitle>קורסים של {selectedClientCourses?.name || selectedClientCourses?.email}</DialogTitle>
@@ -1156,7 +1156,7 @@ export default function AdminClients() {
             {getClientCourses(selectedClientCourses?.email).length === 0 ? (
               <div className="text-center py-8">
                 <BookOpen className="w-12 h-12 text-gray-700 mx-auto mb-3" />
-                <p className="text-gray-400">אין קורסים מורשים ללקוח זה</p>
+                <p className="text-muted-foreground">אין קורסים מורשים ללקוח זה</p>
               </div>
             ) : (
               getClientCourses(selectedClientCourses?.email).map((course) => {
@@ -1171,7 +1171,7 @@ export default function AdminClients() {
                   : 0;
 
                 return (
-                  <Card key={course.id} className="bg-zinc-800/50 border-zinc-700 p-4">
+                  <Card key={course.id} className="bg-secondary/50 border-border p-4">
                     <div className="flex items-start gap-4">
                       <div className="w-16 h-16 rounded-lg bg-zinc-700 overflow-hidden shrink-0">
                         {course.thumbnail ? (
@@ -1187,13 +1187,13 @@ export default function AdminClients() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-white font-semibold mb-1">{course.title}</h3>
+                        <h3 className="text-foreground font-semibold mb-1">{course.title}</h3>
                         <div className="flex items-center gap-3 text-sm">
-                          <span className="text-gray-400">{courseLessons.length} שיעורים</span>
+                          <span className="text-muted-foreground">{courseLessons.length} שיעורים</span>
                           <span className="text-gray-600">•</span>
                           <span className={`font-medium ${
                             progressPercent === 100 ? 'text-green-400' :
-                            progressPercent > 0 ? 'text-[#c7af48]' : 'text-gray-500'
+                            progressPercent > 0 ? 'text-[#c7af48]' : 'text-muted-foreground'
                           }`}>
                             {clientProgress.length}/{courseLessons.length} נצפו ({progressPercent}%)
                           </span>
@@ -1204,7 +1204,7 @@ export default function AdminClients() {
                         size="icon"
                         aria-label="הסרת גישה לקורס"
                         onClick={() => setRemoveAccess({ email: selectedClientCourses.email, course_id: course.id, course_title: course.title })}
-                        className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 shrink-0 min-w-[44px] min-h-[44px]"
+                        className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 shrink-0 min-w-[44px] min-h-[44px]"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -1219,7 +1219,7 @@ export default function AdminClients() {
 
       {/* Lessons Dialog */}
       <Dialog open={!!selectedClientLessons} onOpenChange={() => setSelectedClientLessons(null)}>
-        <DialogContent className="bg-zinc-900 border-zinc-800 text-white max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="bg-card border-border text-foreground max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>שיעורים נצפו - {selectedClientLessons?.name || selectedClientLessons?.email}</DialogTitle>
           </DialogHeader>
@@ -1251,25 +1251,25 @@ export default function AdminClients() {
                           document.getElementById(`course-details-${course.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         }
                       }}
-                      className="p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg hover:border-[#c7af48]/50 transition-all text-right group"
+                      className="p-4 bg-secondary/50 border border-border rounded-lg hover:border-[#c7af48]/50 transition-all text-right group"
                     >
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="text-white font-semibold group-hover:text-[#c7af48] transition-colors">
+                          <h4 className="text-foreground font-semibold group-hover:text-[#c7af48] transition-colors">
                             {course.title}
                           </h4>
-                          <p className="text-gray-400 text-sm">
+                          <p className="text-muted-foreground text-sm">
                             {clientProgress.length}/{courseLessons.length} שיעורים נצפו
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className={`text-lg font-bold ${
                             progressPercent === 100 ? 'text-green-400' :
-                            progressPercent > 0 ? 'text-[#c7af48]' : 'text-gray-500'
+                            progressPercent > 0 ? 'text-[#c7af48]' : 'text-muted-foreground'
                           }`}>
                             {progressPercent}%
                           </span>
-                          <ChevronDown className="w-4 h-4 text-gray-500" />
+                          <ChevronDown className="w-4 h-4 text-muted-foreground" />
                         </div>
                       </div>
                     </button>
@@ -1285,8 +1285,8 @@ export default function AdminClients() {
                 .sort((a, b) => a.order - b.order);
 
               return (
-                <div key={course.id} id={`course-details-${course.id}`} className="space-y-3 pt-4 border-t border-zinc-800">
-                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <div key={course.id} id={`course-details-${course.id}`} className="space-y-3 pt-4 border-t border-border">
+                  <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
                     <BookOpen className="w-5 h-5 text-[#c7af48]" />
                     {course.title}
                   </h3>
@@ -1299,7 +1299,7 @@ export default function AdminClients() {
 
                     return (
                       <div key={chapter.id} className="space-y-2">
-                        <h4 className="text-white font-semibold text-sm px-2">{chapter.title}</h4>
+                        <h4 className="text-foreground font-semibold text-sm px-2">{chapter.title}</h4>
                         <div className="space-y-1">
                           {chapterLessons.map((lesson, index) => {
                             const lessonProgress = allProgress.find(
@@ -1317,7 +1317,7 @@ export default function AdminClients() {
                                     ? 'bg-green-500/5 border-green-500/20' 
                                     : progressPercent > 0
                                       ? 'bg-yellow-500/5 border-yellow-500/20'
-                                      : 'bg-zinc-800/30 border-zinc-700/50'
+                                      : 'bg-secondary/30 border-border/50'
                                 }`}
                               >
                                 <div className="flex items-center gap-3">
@@ -1329,15 +1329,15 @@ export default function AdminClients() {
                                         : 'bg-zinc-700'
                                   }`}>
                                     {isCompleted ? (
-                                      <CheckCircle2 className="w-4 h-4 text-white" />
+                                      <CheckCircle2 className="w-4 h-4 text-foreground" />
                                     ) : (
-                                      <span className="text-xs text-white">{progressPercent > 0 ? `${progressPercent}%` : index + 1}</span>
+                                      <span className="text-xs text-foreground">{progressPercent > 0 ? `${progressPercent}%` : index + 1}</span>
                                     )}
                                   </div>
                                   <div>
                                     <p className="text-gray-300">{lesson.title}</p>
                                     {lesson.duration && (
-                                      <p className="text-xs text-gray-500">{lesson.duration}</p>
+                                      <p className="text-xs text-muted-foreground">{lesson.duration}</p>
                                     )}
                                   </div>
                                 </div>
@@ -1346,7 +1346,7 @@ export default function AdminClients() {
                                     ? 'bg-green-500/20 text-green-400' 
                                     : progressPercent > 0
                                       ? 'bg-yellow-500/20 text-yellow-400'
-                                      : 'bg-zinc-700 text-gray-400'
+                                      : 'bg-zinc-700 text-muted-foreground'
                                 }`}>
                                   {isCompleted ? 'נצפה' : progressPercent > 0 ? `בתהליך ${progressPercent}%` : 'לא נצפה'}
                                 </div>
@@ -1366,21 +1366,21 @@ export default function AdminClients() {
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteClient} onOpenChange={() => setDeleteClient(null)}>
-        <AlertDialogContent className="bg-zinc-900 border-zinc-800">
+        <AlertDialogContent className="bg-card border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">מחיקת לקוח</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-400">
+            <AlertDialogTitle className="text-foreground">מחיקת לקוח</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
               האם אתה בטוח שברצונך למחוק את {deleteClient?.name || deleteClient?.email}? 
               הלקוח לא יוכל יותר לגשת למערכת.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3">
-            <AlertDialogCancel className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700">
+            <AlertDialogCancel className="bg-secondary border-border text-foreground hover:bg-zinc-700">
               ביטול
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteClientMutation.mutate(deleteClient)}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-red-600 hover:bg-red-700 text-foreground"
             >
               מחק
             </AlertDialogAction>
@@ -1390,7 +1390,7 @@ export default function AdminClients() {
 
       {/* Add Course Dialog */}
       <Dialog open={showAddCourseDialog} onOpenChange={setShowAddCourseDialog}>
-        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+        <DialogContent className="bg-card border-border text-foreground">
           <DialogHeader>
             <DialogTitle>הוסף קורס ללקוח</DialogTitle>
           </DialogHeader>
@@ -1398,14 +1398,14 @@ export default function AdminClients() {
             <div className="space-y-2">
               <Label htmlFor="addCourse">בחר קורס</Label>
               {getAvailableCoursesForClient(selectedClientCourses?.email).length === 0 ? (
-                <p className="text-gray-400 text-sm py-3">כל הקורסים כבר מורשים ללקוח זה</p>
+                <p className="text-muted-foreground text-sm py-3">כל הקורסים כבר מורשים ללקוח זה</p>
               ) : (
                 <MobileSelect
                   value={selectedCourseToAdd}
                   onValueChange={setSelectedCourseToAdd}
                   placeholder="בחר קורס"
                   title="בחר קורס"
-                  triggerClassName="bg-zinc-800 border-zinc-700 text-white w-full"
+                  triggerClassName="bg-secondary border-border text-foreground w-full"
                   options={getAvailableCoursesForClient(selectedClientCourses?.email).map(c => ({ value: c.id, label: c.title }))}
                 />
               )}
@@ -1436,21 +1436,21 @@ export default function AdminClients() {
 
       {/* Remove Access Confirmation */}
       <AlertDialog open={!!removeAccess} onOpenChange={() => setRemoveAccess(null)}>
-        <AlertDialogContent className="bg-zinc-900 border-zinc-800">
+        <AlertDialogContent className="bg-card border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">הסרת גישה לקורס</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-400">
+            <AlertDialogTitle className="text-foreground">הסרת גישה לקורס</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
               האם אתה בטוח שברצונך להסיר את הגישה לקורס "{removeAccess?.course_title}"? 
               הלקוח לא יוכל יותר לגשת לקורס זה.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3">
-            <AlertDialogCancel className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700">
+            <AlertDialogCancel className="bg-secondary border-border text-foreground hover:bg-zinc-700">
               ביטול
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => removeAccessMutation.mutate({ email: removeAccess.email, course_id: removeAccess.course_id })}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-red-600 hover:bg-red-700 text-foreground"
             >
               הסר גישה
             </AlertDialogAction>
@@ -1460,7 +1460,7 @@ export default function AdminClients() {
 
       {/* Edit Client Dialog */}
       <Dialog open={!!showEditClientDialog} onOpenChange={() => setShowEditClientDialog(null)}>
-        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+        <DialogContent className="bg-card border-border text-foreground">
           <DialogHeader>
             <DialogTitle>עריכת לקוח</DialogTitle>
           </DialogHeader>
@@ -1472,7 +1472,7 @@ export default function AdminClients() {
                 value={showEditClientDialog?.name || ''}
                 onChange={(e) => setShowEditClientDialog({ ...showEditClientDialog, name: e.target.value })}
                 placeholder="שם הלקוח"
-                className="bg-zinc-800 border-zinc-700 text-white"
+                className="bg-secondary border-border text-foreground"
               />
             </div>
             {consultants.length > 0 && (
@@ -1483,7 +1483,7 @@ export default function AdminClients() {
                   onValueChange={(value) => setShowEditClientDialog({ ...showEditClientDialog, consultant_email: value })}
                   placeholder="בחר יועץ"
                   title="בחר יועץ"
-                  triggerClassName="bg-zinc-800 border-zinc-700 text-white w-full"
+                  triggerClassName="bg-secondary border-border text-foreground w-full"
                   options={[
                     { value: '__none__', label: 'ללא יועץ' },
                     ...consultants.map(c => ({ value: c.email, label: c.full_name || c.email })),
@@ -1514,7 +1514,7 @@ export default function AdminClients() {
 
       {/* Edit Consultant Dialog */}
       <Dialog open={!!showEditConsultantDialog} onOpenChange={() => setShowEditConsultantDialog(null)}>
-        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+        <DialogContent className="bg-card border-border text-foreground">
           <DialogHeader>
             <DialogTitle>עריכת יועץ</DialogTitle>
           </DialogHeader>
@@ -1526,7 +1526,7 @@ export default function AdminClients() {
                 value={showEditConsultantDialog?.full_name || ''}
                 onChange={(e) => setShowEditConsultantDialog({ ...showEditConsultantDialog, full_name: e.target.value })}
                 placeholder="שם מלא"
-                className="bg-zinc-800 border-zinc-700 text-white"
+                className="bg-secondary border-border text-foreground"
               />
             </div>
             <div className="space-y-2">
@@ -1534,7 +1534,7 @@ export default function AdminClients() {
               <Input
                 value={showEditConsultantDialog?.email || ''}
                 disabled
-                className="bg-zinc-800 border-zinc-700 text-gray-500"
+                className="bg-secondary border-border text-muted-foreground"
               />
               <p className="text-gray-600 text-sm">לא ניתן לשנות את האימייל</p>
             </div>
@@ -1561,7 +1561,7 @@ export default function AdminClients() {
 
       {/* Assign Consultant Dialog */}
       <Dialog open={!!showAssignConsultantDialog} onOpenChange={() => setShowAssignConsultantDialog(null)}>
-        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+        <DialogContent className="bg-card border-border text-foreground">
           <DialogHeader>
             <DialogTitle>שיוך יועץ ללקוח</DialogTitle>
           </DialogHeader>
@@ -1571,7 +1571,7 @@ export default function AdminClients() {
               <Input
                 value={showAssignConsultantDialog?.client?.name || showAssignConsultantDialog?.client?.email || ''}
                 disabled
-                className="bg-zinc-800 border-zinc-700 text-gray-300"
+                className="bg-secondary border-border text-gray-300"
               />
             </div>
             <div className="space-y-2">
@@ -1584,7 +1584,7 @@ export default function AdminClients() {
                 })}
                 placeholder="בחר יועץ"
                 title="בחר יועץ"
-                triggerClassName="bg-zinc-800 border-zinc-700 text-white w-full"
+                triggerClassName="bg-secondary border-border text-foreground w-full"
                 options={[
                   { value: 'none', label: 'ללא יועץ' },
                   ...consultants.map(c => ({ value: c.email, label: c.full_name || c.email })),
@@ -1614,7 +1614,7 @@ export default function AdminClients() {
 
       {/* Bulk Assign Consultant Dialog */}
       <Dialog open={showBulkAssignDialog} onOpenChange={setShowBulkAssignDialog}>
-        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+        <DialogContent className="bg-card border-border text-foreground">
           <DialogHeader>
             <DialogTitle>שיוך יועץ ל-{selectedClientIds.size} לקוחות</DialogTitle>
           </DialogHeader>
@@ -1626,7 +1626,7 @@ export default function AdminClients() {
                 onValueChange={setBulkConsultantEmail}
                 placeholder="בחר יועץ"
                 title="שיוך יועץ"
-                triggerClassName="bg-zinc-800 border-zinc-700 text-white w-full"
+                triggerClassName="bg-secondary border-border text-foreground w-full"
                 options={[
                   { value: 'none', label: 'ללא יועץ (הסרה)' },
                   ...consultants.map(c => ({ value: c.email, label: c.full_name || c.email })),
@@ -1655,7 +1655,7 @@ export default function AdminClients() {
 
       {/* Add Manager Dialog */}
       <Dialog open={showAddManagerDialog} onOpenChange={setShowAddManagerDialog}>
-        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+        <DialogContent className="bg-card border-border text-foreground">
           <DialogHeader>
             <DialogTitle>הוסף מנהל חדש</DialogTitle>
           </DialogHeader>
@@ -1663,27 +1663,27 @@ export default function AdminClients() {
             <div className="space-y-2">
               <Label>אימייל *</Label>
               <div className="relative">
-                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   type="email"
                   required
                   value={newManager.email}
                   onChange={(e) => setNewManager({ ...newManager, email: e.target.value })}
                   placeholder="email@example.com"
-                  className="bg-zinc-800 border-zinc-700 text-white pr-11"
+                  className="bg-secondary border-border text-foreground pr-11"
                 />
               </div>
             </div>
             <div className="space-y-2">
               <Label>שם מלא *</Label>
               <div className="relative">
-                <User className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <User className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   required
                   value={newManager.full_name}
                   onChange={(e) => setNewManager({ ...newManager, full_name: e.target.value })}
                   placeholder="שם מלא"
-                  className="bg-zinc-800 border-zinc-700 text-white pr-11"
+                  className="bg-secondary border-border text-foreground pr-11"
                 />
               </div>
             </div>
@@ -1699,7 +1699,7 @@ export default function AdminClients() {
 
       {/* Add Consultant Dialog */}
       <Dialog open={showAddConsultantDialog} onOpenChange={setShowAddConsultantDialog}>
-        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+        <DialogContent className="bg-card border-border text-foreground">
           <DialogHeader>
             <DialogTitle>הוסף יועץ חדש</DialogTitle>
           </DialogHeader>
@@ -1707,7 +1707,7 @@ export default function AdminClients() {
             <div className="space-y-2">
               <Label htmlFor="consultantEmail">אימייל *</Label>
               <div className="relative">
-                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   id="consultantEmail"
                   type="email"
@@ -1715,21 +1715,21 @@ export default function AdminClients() {
                   value={newConsultant.email}
                   onChange={(e) => setNewConsultant({ ...newConsultant, email: e.target.value })}
                   placeholder="email@example.com"
-                  className="bg-zinc-800 border-zinc-700 text-white pr-11"
+                  className="bg-secondary border-border text-foreground pr-11"
                 />
               </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="consultantFullName">שם מלא *</Label>
               <div className="relative">
-                <User className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <User className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   id="consultantFullName"
                   required
                   value={newConsultant.full_name}
                   onChange={(e) => setNewConsultant({ ...newConsultant, full_name: e.target.value })}
                   placeholder="שם מלא"
-                  className="bg-zinc-800 border-zinc-700 text-white pr-11"
+                  className="bg-secondary border-border text-foreground pr-11"
                 />
               </div>
             </div>
@@ -1760,9 +1760,9 @@ export default function AdminClients() {
 function ConsultantsList({ consultants, clients, onEditConsultant, getConsultantClientCount }) {
   if (consultants.length === 0) {
     return (
-      <Card className="bg-zinc-900/50 border-zinc-800 p-10 text-center">
+      <Card className="bg-card/50 border-border p-10 text-center">
         <User className="w-12 h-12 text-gray-700 mx-auto mb-4" />
-        <p className="text-gray-400">אין יועצים במערכת</p>
+        <p className="text-muted-foreground">אין יועצים במערכת</p>
       </Card>
     );
   }
@@ -1781,19 +1781,19 @@ function ConsultantsList({ consultants, clients, onEditConsultant, getConsultant
               exit={{ opacity: 0, x: -20 }}
               transition={{ delay: index * 0.05 }}
             >
-              <Card className="bg-zinc-900/50 border-zinc-800 p-5 group hover:border-zinc-700 transition-all">
+              <Card className="bg-card/50 border-border p-5 group hover:border-border transition-all">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-center gap-4 flex-1">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shrink-0">
-                      <span className="text-white font-bold text-lg">
+                      <span className="text-foreground font-bold text-lg">
                         {(consultant.full_name || consultant.email)[0].toUpperCase()}
                       </span>
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-white font-medium">
+                      <h3 className="text-foreground font-medium">
                         {consultant.full_name || 'ללא שם'}
                       </h3>
-                      <p className="text-gray-500 text-sm flex items-center gap-1 mb-1">
+                      <p className="text-muted-foreground text-sm flex items-center gap-1 mb-1">
                         <Mail className="w-3 h-3" />
                         {consultant.email}
                       </p>
@@ -1807,7 +1807,7 @@ function ConsultantsList({ consultants, clients, onEditConsultant, getConsultant
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="text-left">
-                      <p className="text-sm text-gray-500">לקוחות</p>
+                      <p className="text-sm text-muted-foreground">לקוחות</p>
                       <p className="text-2xl font-bold text-[#c7af48]">{clientCount}</p>
                     </div>
                     <Button
@@ -1815,7 +1815,7 @@ function ConsultantsList({ consultants, clients, onEditConsultant, getConsultant
                       size="icon"
                       aria-label="עריכה"
                       onClick={() => onEditConsultant(consultant)}
-                      className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-70 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity shrink-0 min-w-[44px] min-h-[44px]"
+                      className="text-muted-foreground hover:text-foreground hover:bg-secondary opacity-70 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity shrink-0 min-w-[44px] min-h-[44px]"
                     >
                       <Edit className="w-5 h-5" />
                     </Button>
@@ -1824,8 +1824,8 @@ function ConsultantsList({ consultants, clients, onEditConsultant, getConsultant
 
                 {/* Clients Summary */}
                 {clientCount > 0 && (
-                  <div className="mt-4 pt-4 border-t border-zinc-800">
-                    <p className="text-gray-500 text-sm mb-2">לקוחות משויכים:</p>
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <p className="text-muted-foreground text-sm mb-2">לקוחות משויכים:</p>
                     <div className="flex flex-wrap gap-2">
                       {clients
                         .filter(c => c.consultant_email === consultant.email)
@@ -1833,13 +1833,13 @@ function ConsultantsList({ consultants, clients, onEditConsultant, getConsultant
                         .map((client) => (
                           <div
                             key={client.id}
-                            className="px-2 py-1 bg-zinc-800/50 rounded text-xs text-gray-400"
+                            className="px-2 py-1 bg-secondary/50 rounded text-xs text-muted-foreground"
                           >
                             {client.name || client.email}
                           </div>
                         ))}
                       {clientCount > 5 && (
-                        <div className="px-2 py-1 bg-zinc-800/50 rounded text-xs text-[#c7af48]">
+                        <div className="px-2 py-1 bg-secondary/50 rounded text-xs text-[#c7af48]">
                           +{clientCount - 5} נוספים
                         </div>
                       )}

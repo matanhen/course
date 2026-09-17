@@ -187,7 +187,7 @@ export default function AdminCourseEdit() {
 
   if (!user || courseLoading || !editingCourse) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
       </div>
     );
@@ -195,13 +195,13 @@ export default function AdminCourseEdit() {
 
   if (user.role !== 'admin') {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center" dir="rtl">
+      <div className="min-h-screen bg-background flex items-center justify-center" dir="rtl">
         <div className="text-center max-w-md px-6">
           <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <X className="w-10 h-10 text-red-500" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-4">אין לך הרשאה</h1>
-          <p className="text-gray-400 mb-8">אין לך הרשאה לגשת לדף זה.</p>
+          <h1 className="text-2xl font-bold text-foreground mb-4">אין לך הרשאה</h1>
+          <p className="text-muted-foreground mb-8">אין לך הרשאה לגשת לדף זה.</p>
         </div>
       </div>
     );
@@ -381,25 +381,25 @@ export default function AdminCourseEdit() {
   };
 
   return (
-    <div className="min-h-screen bg-black p-6 lg:p-10">
+    <div className="min-h-screen bg-background p-6 lg:p-10">
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <Link to={createPageUrl('AdminCourses')}>
-          <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white min-w-[44px] min-h-[44px]">
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground min-w-[44px] min-h-[44px]">
             <ArrowRight className="w-5 h-5" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-white">עריכת קורס</h1>
-          <p className="text-gray-500">{course?.title}</p>
+          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">עריכת קורס</h1>
+          <p className="text-muted-foreground">{course?.title}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Course Details */}
         <div className="lg:col-span-1">
-          <Card className="bg-zinc-900/50 border-zinc-800 p-6 sticky top-6">
-            <h2 className="text-lg font-bold text-white mb-6">פרטי הקורס</h2>
+          <Card className="bg-card/50 border-border p-6 sticky top-6">
+            <h2 className="text-lg font-bold text-foreground mb-6">פרטי הקורס</h2>
             <div className="space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="title" className="text-gray-300">שם הקורס</Label>
@@ -407,7 +407,7 @@ export default function AdminCourseEdit() {
                   id="title"
                   value={editingCourse.title || ''}
                   onChange={(e) => setEditingCourse({ ...editingCourse, title: e.target.value })}
-                  className="bg-zinc-800 border-zinc-700 text-white"
+                  className="bg-secondary border-border text-foreground"
                 />
               </div>
               <div className="space-y-2">
@@ -416,14 +416,14 @@ export default function AdminCourseEdit() {
                   id="description"
                   value={editingCourse.description || ''}
                   onChange={(e) => setEditingCourse({ ...editingCourse, description: e.target.value })}
-                  className="bg-zinc-800 border-zinc-700 text-white min-h-[100px]"
+                  className="bg-secondary border-border text-foreground min-h-[100px]"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="thumbnail" className="text-gray-300">תמונת קורס</Label>
                 <div className="space-y-3">
                   {editingCourse.thumbnail && (
-                    <div className="relative rounded-lg overflow-hidden aspect-video bg-zinc-800">
+                    <div className="relative rounded-lg overflow-hidden aspect-video bg-secondary">
                       <img 
                         src={editingCourse.thumbnail} 
                         alt="Preview"
@@ -434,7 +434,7 @@ export default function AdminCourseEdit() {
                         variant="ghost"
                         size="icon"
                         onClick={() => setEditingCourse({ ...editingCourse, thumbnail: '' })}
-                        className="absolute top-2 left-2 bg-black/50 hover:bg-black/70 text-white min-w-[44px] min-h-[44px]"
+                        className="absolute top-2 left-2 bg-background/50 hover:bg-background/70 text-foreground min-w-[44px] min-h-[44px]"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -445,7 +445,7 @@ export default function AdminCourseEdit() {
                     variant="outline"
                     onClick={() => document.getElementById('thumbnail-upload').click()}
                     disabled={uploadingImage}
-                    className="w-full border-zinc-700 text-gray-300 hover:bg-zinc-800"
+                    className="w-full border-border text-gray-300 hover:bg-secondary"
                   >
                     {uploadingImage ? 'מעלה...' : 'העלה תמונה'}
                   </Button>
@@ -461,7 +461,7 @@ export default function AdminCourseEdit() {
                     value={editingCourse.thumbnail || ''}
                     onChange={(e) => setEditingCourse({ ...editingCourse, thumbnail: e.target.value })}
                     placeholder="או הזן קישור ישיר: https://..."
-                    className="bg-zinc-800 border-zinc-700 text-white"
+                    className="bg-secondary border-border text-foreground"
                   />
                 </div>
               </div>
@@ -472,14 +472,14 @@ export default function AdminCourseEdit() {
                   onCheckedChange={(checked) => setEditingCourse({ ...editingCourse, is_published: checked })}
                 />
               </div>
-              <div className="space-y-3 pt-4 border-t border-zinc-800">
+              <div className="space-y-3 pt-4 border-t border-border">
                 <div className="space-y-2">
                   <Label className="text-gray-300">כפתור חיצוני - קישור</Label>
                   <Input
                     value={editingCourse.external_button_url || ''}
                     onChange={(e) => setEditingCourse({ ...editingCourse, external_button_url: e.target.value })}
                     placeholder="https://... (ריק = ללא כפתור)"
-                    className="bg-zinc-800 border-zinc-700 text-white"
+                    className="bg-secondary border-border text-foreground"
                   />
                 </div>
                 <div className="space-y-2">
@@ -488,10 +488,10 @@ export default function AdminCourseEdit() {
                     value={editingCourse.external_button_text || ''}
                     onChange={(e) => setEditingCourse({ ...editingCourse, external_button_text: e.target.value })}
                     placeholder="מערכת לניהול הכסף >>"
-                    className="bg-zinc-800 border-zinc-700 text-white"
+                    className="bg-secondary border-border text-foreground"
                   />
                 </div>
-                <p className="text-gray-500 text-xs">השאר את הקישור ריק כדי שלא יוצג כפתור בקורס.</p>
+                <p className="text-muted-foreground text-xs">השאר את הקישור ריק כדי שלא יוצג כפתור בקורס.</p>
               </div>
               <Button
                 onClick={handleSaveCourse}
@@ -508,7 +508,7 @@ export default function AdminCourseEdit() {
         {/* Chapters & Lessons */}
         <div className="lg:col-span-2">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-bold text-white">פרקים ושיעורים</h2>
+            <h2 className="text-lg font-bold text-foreground">פרקים ושיעורים</h2>
             <Button
               onClick={() => {
                 setEditingChapter(null);
@@ -523,9 +523,9 @@ export default function AdminCourseEdit() {
           </div>
 
           {sortedChapters.length === 0 ? (
-            <Card className="bg-zinc-900/50 border-zinc-800 p-10 text-center">
+            <Card className="bg-card/50 border-border p-10 text-center">
               <BookOpen className="w-12 h-12 text-gray-700 mx-auto mb-4" />
-              <p className="text-gray-400 mb-4">אין פרקים עדיין</p>
+              <p className="text-muted-foreground mb-4">אין פרקים עדיין</p>
               <Button
                 onClick={() => setShowChapterDialog(true)}
                 className="bg-[#c7af48] hover:bg-[#b39d3d] text-black"
@@ -563,15 +563,15 @@ export default function AdminCourseEdit() {
                                 transition={{ delay: chapterIndex * 0.05 }}
                                 className={snapshot.isDragging ? 'opacity-50' : ''}
                               >
-                              <Card className="bg-zinc-900/50 border-zinc-800 overflow-hidden">
+                              <Card className="bg-card/50 border-border overflow-hidden">
                                 {/* Chapter Header */}
-                                <div className="p-4 flex items-center justify-between border-b border-zinc-800">
+                                <div className="p-4 flex items-center justify-between border-b border-border">
                                   <div className="flex items-center gap-3">
                                     <div
                                       {...provided.dragHandleProps}
                                       className="cursor-grab active:cursor-grabbing"
                                     >
-                                      <GripVertical className="w-5 h-5 text-gray-600 hover:text-gray-400" />
+                                      <GripVertical className="w-5 h-5 text-gray-600 hover:text-muted-foreground" />
                                     </div>
                                     <div className="w-8 h-8 rounded-lg bg-[#c7af48]/10 flex items-center justify-center">
                                       <span className="text-[#c7af48] font-bold text-sm">
@@ -579,8 +579,8 @@ export default function AdminCourseEdit() {
                                       </span>
                                     </div>
                             <div>
-                              <h3 className="text-white font-semibold">{chapter.title}</h3>
-                              <p className="text-gray-500 text-sm">{chapterLessons.length} שיעורים</p>
+                              <h3 className="text-foreground font-semibold">{chapter.title}</h3>
+                              <p className="text-muted-foreground text-sm">{chapterLessons.length} שיעורים</p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
@@ -597,7 +597,7 @@ export default function AdminCourseEdit() {
                               variant="ghost"
                               size="icon"
                               onClick={() => openEditChapter(chapter)}
-                              className="text-gray-400 hover:text-white min-w-[44px] min-h-[44px]"
+                              className="text-muted-foreground hover:text-foreground min-w-[44px] min-h-[44px]"
                             >
                               <Edit className="w-4 h-4" />
                             </Button>
@@ -605,7 +605,7 @@ export default function AdminCourseEdit() {
                               variant="ghost"
                               size="icon"
                               onClick={() => setDeleteItem({ type: 'chapter', item: chapter })}
-                              className="text-gray-400 hover:text-red-500 min-w-[44px] min-h-[44px]"
+                              className="text-muted-foreground hover:text-red-500 min-w-[44px] min-h-[44px]"
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
@@ -620,7 +620,7 @@ export default function AdminCourseEdit() {
                               ref={provided.innerRef}
                               {...provided.droppableProps}
                               className={`divide-y divide-zinc-800/50 ${
-                                snapshot.isDraggingOver ? 'bg-zinc-800/30' : ''
+                                snapshot.isDraggingOver ? 'bg-secondary/30' : ''
                               }`}
                             >
                               {chapterLessons.length > 0 ? (
@@ -634,8 +634,8 @@ export default function AdminCourseEdit() {
                                       <div
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
-                                        className={`p-4 pr-4 flex items-center justify-between hover:bg-zinc-800/30 transition-colors ${
-                                          snapshot.isDragging ? 'bg-zinc-800 shadow-lg' : ''
+                                        className={`p-4 pr-4 flex items-center justify-between hover:bg-secondary/30 transition-colors ${
+                                          snapshot.isDragging ? 'bg-secondary shadow-lg' : ''
                                         }`}
                                       >
                                         <div className="flex items-center gap-3 flex-1">
@@ -643,13 +643,13 @@ export default function AdminCourseEdit() {
                                             {...provided.dragHandleProps}
                                             className="cursor-grab active:cursor-grabbing"
                                           >
-                                            <GripVertical className="w-5 h-5 text-gray-600 hover:text-gray-400" />
+                                            <GripVertical className="w-5 h-5 text-gray-600 hover:text-muted-foreground" />
                                           </div>
-                                          <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center">
+                                          <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center">
                                             {lesson.lesson_type === 'external_link' ? (
-                                              <FileText className="w-4 h-4 text-gray-400" />
+                                              <FileText className="w-4 h-4 text-muted-foreground" />
                                             ) : (
-                                              <PlayCircle className="w-4 h-4 text-gray-400" />
+                                              <PlayCircle className="w-4 h-4 text-muted-foreground" />
                                             )}
                                           </div>
                                           <div>
@@ -669,7 +669,7 @@ export default function AdminCourseEdit() {
                                             variant="ghost"
                                             size="icon"
                                             onClick={() => openEditLesson(lesson)}
-                                            className="text-gray-500 hover:text-white min-w-[44px] min-h-[44px]"
+                                            className="text-muted-foreground hover:text-foreground min-w-[44px] min-h-[44px]"
                                           >
                                             <Edit className="w-4 h-4" />
                                           </Button>
@@ -677,7 +677,7 @@ export default function AdminCourseEdit() {
                                             variant="ghost"
                                             size="icon"
                                             onClick={() => setDeleteItem({ type: 'lesson', item: lesson })}
-                                            className="text-gray-500 hover:text-red-500 min-w-[44px] min-h-[44px]"
+                                            className="text-muted-foreground hover:text-red-500 min-w-[44px] min-h-[44px]"
                                           >
                                             <Trash2 className="w-4 h-4" />
                                           </Button>
@@ -687,7 +687,7 @@ export default function AdminCourseEdit() {
                                   </Draggable>
                                 ))
                               ) : (
-                                <div className="p-8 text-center text-gray-500">
+                                <div className="p-8 text-center text-muted-foreground">
                                   אין שיעורים בפרק זה
                                 </div>
                               )}
@@ -714,7 +714,7 @@ export default function AdminCourseEdit() {
 
       {/* Chapter Dialog */}
       <Dialog open={showChapterDialog} onOpenChange={setShowChapterDialog}>
-        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+        <DialogContent className="bg-card border-border text-foreground">
           <DialogHeader>
             <DialogTitle>{editingChapter ? 'עריכת פרק' : 'פרק חדש'}</DialogTitle>
           </DialogHeader>
@@ -727,7 +727,7 @@ export default function AdminCourseEdit() {
                 value={newChapter.title}
                 onChange={(e) => setNewChapter({ ...newChapter, title: e.target.value })}
                 placeholder="שם הפרק"
-                className="bg-zinc-800 border-zinc-700 text-white"
+                className="bg-secondary border-border text-foreground"
               />
             </div>
             <div className="flex gap-3 pt-4">
@@ -735,7 +735,7 @@ export default function AdminCourseEdit() {
                 type="button"
                 variant="outline"
                 onClick={() => setShowChapterDialog(false)}
-                className="flex-1 border-zinc-700 text-gray-300 hover:bg-zinc-800"
+                className="flex-1 border-border text-gray-300 hover:bg-secondary"
               >
                 ביטול
               </Button>
@@ -753,7 +753,7 @@ export default function AdminCourseEdit() {
 
       {/* Lesson Dialog */}
       <Dialog open={showLessonDialog} onOpenChange={setShowLessonDialog}>
-        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+        <DialogContent className="bg-card border-border text-foreground">
           <DialogHeader>
             <DialogTitle>{editingLesson ? 'עריכת שיעור' : 'שיעור חדש'}</DialogTitle>
           </DialogHeader>
@@ -766,7 +766,7 @@ export default function AdminCourseEdit() {
                 value={newLesson.title}
                 onChange={(e) => setNewLesson({ ...newLesson, title: e.target.value })}
                 placeholder="שם השיעור"
-                className="bg-zinc-800 border-zinc-700 text-white"
+                className="bg-secondary border-border text-foreground"
               />
             </div>
             {editingLesson && (
@@ -777,7 +777,7 @@ export default function AdminCourseEdit() {
                   onValueChange={setSelectedChapterId}
                   placeholder="בחר פרק"
                   title="בחר פרק"
-                  triggerClassName="bg-zinc-800 border-zinc-700 text-white"
+                  triggerClassName="bg-secondary border-border text-foreground"
                   options={sortedChapters.map(ch => ({ value: ch.id, label: ch.title }))}
                 />
               </div>
@@ -789,7 +789,7 @@ export default function AdminCourseEdit() {
                 onValueChange={(value) => setNewLesson({ ...newLesson, lesson_type: value })}
                 placeholder="בחר סוג שיעור"
                 title="סוג השיעור"
-                triggerClassName="bg-zinc-800 border-zinc-700 text-white"
+                triggerClassName="bg-secondary border-border text-foreground"
                 options={[
                   { value: 'video', label: 'וידאו YouTube' },
                   { value: 'external_link', label: 'קישור חיצוני (Docs, Sheets...)' },
@@ -801,33 +801,33 @@ export default function AdminCourseEdit() {
               <div className="space-y-2">
                 <Label htmlFor="youtubeUrl">קישור YouTube</Label>
                 <div className="relative">
-                  <Video className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <Video className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
                     id="youtubeUrl"
                     required
                     value={newLesson.youtube_url}
                     onChange={(e) => setNewLesson({ ...newLesson, youtube_url: e.target.value })}
                     placeholder="https://youtube.com/watch?v=..."
-                    className="bg-zinc-800 border-zinc-700 text-white pr-11"
+                    className="bg-secondary border-border text-foreground pr-11"
                   />
                 </div>
-                <p className="text-gray-500 text-xs">הזן קישור לסרטון YouTube</p>
+                <p className="text-muted-foreground text-xs">הזן קישור לסרטון YouTube</p>
               </div>
             ) : (
               <div className="space-y-2">
                 <Label htmlFor="externalUrl">קישור חיצוני</Label>
                 <div className="relative">
-                  <Link2 className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <Link2 className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
                     id="externalUrl"
                     required
                     value={newLesson.external_url}
                     onChange={(e) => setNewLesson({ ...newLesson, external_url: e.target.value })}
                     placeholder="https://..."
-                    className="bg-zinc-800 border-zinc-700 text-white pr-11"
+                    className="bg-secondary border-border text-foreground pr-11"
                   />
                 </div>
-                <p className="text-gray-500 text-xs">הזן קישור לאתר, Google Docs, Sheets, Slides או כל קובץ אחר - יוצג בתוך המערכת</p>
+                <p className="text-muted-foreground text-xs">הזן קישור לאתר, Google Docs, Sheets, Slides או כל קובץ אחר - יוצג בתוך המערכת</p>
               </div>
             )}
             
@@ -838,7 +838,7 @@ export default function AdminCourseEdit() {
                 value={newLesson.duration}
                 onChange={(e) => setNewLesson({ ...newLesson, duration: e.target.value })}
                 placeholder="לדוגמה: 15:30"
-                className="bg-zinc-800 border-zinc-700 text-white"
+                className="bg-secondary border-border text-foreground"
               />
             </div>
             <div className="flex gap-3 pt-4">
@@ -846,7 +846,7 @@ export default function AdminCourseEdit() {
                 type="button"
                 variant="outline"
                 onClick={() => setShowLessonDialog(false)}
-                className="flex-1 border-zinc-700 text-gray-300 hover:bg-zinc-800"
+                className="flex-1 border-border text-gray-300 hover:bg-secondary"
               >
                 ביטול
               </Button>
@@ -864,12 +864,12 @@ export default function AdminCourseEdit() {
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteItem} onOpenChange={() => setDeleteItem(null)}>
-        <AlertDialogContent className="bg-zinc-900 border-zinc-800">
+        <AlertDialogContent className="bg-card border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">
+            <AlertDialogTitle className="text-foreground">
               מחיקת {deleteItem?.type === 'chapter' ? 'פרק' : 'שיעור'}
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-400">
+            <AlertDialogDescription className="text-muted-foreground">
               {deleteItem?.type === 'chapter' 
                 ? `האם אתה בטוח שברצונך למחוק את "${deleteItem?.item?.title}"? כל השיעורים בפרק זה יימחקו גם כן.`
                 : `האם אתה בטוח שברצונך למחוק את "${deleteItem?.item?.title}"?`
@@ -877,7 +877,7 @@ export default function AdminCourseEdit() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3">
-            <AlertDialogCancel className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700">
+            <AlertDialogCancel className="bg-secondary border-border text-foreground hover:bg-zinc-700">
               ביטול
             </AlertDialogCancel>
             <AlertDialogAction
@@ -888,7 +888,7 @@ export default function AdminCourseEdit() {
                   deleteLessonMutation.mutate(deleteItem.item.id);
                 }
               }}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-red-600 hover:bg-red-700 text-foreground"
             >
               מחק
             </AlertDialogAction>

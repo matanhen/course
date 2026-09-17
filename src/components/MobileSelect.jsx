@@ -46,19 +46,19 @@ export default function MobileSelect({
           type="button"
           disabled={disabled}
           onClick={() => setOpen(true)}
-          className={`flex h-9 w-full items-center justify-between rounded-md border border-input bg-zinc-800 border-zinc-700 px-3 py-2 text-sm text-white shadow-sm disabled:cursor-not-allowed disabled:opacity-50 ${triggerClassName}`}
+          className={`flex h-9 w-full items-center justify-between rounded-md border border-input bg-secondary border-border px-3 py-2 text-sm text-foreground shadow-sm disabled:cursor-not-allowed disabled:opacity-50 ${triggerClassName}`}
         >
-          <span className={selectedLabel ? 'text-white' : 'text-gray-500'}>
+          <span className={selectedLabel ? 'text-foreground' : 'text-muted-foreground'}>
             {selectedLabel || placeholder}
           </span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400"><path d="m6 9 6 6 6-6"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="m6 9 6 6 6-6"/></svg>
         </button>
 
         <Drawer open={open} onOpenChange={setOpen}>
-          <DrawerContent className="bg-zinc-950 border-zinc-800" dir="rtl">
+          <DrawerContent className="bg-sidebar border-border" dir="rtl">
             {title && (
-              <DrawerHeader className="border-b border-zinc-800">
-                <DrawerTitle className="text-white text-center">{title}</DrawerTitle>
+              <DrawerHeader className="border-b border-border">
+                <DrawerTitle className="text-foreground text-center">{title}</DrawerTitle>
               </DrawerHeader>
             )}
             <div className="p-4 space-y-1 overflow-y-auto max-h-[60vh] pb-safe">
@@ -73,7 +73,7 @@ export default function MobileSelect({
                   className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-right transition-colors ${
                     value === opt.value
                       ? 'bg-[#c7af48]/10 text-[#c7af48]'
-                      : 'text-white hover:bg-zinc-800'
+                      : 'text-foreground hover:bg-secondary'
                   }`}
                 >
                   <span>{opt.label}</span>
@@ -93,9 +93,9 @@ export default function MobileSelect({
       <SelectTrigger className={triggerClassName}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
-      <SelectContent className="bg-zinc-800 border-zinc-700">
+      <SelectContent className="bg-secondary border-border">
         {options.map((opt) => (
-          <SelectItem key={opt.value} value={opt.value} className="text-white">
+          <SelectItem key={opt.value} value={opt.value} className="text-foreground">
             {opt.label}
           </SelectItem>
         ))}

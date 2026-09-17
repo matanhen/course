@@ -8,8 +8,8 @@ import React, { Suspense } from 'react';
 import __Layout from './Layout.jsx';
 
 const CenteredSpinner = () =>
-  React.createElement('div', { className: 'fixed inset-0 flex items-center justify-center bg-black' },
-    React.createElement('div', { className: 'w-8 h-8 border-4 border-zinc-700 border-t-[#c7af48] rounded-full animate-spin' })
+  React.createElement('div', { className: 'fixed inset-0 flex items-center justify-center bg-background' },
+    React.createElement('div', { className: 'w-8 h-8 border-4 border-border border-t-[#c7af48] rounded-full animate-spin' })
   );
 
 const withSuspense = (LazyComp) => (props) =>

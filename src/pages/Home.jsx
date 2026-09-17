@@ -80,14 +80,14 @@ export default function Home() {
 
   if (coursesLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black p-6 lg:p-10">
+    <div className="min-h-screen bg-background p-6 lg:p-10">
       {/* Pull-to-refresh indicator */}
       {(pullDistance > 0 || isRefreshing) && (
         <div
@@ -103,18 +103,18 @@ export default function Home() {
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-3xl lg:text-4xl font-bold text-white mb-2"
+          className="text-3xl lg:text-4xl font-bold text-foreground mb-2"
         >
           שלום, {clientData[0]?.name || user?.full_name || user?.email?.split('@')[0] || 'משתמש'}
         </motion.h1>
-        <p className="text-gray-400">בחר קורס והתחל ללמוד</p>
+        <p className="text-muted-foreground">בחר קורס והתחל ללמוד</p>
       </div>
 
       {/* Courses Grid */}
       {courses.length === 0 ? (
         <div className="text-center py-20">
           <BookOpen className="w-16 h-16 text-gray-700 mx-auto mb-4" />
-          <h2 className="text-xl text-gray-400">אין קורסים זמינים כרגע</h2>
+          <h2 className="text-xl text-muted-foreground">אין קורסים זמינים כרגע</h2>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -130,9 +130,9 @@ export default function Home() {
                 transition={{ delay: index * 0.1 }}
               >
                 <Link to={createPageUrl(`CourseView?id=${course.id}`)}>
-                  <Card className="group bg-zinc-900/50 border-zinc-800 hover:border-[#c7af48]/50 transition-all duration-300 overflow-hidden">
+                  <Card className="group bg-card/50 border-border hover:border-[#c7af48]/50 transition-all duration-300 overflow-hidden">
                     {/* Thumbnail */}
-                    <div className="relative aspect-video bg-zinc-800 overflow-hidden">
+                    <div className="relative aspect-video bg-secondary overflow-hidden">
                       {course.thumbnail ? (
                         <img 
                           src={course.thumbnail} 
@@ -156,13 +156,13 @@ export default function Home() {
                       {/* Progress Badge */}
                       {progressPercent > 0 && (
                         <div className="absolute top-3 left-3">
-                          <div className="flex items-center gap-1.5 bg-black/70 backdrop-blur-sm rounded-full px-3 py-1.5">
+                          <div className="flex items-center gap-1.5 bg-background/70 backdrop-blur-sm rounded-full px-3 py-1.5">
                             {progressPercent === 100 ? (
                               <CheckCircle2 className="w-4 h-4 text-green-400" />
                             ) : (
                               <Clock className="w-4 h-4 text-[#c7af48]" />
                             )}
-                            <span className="text-white text-sm font-medium">{progressPercent}%</span>
+                            <span className="text-foreground text-sm font-medium">{progressPercent}%</span>
                           </div>
                         </div>
                       )}
@@ -170,17 +170,17 @@ export default function Home() {
 
                     {/* Content */}
                     <div className="p-5">
-                      <h3 className="text-lg font-bold text-white mb-2 group-hover:text-[#c7af48] transition-colors">
+                      <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-[#c7af48] transition-colors">
                         {course.title}
                       </h3>
                       {course.description && (
-                        <p className="text-gray-400 text-sm line-clamp-2 mb-4">
+                        <p className="text-muted-foreground text-sm line-clamp-2 mb-4">
                           {course.description}
                         </p>
                       )}
                       
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-500">
+                        <span className="text-muted-foreground">
                           {lessonsCount} שיעורים
                         </span>
                         {progressPercent > 0 && (
@@ -195,7 +195,7 @@ export default function Home() {
                         <div className="mt-4">
                           <Progress 
                             value={progressPercent} 
-                            className="h-1.5 bg-zinc-800"
+                            className="h-1.5 bg-secondary"
                           />
                         </div>
                       )}

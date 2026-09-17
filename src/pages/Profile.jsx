@@ -48,12 +48,12 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-black p-6 lg:p-10" dir="rtl">
+    <div className="min-h-screen bg-background p-6 lg:p-10" dir="rtl">
       <div className="max-w-md mx-auto">
-        <h1 className="text-3xl font-bold text-white mb-8">הפרופיל שלי</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-8">הפרופיל שלי</h1>
 
         {/* User Info */}
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 mb-6">
+        <div className="bg-card/50 border border-border rounded-2xl p-6 mb-6">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-16 h-16 rounded-full bg-[#c7af48] flex items-center justify-center">
               <span className="text-black text-2xl font-bold">
@@ -61,8 +61,8 @@ export default function Profile() {
               </span>
             </div>
             <div>
-              <p className="text-white font-semibold text-lg">{user?.full_name || 'משתמש'}</p>
-              <p className="text-gray-400 text-sm">{user?.email}</p>
+              <p className="text-foreground font-semibold text-lg">{user?.full_name || 'משתמש'}</p>
+              <p className="text-muted-foreground text-sm">{user?.email}</p>
             </div>
           </div>
         </div>
@@ -72,7 +72,7 @@ export default function Profile() {
           <Button
             onClick={() => base44.auth.logout('/')}
             variant="outline"
-            className="w-full justify-start border-zinc-700 text-gray-300 hover:bg-zinc-800 hover:text-white gap-3 py-6"
+            className="w-full justify-start border-border text-gray-300 hover:bg-secondary hover:text-foreground gap-3 py-6"
           >
             <LogOut className="w-5 h-5" />
             התנתק
@@ -88,21 +88,21 @@ export default function Profile() {
                 מחק חשבון
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="bg-zinc-900 border-zinc-700 text-white" dir="rtl">
+            <AlertDialogContent className="bg-card border-border text-foreground" dir="rtl">
               <AlertDialogHeader>
-                <AlertDialogTitle className="text-white">מחיקת חשבון</AlertDialogTitle>
-                <AlertDialogDescription className="text-gray-400">
+                <AlertDialogTitle className="text-foreground">מחיקת חשבון</AlertDialogTitle>
+                <AlertDialogDescription className="text-muted-foreground">
                   האם אתה בטוח שברצונך למחוק את החשבון? פעולה זו תשלח בקשה למנהל המערכת ואינה ניתנת לביטול. לאחר שליחת הבקשה תתנתק אוטומטית מהמערכת, והבקשה תטופל על ידי מנהל המערכת בהמשך.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter className="flex-row-reverse gap-2">
                 <AlertDialogAction
                   onClick={handleDeleteAccount}
-                  className="bg-red-600 hover:bg-red-700 text-white"
+                  className="bg-red-600 hover:bg-red-700 text-foreground"
                 >
                   מחק חשבון
                 </AlertDialogAction>
-                <AlertDialogCancel className="border-zinc-700 text-gray-300 hover:bg-zinc-800">
+                <AlertDialogCancel className="border-border text-gray-300 hover:bg-secondary">
                   ביטול
                 </AlertDialogCancel>
               </AlertDialogFooter>
