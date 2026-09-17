@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -103,23 +103,42 @@ export default function AdminClients() {
     checkUser();
   }, []);
 
-  const { data: clients = [], isLoading } = useQuery({
+  const { data: rawClients = [], isLoading } = useQuery({
     queryKey: ['clients'],
-    queryFn: async () => {
-      const allClients = await base44.entities.AllowedClient.list('-created_date');
-      
-      // Find and merge duplicates
+    queryFn: () => base44.entities.AllowedClient.list('-created_date'),
+  });
+
+  // In-memory dedup for display (cheap) — keeps the earliest-created record per email
+  const clients = useMemo(() => {
+    const map = new Map();
+    for (const c of rawClients) {
+      const existing = map.get(c.email);
+      if (!existing || new Date(c.created_date) < new Date(existing.created_date)) {
+        map.set(c.email, c);
+      }
+    }
+    return Array.from(map.values());
+  }, [rawClients]);
+
+  // Backend cleanup: merge & delete duplicates only when duplicates are detected
+  useEffect(() => {
+    const counts = {};
+    for (const c of rawClients) counts[c.email] = (counts[c.email] || 0) + 1;
+    if (!Object.values(counts).some(n => n > 1)) return;
+
+    let cancelled = false;
+    (async () => {
       const emailMap = new Map();
       const duplicatesToDelete = [];
-      
-      for (const client of allClients) {
+
+      for (const client of rawClients) {
         if (emailMap.has(client.email)) {
           const existing = emailMap.get(client.email);
-          
+
           // Keep the one with earlier created_date
           const keepClient = new Date(existing.created_date) < new Date(client.created_date) ? existing : client;
           const deleteClient = keepClient === existing ? client : existing;
-          
+
           // Merge data - keep non-null values from both
           const mergedData = {
             name: keepClient.name || deleteClient.name,
@@ -136,29 +155,23 @@ export default function AdminClients() {
               : (keepClient.last_login_date || deleteClient.last_login_date),
             is_consultant: keepClient.is_consultant || deleteClient.is_consultant
           };
-          
-          // Update the kept client with merged data
+
           await base44.entities.AllowedClient.update(keepClient.id, mergedData);
-          
-          // Mark duplicate for deletion
           duplicatesToDelete.push(deleteClient.id);
-          
-          // Update map with kept client
           emailMap.set(client.email, keepClient);
         } else {
           emailMap.set(client.email, client);
         }
       }
-      
-      // Delete duplicates
+
       for (const id of duplicatesToDelete) {
         await base44.entities.AllowedClient.delete(id);
       }
-      
-      // Return deduplicated list
-      return Array.from(emailMap.values());
-    },
-  });
+
+      if (!cancelled) queryClient.invalidateQueries(['clients']);
+    })();
+    return () => { cancelled = true; };
+  }, [rawClients, queryClient]);
 
   const { data: courses = [] } = useQuery({
     queryKey: ['courses'],

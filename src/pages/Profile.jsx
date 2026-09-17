@@ -13,9 +13,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     base44.auth.me().then(setUser);
@@ -29,11 +31,20 @@ export default function Profile() {
         subject: `בקשת מחיקת חשבון - ${user?.email}`,
         body: `המשתמש ${user?.full_name || ''} (${user?.email}) ביקש למחוק את חשבונו.\n\nמזהה משתמש: ${user?.id}\nתאריך: ${new Date().toLocaleString('he-IL')}\n\nנא לטפל בבקשה זו בהקדם.`,
       });
+      toast({
+        title: "הבקשה נשלחה בהצלחה",
+        description: "בקשת מחיקת החשבון נשלחה למנהל המערכת ותטופל בהקדם. תתנתק כעת מהמערכת.",
+      });
     } catch (e) {
-      // Even if email fails, proceed with logout
       console.warn('Failed to send deletion request email', e);
+      toast({
+        title: "שגיאה בשליחת הבקשה",
+        description: "לא הצלחנו לשלוח את בקשת המחיקה, אך תתנתק מהמערכת. נא לפנות שוב למנהל המערכת.",
+        variant: "destructive",
+      });
     }
-    base44.auth.logout('/');
+    // Brief delay so the toast is visible before logout redirects
+    setTimeout(() => base44.auth.logout('/'), 1500);
   };
 
   return (
@@ -81,7 +92,7 @@ export default function Profile() {
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-white">מחיקת חשבון</AlertDialogTitle>
                 <AlertDialogDescription className="text-gray-400">
-                  האם אתה בטוח שברצונך למחוק את החשבון? פעולה זו תשלח בקשה למנהל המערכת ואינה ניתנת לביטול.
+                  האם אתה בטוח שברצונך למחוק את החשבון? פעולה זו תשלח בקשה למנהל המערכת ואינה ניתנת לביטול. לאחר שליחת הבקשה תתנתק אוטומטית מהמערכת, והבקשה תטופל על ידי מנהל המערכת בהמשך.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter className="flex-row-reverse gap-2">

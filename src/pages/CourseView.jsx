@@ -580,7 +580,7 @@ export default function CourseView() {
           <div className="px-4 py-2 bg-zinc-950 border-b border-zinc-800 flex items-center justify-center lg:justify-start gap-2">
             <button
               onClick={() => setCourseContentOpen(prev => !prev)}
-              className="flex items-center gap-2 bg-[#105330] text-white hover:bg-[#0a3d20] px-3 py-1.5 rounded-lg transition-colors font-medium text-sm"
+              className="flex items-center gap-2 bg-[#105330] text-white hover:bg-[#0a3d20] px-3 py-1.5 rounded-lg transition-colors font-medium text-sm focus-visible:ring-2 focus-visible:ring-[#c7af48]"
             >
               <BookOpen className="w-4 h-4" />
               <span>תוכן הקורס</span>
@@ -609,7 +609,7 @@ export default function CourseView() {
                       <div key={chapter.id}>
                         <button
                           onClick={() => setExpandedChapters(prev => ({ ...prev, [chapter.id]: !prev[chapter.id] }))}
-                          className="w-full p-2 lg:p-4 flex items-center justify-between hover:bg-zinc-900/50 transition-colors"
+                          className="w-full p-2 lg:p-4 flex items-center justify-between hover:bg-zinc-900/50 transition-colors focus-visible:ring-2 focus-visible:ring-[#c7af48]"
                         >
                           <div className="flex items-center gap-2 lg:gap-3">
                             <div className="w-6 h-6 lg:w-7 lg:h-7 rounded-lg bg-[#c7af48]/10 flex items-center justify-center shrink-0">
@@ -641,7 +641,7 @@ export default function CourseView() {
                                   <button
                                     key={lesson.id}
                                     onClick={() => { selectLesson(lesson); setCourseContentOpen(false); }}
-                                    className={`w-full p-3 pr-8 lg:p-3 lg:pr-10 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right ${
+                                    className={`w-full p-3 pr-8 lg:p-3 lg:pr-10 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right focus-visible:ring-2 focus-visible:ring-[#c7af48] ${
                                       isCurrent
                                         ? 'bg-[#c7af48]/10 border-r-2 border-[#c7af48]'
                                         : 'hover:bg-zinc-800/50'
@@ -714,7 +714,7 @@ export default function CourseView() {
                       {!isPlaying && (
                         <button
                           type="button"
-                          aria-label="נגן/השהה"
+                          aria-label={isPlaying ? "השהה" : "נגן"}
                           className="w-16 h-16 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center hover:bg-black/80 transition-colors"
                           onClick={(e) => { e.stopPropagation(); togglePlayPause(); }}
                         >
@@ -741,6 +741,7 @@ export default function CourseView() {
                         <button
                           type="button"
                           onClick={() => setSpeedMenuOpen(o => !o)}
+                          aria-label="מהירות נגינה"
                           className="h-9 px-2 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors text-white text-xs font-medium focus-visible:ring-2 focus-visible:ring-[#c7af48]"
                         >
                           {playbackRate}x
@@ -762,7 +763,7 @@ export default function CourseView() {
                       </div>
                       <button
                         type="button"
-                        aria-label="מסך מלא"
+                        aria-label={fsMode ? "צא ממסך מלא" : "מסך מלא"}
                         onClick={toggleFullscreen}
                         className="w-9 h-9 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[#c7af48]"
                       >
@@ -838,7 +839,7 @@ export default function CourseView() {
                 <div key={chapter.id}>
                   <button
                     onClick={() => setExpandedChapters(prev => ({ ...prev, [chapter.id]: !prev[chapter.id] }))}
-                    className="w-full p-2 lg:p-4 flex items-center justify-between hover:bg-zinc-900/50 transition-colors"
+                    className="w-full p-2 lg:p-4 flex items-center justify-between hover:bg-zinc-900/50 transition-colors focus-visible:ring-2 focus-visible:ring-[#c7af48]"
                   >
                     <div className="flex items-center gap-2 lg:gap-3">
                       <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-lg bg-[#c7af48]/10 flex items-center justify-center">
@@ -870,7 +871,7 @@ export default function CourseView() {
                             <button
                               key={lesson.id}
                               onClick={() => selectLesson(lesson)}
-                              className={`w-full p-3 pr-8 lg:p-4 lg:pr-12 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right ${
+                              className={`w-full p-3 pr-8 lg:p-4 lg:pr-12 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right focus-visible:ring-2 focus-visible:ring-[#c7af48] ${
                                 isCurrent
                                   ? 'bg-[#c7af48]/10 border-r-2 border-[#c7af48]'
                                   : 'hover:bg-zinc-800/50'
