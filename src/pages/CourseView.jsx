@@ -653,7 +653,7 @@ export default function CourseView() {
                                       {lesson.lesson_type === 'external_link' ? (
                                         <FileText className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" />
                                       ) : (
-                                        <span className="text-[10px] lg:text-xs text-white">{lessonIndex + 1}</span>
+                                        <span className="text-xs text-white">{lessonIndex + 1}</span>
                                       )}
                                     </div>
                                     {isCompleted && (
@@ -727,7 +727,8 @@ export default function CourseView() {
                       <span className="text-white text-xs tabular-nums w-10 text-right shrink-0">{formatTime(videoTime)}</span>
                       <div
                         ref={seekBarRef}
-                        className="flex-1 h-2 bg-zinc-700 rounded-full cursor-pointer relative touch-none"
+                        tabIndex={0}
+                        className="flex-1 h-2 bg-zinc-700 rounded-full cursor-pointer relative touch-none focus-visible:ring-2 focus-visible:ring-[#c7af48]"
                         onPointerDown={onSeekPointerDown}
                         onPointerMove={onSeekPointerMove}
                         onPointerUp={onSeekPointerUp}
@@ -740,7 +741,7 @@ export default function CourseView() {
                         <button
                           type="button"
                           onClick={() => setSpeedMenuOpen(o => !o)}
-                          className="h-9 px-2 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors text-white text-xs font-medium"
+                          className="h-9 px-2 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors text-white text-xs font-medium focus-visible:ring-2 focus-visible:ring-[#c7af48]"
                         >
                           {playbackRate}x
                         </button>
@@ -763,7 +764,7 @@ export default function CourseView() {
                         type="button"
                         aria-label="מסך מלא"
                         onClick={toggleFullscreen}
-                        className="w-9 h-9 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors shrink-0"
+                        className="w-9 h-9 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[#c7af48]"
                       >
                         {fsMode ? <Minimize2 className="w-5 h-5 text-white" /> : <Maximize2 className="w-5 h-5 text-white" />}
                       </button>
@@ -881,7 +882,7 @@ export default function CourseView() {
                                 {lesson.lesson_type === 'external_link' ? (
                                   <FileText className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" />
                                 ) : (
-                                  <span className="text-[10px] lg:text-xs text-white">{lessonIndex + 1}</span>
+                                  <span className="text-xs text-white">{lessonIndex + 1}</span>
                                 )}
                               </div>
                               {isCompleted && (

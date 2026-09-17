@@ -661,8 +661,8 @@ export default function AdminClients() {
             variant={activeTab === 'clients' ? 'default' : 'outline'}
             onClick={() => setActiveTab('clients')}
             className={activeTab === 'clients' 
-              ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold' 
-              : 'border-zinc-700 text-gray-300 hover:bg-zinc-800'
+              ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' 
+              : 'border-zinc-700 text-gray-300 hover:bg-zinc-800 min-w-[44px] min-h-[44px]'
             }
           >
             <Users className="w-4 h-4 ml-2" />
@@ -672,8 +672,8 @@ export default function AdminClients() {
             variant={activeTab === 'consultants' ? 'default' : 'outline'}
             onClick={() => setActiveTab('consultants')}
             className={activeTab === 'consultants' 
-              ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold' 
-              : 'border-zinc-700 text-gray-300 hover:bg-zinc-800'
+              ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' 
+              : 'border-zinc-700 text-gray-300 hover:bg-zinc-800 min-w-[44px] min-h-[44px]'
             }
           >
             <User className="w-4 h-4 ml-2" />
@@ -683,8 +683,8 @@ export default function AdminClients() {
             variant={activeTab === 'managers' ? 'default' : 'outline'}
             onClick={() => setActiveTab('managers')}
             className={activeTab === 'managers' 
-              ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold' 
-              : 'border-zinc-700 text-gray-300 hover:bg-zinc-800'
+              ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' 
+              : 'border-zinc-700 text-gray-300 hover:bg-zinc-800 min-w-[44px] min-h-[44px]'
             }
           >
             <Users className="w-4 h-4 ml-2" />
@@ -704,21 +704,21 @@ export default function AdminClients() {
                   <Button
                     variant={filterType === 'all' ? 'default' : 'outline'}
                     onClick={() => { setFilterType('all'); setSelectedCourseFilter(''); setSelectedConsultantFilter(''); }}
-                    className={filterType === 'all' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold' : 'border-zinc-700 text-gray-300 hover:bg-zinc-800'}
+                    className={filterType === 'all' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-zinc-700 text-gray-300 hover:bg-zinc-800 min-w-[44px] min-h-[44px]'}
                   >
                     כל הלקוחות ({clients.length})
                   </Button>
                   <Button
                     variant={filterType === 'course' ? 'default' : 'outline'}
                     onClick={() => setFilterType('course')}
-                    className={filterType === 'course' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold' : 'border-zinc-700 text-gray-300 hover:bg-zinc-800'}
+                    className={filterType === 'course' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-zinc-700 text-gray-300 hover:bg-zinc-800 min-w-[44px] min-h-[44px]'}
                   >
                     לפי קורס
                   </Button>
                   <Button
                     variant={filterType === 'consultant' ? 'default' : 'outline'}
                     onClick={() => setFilterType('consultant')}
-                    className={filterType === 'consultant' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold' : 'border-zinc-700 text-gray-300 hover:bg-zinc-800'}
+                    className={filterType === 'consultant' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-zinc-700 text-gray-300 hover:bg-zinc-800 min-w-[44px] min-h-[44px]'}
                   >
                     לפי יועץ
                   </Button>
