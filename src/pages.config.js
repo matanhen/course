@@ -1,60 +1,29 @@
 /**
  * pages.config.js - Page routing configuration
- * 
- * This file is AUTO-GENERATED. Do not add imports or modify PAGES manually.
- * Pages are auto-registered when you create files in the ./pages/ folder.
- * 
- * THE ONLY EDITABLE VALUE: mainPage
- * This controls which page is the landing page (shown when users visit the app).
- * 
- * Example file structure:
- * 
- *   import HomePage from './pages/HomePage';
- *   import Dashboard from './pages/Dashboard';
- *   import Settings from './pages/Settings';
- *   
- *   export const PAGES = {
- *       "HomePage": HomePage,
- *       "Dashboard": Dashboard,
- *       "Settings": Settings,
- *   }
- *   
- *   export const pagesConfig = {
- *       mainPage: "HomePage",
- *       Pages: PAGES,
- *   };
- * 
- * Example with Layout (wraps all pages):
  *
- *   import Home from './pages/Home';
- *   import Settings from './pages/Settings';
- *   import __Layout from './Layout.jsx';
- *
- *   export const PAGES = {
- *       "Home": Home,
- *       "Settings": Settings,
- *   }
- *
- *   export const pagesConfig = {
- *       mainPage: "Home",
- *       Pages: PAGES,
- *       Layout: __Layout,
- *   };
- *
- * To change the main page from HomePage to Dashboard, use find_replace:
- *   Old: mainPage: "HomePage",
- *   New: mainPage: "Dashboard",
- *
- * The mainPage value must match a key in the PAGES object exactly.
+ * Page components are loaded lazily via React.lazy and wrapped with a
+ * Suspense fallback (centered spinner) so each route code-splits.
  */
-import AdminClients from './pages/AdminClients';
-import AdminCourseEdit from './pages/AdminCourseEdit';
-import AdminCourses from './pages/AdminCourses';
-import AdminDashboard from './pages/AdminDashboard';
-import CourseView from './pages/CourseView';
-import Home from './pages/Home';
-import Index from './pages/Index';
+import React, { Suspense } from 'react';
 import __Layout from './Layout.jsx';
+
+const CenteredSpinner = () =>
+  React.createElement('div', { className: 'fixed inset-0 flex items-center justify-center bg-black' },
+    React.createElement('div', { className: 'w-8 h-8 border-4 border-zinc-700 border-t-[#c7af48] rounded-full animate-spin' })
+  );
+
+const withSuspense = (LazyComp) => (props) =>
+  React.createElement(Suspense, { fallback: React.createElement(CenteredSpinner) },
+    React.createElement(LazyComp, props)
+  );
+
+const AdminClients = withSuspense(React.lazy(() => import('./pages/AdminClients')));
+const AdminCourseEdit = withSuspense(React.lazy(() => import('./pages/AdminCourseEdit')));
+const AdminCourses = withSuspense(React.lazy(() => import('./pages/AdminCourses')));
+const AdminDashboard = withSuspense(React.lazy(() => import('./pages/AdminDashboard')));
+const CourseView = withSuspense(React.lazy(() => import('./pages/CourseView')));
+const Home = withSuspense(React.lazy(() => import('./pages/Home')));
+const Index = withSuspense(React.lazy(() => import('./pages/Index')));
 
 
 export const PAGES = {

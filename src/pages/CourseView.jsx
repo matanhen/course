@@ -533,7 +533,7 @@ export default function CourseView() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to={createPageUrl('Home')}>
-              <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
+              <Button variant="ghost" size="icon" aria-label="חזרה" className="text-gray-400 hover:text-white">
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
@@ -641,7 +641,7 @@ export default function CourseView() {
                                   <button
                                     key={lesson.id}
                                     onClick={() => { selectLesson(lesson); setCourseContentOpen(false); }}
-                                    className={`w-full p-2 pr-8 lg:p-3 lg:pr-10 flex items-center gap-2 lg:gap-3 transition-all text-right ${
+                                    className={`w-full p-3 pr-8 lg:p-3 lg:pr-10 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right ${
                                       isCurrent
                                         ? 'bg-[#c7af48]/10 border-r-2 border-[#c7af48]'
                                         : 'hover:bg-zinc-800/50'
@@ -714,6 +714,7 @@ export default function CourseView() {
                       {!isPlaying && (
                         <button
                           type="button"
+                          aria-label="נגן/השהה"
                           className="w-16 h-16 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center hover:bg-black/80 transition-colors"
                           onClick={(e) => { e.stopPropagation(); togglePlayPause(); }}
                         >
@@ -760,6 +761,7 @@ export default function CourseView() {
                       </div>
                       <button
                         type="button"
+                        aria-label="מסך מלא"
                         onClick={toggleFullscreen}
                         className="w-9 h-9 rounded-lg bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors shrink-0"
                       >
@@ -867,7 +869,7 @@ export default function CourseView() {
                             <button
                               key={lesson.id}
                               onClick={() => selectLesson(lesson)}
-                              className={`w-full p-2 pr-8 lg:p-4 lg:pr-12 flex items-center gap-2 lg:gap-3 transition-all text-right ${
+                              className={`w-full p-3 pr-8 lg:p-4 lg:pr-12 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right ${
                                 isCurrent
                                   ? 'bg-[#c7af48]/10 border-r-2 border-[#c7af48]'
                                   : 'hover:bg-zinc-800/50'

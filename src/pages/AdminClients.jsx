@@ -711,34 +711,34 @@ export default function AdminClients() {
               )}
 
               {isAdmin && filterType === 'course' && (
-                <Select value={selectedCourseFilter} onValueChange={setSelectedCourseFilter}>
-                  <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-white max-w-md">
-                    <SelectValue placeholder="בחר קורס" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-800 border-zinc-700">
-                    {courses.map((course) => (
-                      <SelectItem key={course.id} value={course.id} className="text-white">
-                        {course.title} ({clientAccess.filter(a => a.course_id === course.id).length} לקוחות)
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <MobileSelect
+                  value={selectedCourseFilter}
+                  onValueChange={setSelectedCourseFilter}
+                  placeholder="בחר קורס"
+                  title="בחר קורס"
+                  triggerClassName="bg-zinc-900/50 border-zinc-800 text-white max-w-md"
+                  options={courses.map((course) => ({
+                    value: course.id,
+                    label: `${course.title} (${clientAccess.filter(a => a.course_id === course.id).length} לקוחות)`,
+                  }))}
+                />
               )}
 
               {(isAdmin ? filterType === 'consultant' : true) && (
-                <Select value={selectedConsultantFilter} onValueChange={setSelectedConsultantFilter}>
-                  <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-white max-w-md">
-                    <SelectValue placeholder={isManager ? 'סנן לפי יועץ' : 'בחר יועץ'} />
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-800 border-zinc-700">
-                    {isManager && <SelectItem value="__all__" className="text-white">כל היועצים</SelectItem>}
-                    {consultants.map((consultant) => (
-                      <SelectItem key={consultant.email} value={consultant.email} className="text-white">
-                        {consultant.full_name || consultant.email} ({clients.filter(c => c.consultant_email === consultant.email).length} לקוחות)
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <MobileSelect
+                  value={selectedConsultantFilter}
+                  onValueChange={setSelectedConsultantFilter}
+                  placeholder={isManager ? 'סנן לפי יועץ' : 'בחר יועץ'}
+                  title={isManager ? 'סינון לפי יועץ' : 'בחר יועץ'}
+                  triggerClassName="bg-zinc-900/50 border-zinc-800 text-white max-w-md"
+                  options={[
+                    ...(isManager ? [{ value: '__all__', label: 'כל היועצים' }] : []),
+                    ...consultants.map((consultant) => ({
+                      value: consultant.email,
+                      label: `${consultant.full_name || consultant.email} (${clients.filter(c => c.consultant_email === consultant.email).length} לקוחות)`,
+                    })),
+                  ]}
+                />
               )}
             </div>
           )}
@@ -874,6 +874,7 @@ export default function AdminClients() {
                             <Button
                               variant="ghost"
                               size="icon"
+                              aria-label="עריכה"
                               onClick={() => setShowEditClientDialog(client)}
                               className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
                             >
@@ -882,6 +883,7 @@ export default function AdminClients() {
                             <Button
                               variant="ghost"
                               size="icon"
+                              aria-label="מחיקה"
                               onClick={() => setDeleteClient(client)}
                               className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
                             >
@@ -998,6 +1000,7 @@ export default function AdminClients() {
                       <Button
                         variant="ghost"
                         size="icon"
+                        aria-label="מחיקה"
                         onClick={() => deleteManagerMutation.mutate(manager)}
                         className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
                       >
@@ -1171,6 +1174,7 @@ export default function AdminClients() {
                       <Button
                         variant="ghost"
                         size="icon"
+                        aria-label="הסרת גישה לקורס"
                         onClick={() => setRemoveAccess({ email: selectedClientCourses.email, course_id: course.id, course_title: course.title })}
                         className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 shrink-0"
                       >
@@ -1781,6 +1785,7 @@ function ConsultantsList({ consultants, clients, onEditConsultant, getConsultant
                     <Button
                       variant="ghost"
                       size="icon"
+                      aria-label="עריכה"
                       onClick={() => onEditConsultant(consultant)}
                       className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
                     >

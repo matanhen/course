@@ -317,6 +317,7 @@ export default function AdminCourses() {
                             <Button 
                               variant="ghost" 
                               size="icon"
+                              aria-label="פעולות קורס"
                               className="bg-black/50 hover:bg-black/70 text-white"
                             >
                               <MoreVertical className="w-4 h-4" />
@@ -438,6 +439,7 @@ export default function AdminCourses() {
                       type="button"
                       variant="ghost"
                       size="icon"
+                      aria-label="הסרת תמונה"
                       onClick={() => setNewCourse({ ...newCourse, thumbnail: '' })}
                       className="absolute top-2 left-2 bg-black/50 hover:bg-black/70 text-white"
                     >
