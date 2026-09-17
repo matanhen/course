@@ -789,7 +789,7 @@ export default function AdminClients() {
                 type="checkbox"
                 checked={selectedClientIds.size === filteredClients.length && filteredClients.length > 0}
                 onChange={toggleSelectAll}
-                className="w-4 h-4 accent-[#c7af48] cursor-pointer"
+                className="w-5 h-5 accent-[#c7af48] cursor-pointer"
               />
               <span className="text-gray-400 text-sm">
                 {selectedClientIds.size > 0 ? `${selectedClientIds.size} נבחרו` : 'בחר הכל'}
@@ -846,7 +846,7 @@ export default function AdminClients() {
                               type="checkbox"
                               checked={selectedClientIds.has(client.id)}
                               onChange={() => toggleSelectClient(client.id)}
-                              className="w-4 h-4 accent-[#c7af48] cursor-pointer shrink-0"
+                              className="w-5 h-5 accent-[#c7af48] cursor-pointer shrink-0"
                               onClick={e => e.stopPropagation()}
                             />
                           )}
@@ -863,7 +863,7 @@ export default function AdminClients() {
                               <Mail className="w-3 h-3" />
                               {client.email}
                             </p>
-                            <div className="flex items-center gap-3 text-xs text-gray-600">
+                            <div className="flex items-center gap-3 text-sm text-gray-600">
                               <span className="flex items-center gap-1">
                                 <Calendar className="w-3 h-3" />
                                 נרשם: {format(new Date(client.created_date), 'dd/MM/yyyy', { locale: he })}
@@ -882,7 +882,7 @@ export default function AdminClients() {
                               )}
                             </div>
                             {client.consultant_email && (
-                              <p className="text-[#c7af48] text-xs mt-1">
+                              <p className="text-[#c7af48] text-sm mt-1">
                                 יועץ: {getConsultantName(client.consultant_email)}
                               </p>
                             )}
@@ -894,7 +894,7 @@ export default function AdminClients() {
                               variant="outline"
                               size="sm"
                               onClick={() => setShowAssignConsultantDialog({ client, consultant_email: client.consultant_email || '' })}
-                              className="text-[#c7af48] border-[#c7af48]/30 hover:bg-[#c7af48]/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                              className="text-[#c7af48] border-[#c7af48]/30 hover:bg-[#c7af48]/10 opacity-70 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity shrink-0"
                             >
                               <UserPlus className="w-4 h-4 ml-1" />
                               שייך יועץ
@@ -904,7 +904,7 @@ export default function AdminClients() {
                               size="icon"
                               aria-label="עריכה"
                               onClick={() => setShowEditClientDialog(client)}
-                              className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 min-w-[44px] min-h-[44px]"
+                              className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-70 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity shrink-0 min-w-[44px] min-h-[44px]"
                             >
                               <Edit className="w-5 h-5" />
                             </Button>
@@ -913,7 +913,7 @@ export default function AdminClients() {
                               size="icon"
                               aria-label="מחיקה"
                               onClick={() => setDeleteClient(client)}
-                              className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 min-w-[44px] min-h-[44px]"
+                              className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 opacity-70 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity shrink-0 min-w-[44px] min-h-[44px]"
                             >
                               <Trash2 className="w-5 h-5" />
                             </Button>
@@ -931,7 +931,7 @@ export default function AdminClients() {
                             <PlayCircle className="w-4 h-4 text-blue-400" />
                           </div>
                           <div className="text-right">
-                            <p className="text-xs text-gray-500 group-hover/stat:text-blue-400 transition-colors">קורסים מורשים</p>
+                            <p className="text-sm text-gray-500 group-hover/stat:text-blue-400 transition-colors">קורסים מורשים</p>
                             <p className="text-white font-semibold">{getClientCourses(client.email).length}</p>
                           </div>
                         </button>
@@ -943,7 +943,7 @@ export default function AdminClients() {
                             <CheckCircle2 className="w-4 h-4 text-green-400" />
                           </div>
                           <div className="text-right">
-                            <p className="text-xs text-gray-500 group-hover/stat:text-green-400 transition-colors">שיעורים נצפו</p>
+                            <p className="text-sm text-gray-500 group-hover/stat:text-green-400 transition-colors">שיעורים נצפו</p>
                             <p className="text-white font-semibold">
                               {getClientProgress(client.email)}/{getTotalLessons(client.email)}
                             </p>
@@ -954,7 +954,7 @@ export default function AdminClients() {
                             <TrendingUp className="w-4 h-4 text-[#c7af48]" />
                           </div>
                           <div>
-                            <p className="text-xs text-gray-500">התקדמות</p>
+                            <p className="text-sm text-gray-500">התקדמות</p>
                             <p className="text-white font-semibold">
                               {getTotalLessons(client.email) > 0 
                                 ? Math.round((getClientProgress(client.email) / getTotalLessons(client.email)) * 100)
@@ -1030,7 +1030,7 @@ export default function AdminClients() {
                         size="icon"
                         aria-label="מחיקה"
                         onClick={() => deleteManagerMutation.mutate(manager)}
-                        className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity min-w-[44px] min-h-[44px]"
+                        className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 opacity-70 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity min-w-[44px] min-h-[44px]"
                       >
                         <Trash2 className="w-5 h-5" />
                       </Button>
@@ -1797,7 +1797,7 @@ function ConsultantsList({ consultants, clients, onEditConsultant, getConsultant
                         <Mail className="w-3 h-3" />
                         {consultant.email}
                       </p>
-                      <div className="flex items-center gap-3 text-xs text-gray-600">
+                      <div className="flex items-center gap-3 text-sm text-gray-600">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
                           נוצר: {format(new Date(consultant.created_date), 'dd/MM/yyyy', { locale: he })}
@@ -1807,7 +1807,7 @@ function ConsultantsList({ consultants, clients, onEditConsultant, getConsultant
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="text-left">
-                      <p className="text-xs text-gray-500">לקוחות</p>
+                      <p className="text-sm text-gray-500">לקוחות</p>
                       <p className="text-2xl font-bold text-[#c7af48]">{clientCount}</p>
                     </div>
                     <Button
@@ -1815,7 +1815,7 @@ function ConsultantsList({ consultants, clients, onEditConsultant, getConsultant
                       size="icon"
                       aria-label="עריכה"
                       onClick={() => onEditConsultant(consultant)}
-                      className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 min-w-[44px] min-h-[44px]"
+                      className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-70 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity shrink-0 min-w-[44px] min-h-[44px]"
                     >
                       <Edit className="w-5 h-5" />
                     </Button>

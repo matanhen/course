@@ -617,7 +617,7 @@ export default function CourseView() {
                             </div>
                             <div className="text-right">
                               <h4 className="text-white font-medium text-sm">{chapter.title}</h4>
-                              <p className="text-gray-500 text-xs">{chapterCompletedCount}/{chapterLessons.length} הושלמו</p>
+                              <p className="text-gray-500 text-sm">{chapterCompletedCount}/{chapterLessons.length} הושלמו</p>
                             </div>
                           </div>
                           {isExpanded ? <ChevronUp className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-gray-500 shrink-0" /> : <ChevronDown className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-gray-500 shrink-0" />}
@@ -847,7 +847,7 @@ export default function CourseView() {
                       </div>
                       <div className="text-right">
                         <h4 className="text-white font-medium text-sm lg:text-base">{chapter.title}</h4>
-                        <p className="text-gray-500 text-xs">{chapterCompletedCount}/{chapterLessons.length} הושלמו</p>
+                        <p className="text-gray-500 text-sm">{chapterCompletedCount}/{chapterLessons.length} הושלמו</p>
                       </div>
                     </div>
                     {isExpanded ? <ChevronUp className="w-4 h-4 lg:w-5 lg:h-5 text-gray-500" /> : <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5 text-gray-500" />}
