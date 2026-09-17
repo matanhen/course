@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,7 +15,8 @@ import {
   Eye,
   EyeOff,
   X,
-  Copy
+  Copy,
+  RefreshCw
 } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -60,6 +62,9 @@ export default function AdminCourses() {
   const [uploadingImage, setUploadingImage] = useState(false);
   
   const queryClient = useQueryClient();
+  const { pullDistance, isRefreshing } = usePullToRefresh(async () => {
+    await queryClient.invalidateQueries();
+  });
 
   React.useEffect(() => {
     const checkUser = async () => {
@@ -208,6 +213,16 @@ export default function AdminCourses() {
 
   return (
     <div className="min-h-screen bg-black p-6 lg:p-10">
+      {/* Pull-to-refresh indicator */}
+      {(pullDistance > 0 || isRefreshing) && (
+        <div
+          className="flex items-center justify-center transition-all"
+          style={{ height: isRefreshing ? 48 : pullDistance, overflow: 'hidden' }}
+        >
+          <RefreshCw className={`w-5 h-5 text-[#c7af48] ${isRefreshing ? 'animate-spin' : ''}`} />
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-10">
         <div>

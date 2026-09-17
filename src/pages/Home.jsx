@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { base44 } from '@/api/base44Client';
@@ -10,10 +11,10 @@ import { Progress } from "@/components/ui/progress";
 
 export default function Home() {
   const [user, setUser] = useState(null);
-  const [pullDistance, setPullDistance] = useState(0);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const touchStartY = useRef(null);
   const queryClient = useQueryClient();
+  const { pullDistance, isRefreshing } = usePullToRefresh(async () => {
+    await queryClient.invalidateQueries();
+  });
 
   useEffect(() => {
     const getUser = async () => {
@@ -22,42 +23,6 @@ export default function Home() {
     };
     getUser();
   }, []);
-
-  // Pull-to-refresh
-  useEffect(() => {
-    const el = document.documentElement;
-
-    const onTouchStart = (e) => {
-      if (el.scrollTop === 0) touchStartY.current = e.touches[0].clientY;
-    };
-
-    const onTouchMove = (e) => {
-      if (touchStartY.current === null) return;
-      const delta = e.touches[0].clientY - touchStartY.current;
-      if (delta > 0 && el.scrollTop === 0) {
-        setPullDistance(Math.min(delta * 0.4, 70));
-      }
-    };
-
-    const onTouchEnd = async () => {
-      if (pullDistance > 50) {
-        setIsRefreshing(true);
-        await queryClient.invalidateQueries();
-        setTimeout(() => setIsRefreshing(false), 800);
-      }
-      setPullDistance(0);
-      touchStartY.current = null;
-    };
-
-    window.addEventListener('touchstart', onTouchStart, { passive: true });
-    window.addEventListener('touchmove', onTouchMove, { passive: true });
-    window.addEventListener('touchend', onTouchEnd);
-    return () => {
-      window.removeEventListener('touchstart', onTouchStart);
-      window.removeEventListener('touchmove', onTouchMove);
-      window.removeEventListener('touchend', onTouchEnd);
-    };
-  }, [pullDistance, queryClient]);
 
   const normalizedEmail = user?.email?.toLowerCase();
 

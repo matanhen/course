@@ -385,7 +385,7 @@ export default function AdminCourseEdit() {
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <Link to={createPageUrl('AdminCourses')}>
-          <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
+          <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white min-w-[44px] min-h-[44px]">
             <ArrowRight className="w-5 h-5" />
           </Button>
         </Link>
@@ -434,7 +434,7 @@ export default function AdminCourseEdit() {
                         variant="ghost"
                         size="icon"
                         onClick={() => setEditingCourse({ ...editingCourse, thumbnail: '' })}
-                        className="absolute top-2 left-2 bg-black/50 hover:bg-black/70 text-white"
+                        className="absolute top-2 left-2 bg-black/50 hover:bg-black/70 text-white min-w-[44px] min-h-[44px]"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -597,7 +597,7 @@ export default function AdminCourseEdit() {
                               variant="ghost"
                               size="icon"
                               onClick={() => openEditChapter(chapter)}
-                              className="text-gray-400 hover:text-white"
+                              className="text-gray-400 hover:text-white min-w-[44px] min-h-[44px]"
                             >
                               <Edit className="w-4 h-4" />
                             </Button>
@@ -605,7 +605,7 @@ export default function AdminCourseEdit() {
                               variant="ghost"
                               size="icon"
                               onClick={() => setDeleteItem({ type: 'chapter', item: chapter })}
-                              className="text-gray-400 hover:text-red-500"
+                              className="text-gray-400 hover:text-red-500 min-w-[44px] min-h-[44px]"
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
@@ -669,7 +669,7 @@ export default function AdminCourseEdit() {
                                             variant="ghost"
                                             size="icon"
                                             onClick={() => openEditLesson(lesson)}
-                                            className="text-gray-500 hover:text-white"
+                                            className="text-gray-500 hover:text-white min-w-[44px] min-h-[44px]"
                                           >
                                             <Edit className="w-4 h-4" />
                                           </Button>
@@ -677,7 +677,7 @@ export default function AdminCourseEdit() {
                                             variant="ghost"
                                             size="icon"
                                             onClick={() => setDeleteItem({ type: 'lesson', item: lesson })}
-                                            className="text-gray-500 hover:text-red-500"
+                                            className="text-gray-500 hover:text-red-500 min-w-[44px] min-h-[44px]"
                                           >
                                             <Trash2 className="w-4 h-4" />
                                           </Button>

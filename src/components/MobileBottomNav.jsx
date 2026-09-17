@@ -1,23 +1,78 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, User } from 'lucide-react';
+import { Home, User, LayoutDashboard, BookOpen, Users } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 
-const tabs = [
-  { label: 'ראשי', icon: Home, path: '/Home' },
-  { label: 'פרופיל', icon: User, path: '/Profile' },
-];
+const getTabsForRole = (role, isManager, isConsultant) => {
+  if (role === 'admin') {
+    return [
+      { label: 'לוח בקרה', icon: LayoutDashboard, path: '/AdminDashboard' },
+      { label: 'קורסים', icon: BookOpen, path: '/AdminCourses' },
+      { label: 'לקוחות', icon: Users, path: '/AdminClients' },
+      { label: 'פרופיל', icon: User, path: '/Profile' },
+    ];
+  }
+  if (isManager) {
+    return [
+      { label: 'קורסים', icon: BookOpen, path: '/AdminCourses' },
+      { label: 'לקוחות', icon: Users, path: '/AdminClients' },
+      { label: 'פרופיל', icon: User, path: '/Profile' },
+    ];
+  }
+  if (isConsultant) {
+    return [
+      { label: 'הקורסים שלי', icon: Home, path: '/Home' },
+      { label: 'לקוחות', icon: Users, path: '/AdminClients' },
+      { label: 'פרופיל', icon: User, path: '/Profile' },
+    ];
+  }
+  return [
+    { label: 'ראשי', icon: Home, path: '/Home' },
+    { label: 'פרופיל', icon: User, path: '/Profile' },
+  ];
+};
+
+const DEFAULT_TABS = getTabsForRole(null, false, false);
 
 // Per-tab navigation history (stack of visited full paths) and scroll positions
 const tabHistory = {};
 const scrollPositions = {};
 
-const getTabForPath = (pathname) =>
+const getTabForPath = (pathname, tabs) =>
   tabs.find(t => t.path === pathname || (t.path === '/Home' && pathname === '/home')) || tabs[0];
 
 export default function MobileBottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
-  const currentTab = getTabForPath(location.pathname);
+  const [tabs, setTabs] = useState(DEFAULT_TABS);
+
+  // Resolve role-based tabs once on mount
+  useEffect(() => {
+    let cancelled = false;
+    const loadTabs = async () => {
+      try {
+        const u = await base44.auth.me();
+        if (cancelled) return;
+        if (u?.role === 'admin') {
+          setTabs(getTabsForRole('admin', false, false));
+          return;
+        }
+        const email = u?.email?.toLowerCase();
+        if (!email) return;
+        const clientData = await base44.entities.AllowedClient.filter({ email });
+        if (cancelled) return;
+        const isManager = clientData.length > 0 && clientData[0].is_manager;
+        const isConsultant = clientData.length > 0 && clientData[0].is_consultant;
+        setTabs(getTabsForRole(u?.role, isManager, isConsultant));
+      } catch {
+        // keep default tabs on error
+      }
+    };
+    loadTabs();
+    return () => { cancelled = true; };
+  }, []);
+
+  const currentTab = getTabForPath(location.pathname, tabs);
 
   // Save scroll position for the current full path
   useEffect(() => {
