@@ -228,18 +228,7 @@ export default function Layout({ children, currentPageName }) {
           border: 1px solid rgba(199, 175, 72, 0.1);
         }
         
-        ::-webkit-scrollbar {
-          width: 6px;
-        }
-        
-        ::-webkit-scrollbar-track {
-          background: #1a1a1a;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-          background: #c7af48;
-          border-radius: 3px;
-        }
+
       `}</style>
 
       {/* Mobile Header */}
@@ -300,7 +289,7 @@ export default function Layout({ children, currentPageName }) {
                   variant="ghost"
                   size="icon"
                   onClick={() => setSidebarOpen(false)}
-                  className="text-gray-400"
+                  className="text-gray-400 min-w-[44px] min-h-[44px]"
                 >
                   <X className="w-5 h-5" />
                 </Button>

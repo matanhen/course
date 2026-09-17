@@ -533,7 +533,7 @@ export default function CourseView() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to={createPageUrl('Home')}>
-              <Button variant="ghost" size="icon" aria-label="חזרה" className="text-gray-400 hover:text-white">
+              <Button variant="ghost" size="icon" aria-label="חזרה" className="text-gray-400 hover:text-white min-w-[44px] min-h-[44px]">
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
@@ -599,7 +599,7 @@ export default function CourseView() {
                 transition={{ duration: 0.25 }}
                 className="overflow-hidden bg-zinc-950 border-b border-zinc-800"
               >
-                <div className="divide-y divide-zinc-800 max-h-[60vh] overflow-y-auto">
+                <div className="divide-y divide-zinc-800 max-h-[60vh] overflow-y-auto overscroll-behavior-none">
                   {sortedChapters.map((chapter, chapterIndex) => {
                     const chapterLessons = getLessonsForChapter(chapter.id);
                     const chapterCompletedCount = chapterLessons.filter(l => isLessonCompleted(l.id)).length;
@@ -819,7 +819,7 @@ export default function CourseView() {
         </div>
 
         {/* Sidebar */}
-        <aside className="lg:fixed lg:right-0 lg:top-[57px] lg:bottom-0 lg:w-96 bg-zinc-950 border-l border-zinc-800 overflow-y-auto">
+        <aside className="lg:fixed lg:right-0 lg:top-[57px] lg:bottom-0 lg:w-96 bg-zinc-950 border-l border-zinc-800 overflow-y-auto overscroll-behavior-none">
           <div className="p-4 border-b border-zinc-800 sticky top-0 bg-zinc-950 z-10">
             <h3 className="font-bold text-white">תוכן הקורס</h3>
             <p className="text-gray-500 text-sm mt-1">

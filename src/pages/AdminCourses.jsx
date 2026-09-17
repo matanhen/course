@@ -304,7 +304,7 @@ export default function AdminCourses() {
                           ) : (
                             <EyeOff className="w-3 h-3" />
                           )}
-                          <span className="text-xs font-medium">
+                          <span className="text-sm font-medium">
                             {course.is_published ? 'פורסם' : 'טיוטה'}
                           </span>
                         </div>
@@ -318,7 +318,7 @@ export default function AdminCourses() {
                               variant="ghost" 
                               size="icon"
                               aria-label="פעולות קורס"
-                              className="bg-black/50 hover:bg-black/70 text-white"
+                              className="bg-black/50 hover:bg-black/70 text-white min-w-[44px] min-h-[44px]"
                             >
                               <MoreVertical className="w-4 h-4" />
                             </Button>
@@ -441,7 +441,7 @@ export default function AdminCourses() {
                       size="icon"
                       aria-label="הסרת תמונה"
                       onClick={() => setNewCourse({ ...newCourse, thumbnail: '' })}
-                      className="absolute top-2 left-2 bg-black/50 hover:bg-black/70 text-white"
+                      className="absolute top-2 left-2 bg-black/50 hover:bg-black/70 text-white min-w-[44px] min-h-[44px]"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>

@@ -876,7 +876,7 @@ export default function AdminClients() {
                               size="icon"
                               aria-label="עריכה"
                               onClick={() => setShowEditClientDialog(client)}
-                              className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                              className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 min-w-[44px] min-h-[44px]"
                             >
                               <Edit className="w-5 h-5" />
                             </Button>
@@ -885,7 +885,7 @@ export default function AdminClients() {
                               size="icon"
                               aria-label="מחיקה"
                               onClick={() => setDeleteClient(client)}
-                              className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                              className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 min-w-[44px] min-h-[44px]"
                             >
                               <Trash2 className="w-5 h-5" />
                             </Button>
@@ -1002,7 +1002,7 @@ export default function AdminClients() {
                         size="icon"
                         aria-label="מחיקה"
                         onClick={() => deleteManagerMutation.mutate(manager)}
-                        className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity min-w-[44px] min-h-[44px]"
                       >
                         <Trash2 className="w-5 h-5" />
                       </Button>
@@ -1176,7 +1176,7 @@ export default function AdminClients() {
                         size="icon"
                         aria-label="הסרת גישה לקורס"
                         onClick={() => setRemoveAccess({ email: selectedClientCourses.email, course_id: course.id, course_title: course.title })}
-                        className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 shrink-0"
+                        className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 shrink-0 min-w-[44px] min-h-[44px]"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -1508,7 +1508,7 @@ export default function AdminClients() {
                 disabled
                 className="bg-zinc-800 border-zinc-700 text-gray-500"
               />
-              <p className="text-gray-600 text-xs">לא ניתן לשנות את האימייל</p>
+              <p className="text-gray-600 text-sm">לא ניתן לשנות את האימייל</p>
             </div>
             <div className="flex gap-3 pt-4">
               <Button
@@ -1787,7 +1787,7 @@ function ConsultantsList({ consultants, clients, onEditConsultant, getConsultant
                       size="icon"
                       aria-label="עריכה"
                       onClick={() => onEditConsultant(consultant)}
-                      className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                      className="text-gray-500 hover:text-white hover:bg-zinc-800 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 min-w-[44px] min-h-[44px]"
                     >
                       <Edit className="w-5 h-5" />
                     </Button>

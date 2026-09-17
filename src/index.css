@@ -6,6 +6,10 @@ html, body {
   overscroll-behavior-y: none;
 }
 
+.overflow-y-auto, .overflow-auto {
+  overscroll-behavior: none;
+}
+
 button, a, label, [role="button"] {
   -webkit-user-select: none;
   user-select: none;
