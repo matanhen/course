@@ -86,7 +86,7 @@ export default function Landing() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com"
-                  className="bg-card/80 border-border text-foreground placeholder:text-gray-600 pr-11 py-6 focus:border-[#c7af48] focus:ring-[#c7af48]/20"
+                  className="bg-card/80 border-border text-foreground placeholder:text-muted-foreground pr-11 py-6 focus:border-[#c7af48] focus:ring-[#c7af48]/20"
                   dir="ltr"
                 />
               </div>
@@ -121,7 +121,7 @@ export default function Landing() {
           </form>
         </div>
 
-        <p className="text-center text-gray-600 text-xs mt-6">
+        <p className="text-center text-muted-foreground text-xs mt-6">
           צעירים מתעשרים © {new Date().getFullYear()}
         </p>
       </div>

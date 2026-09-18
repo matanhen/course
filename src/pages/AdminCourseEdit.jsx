@@ -571,7 +571,7 @@ export default function AdminCourseEdit() {
                                       {...provided.dragHandleProps}
                                       className="cursor-grab active:cursor-grabbing"
                                     >
-                                      <GripVertical className="w-5 h-5 text-gray-600 hover:text-muted-foreground" />
+                                      <GripVertical className="w-5 h-5 text-muted-foreground hover:text-muted-foreground" />
                                     </div>
                                     <div className="w-8 h-8 rounded-lg bg-[#c7af48]/10 flex items-center justify-center">
                                       <span className="text-[#c7af48] font-bold text-sm">
@@ -643,7 +643,7 @@ export default function AdminCourseEdit() {
                                             {...provided.dragHandleProps}
                                             className="cursor-grab active:cursor-grabbing"
                                           >
-                                            <GripVertical className="w-5 h-5 text-gray-600 hover:text-muted-foreground" />
+                                            <GripVertical className="w-5 h-5 text-muted-foreground hover:text-muted-foreground" />
                                           </div>
                                           <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center">
                                             {lesson.lesson_type === 'external_link' ? (
@@ -656,7 +656,7 @@ export default function AdminCourseEdit() {
                                             <p className="text-gray-300">{lesson.title}</p>
                                             <div className="flex items-center gap-2">
                                               {lesson.duration && (
-                                                <p className="text-gray-600 text-xs">{lesson.duration}</p>
+                                                <p className="text-muted-foreground text-xs">{lesson.duration}</p>
                                               )}
                                               {lesson.lesson_type === 'external_link' && (
                                                 <span className="text-[#c7af48] text-xs">קישור חיצוני</span>

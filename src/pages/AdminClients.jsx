@@ -863,7 +863,7 @@ export default function AdminClients() {
                               <Mail className="w-3 h-3" />
                               {client.email}
                             </p>
-                            <div className="flex items-center gap-3 text-sm text-gray-600">
+                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
                               <span className="flex items-center gap-1">
                                 <Calendar className="w-3 h-3" />
                                 נרשם: {format(new Date(client.created_date), 'dd/MM/yyyy', { locale: he })}
@@ -1182,7 +1182,7 @@ export default function AdminClients() {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <BookOpen className="w-6 h-6 text-gray-600" />
+                            <BookOpen className="w-6 h-6 text-muted-foreground" />
                           </div>
                         )}
                       </div>
@@ -1190,7 +1190,7 @@ export default function AdminClients() {
                         <h3 className="text-foreground font-semibold mb-1">{course.title}</h3>
                         <div className="flex items-center gap-3 text-sm">
                           <span className="text-muted-foreground">{courseLessons.length} שיעורים</span>
-                          <span className="text-gray-600">•</span>
+                          <span className="text-muted-foreground">•</span>
                           <span className={`font-medium ${
                             progressPercent === 100 ? 'text-green-400' :
                             progressPercent > 0 ? 'text-[#c7af48]' : 'text-muted-foreground'
@@ -1536,7 +1536,7 @@ export default function AdminClients() {
                 disabled
                 className="bg-secondary border-border text-muted-foreground"
               />
-              <p className="text-gray-600 text-sm">לא ניתן לשנות את האימייל</p>
+              <p className="text-muted-foreground text-sm">לא ניתן לשנות את האימייל</p>
             </div>
             <div className="flex gap-3 pt-4">
               <Button
@@ -1797,7 +1797,7 @@ function ConsultantsList({ consultants, clients, onEditConsultant, getConsultant
                         <Mail className="w-3 h-3" />
                         {consultant.email}
                       </p>
-                      <div className="flex items-center gap-3 text-sm text-gray-600">
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
                           נוצר: {format(new Date(consultant.created_date), 'dd/MM/yyyy', { locale: he })}

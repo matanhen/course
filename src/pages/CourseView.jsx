@@ -14,7 +14,8 @@ import {
   FileText,
   ExternalLink,
   Maximize2,
-  Minimize2
+  Minimize2,
+  X
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
@@ -580,13 +581,13 @@ export default function CourseView() {
           <div className="px-4 py-2 bg-sidebar border-b border-border flex items-center justify-center lg:justify-start gap-2">
             <button
               onClick={() => setCourseContentOpen(prev => !prev)}
-              className="flex items-center gap-2 bg-[#105330] text-foreground hover:bg-[#0a3d20] px-3 py-1.5 rounded-lg transition-colors font-medium text-sm focus-visible:ring-2 focus-visible:ring-[#c7af48]"
+              className="flex items-center gap-2 bg-[#105330] text-foreground hover:bg-[#0a3d20] px-3 py-1.5 min-h-[44px] rounded-lg transition-colors font-medium text-sm focus-visible:ring-2 focus-visible:ring-[#c7af48]"
             >
               <BookOpen className="w-4 h-4" />
               <span>תוכן הקורס</span>
               {courseContentOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
-            <span className="hidden lg:inline text-gray-600 text-xs mr-2">{sortedChapters.length} פרקים • {lessons.length} שיעורים</span>
+            <span className="hidden lg:inline text-muted-foreground text-xs mr-2">{sortedChapters.length} פרקים • {lessons.length} שיעורים</span>
           </div>
 
           {/* Inline course content panel */}
@@ -609,7 +610,7 @@ export default function CourseView() {
                       <div key={chapter.id}>
                         <button
                           onClick={() => setExpandedChapters(prev => ({ ...prev, [chapter.id]: !prev[chapter.id] }))}
-                          className="w-full p-2 lg:p-4 flex items-center justify-between hover:bg-card/50 transition-colors focus-visible:ring-2 focus-visible:ring-[#c7af48]"
+                          className="w-full p-2 lg:p-4 min-h-[44px] flex items-center justify-between hover:bg-card/50 transition-colors focus-visible:ring-2 focus-visible:ring-[#c7af48]"
                         >
                           <div className="flex items-center gap-2 lg:gap-3">
                             <div className="w-6 h-6 lg:w-7 lg:h-7 rounded-lg bg-[#c7af48]/10 flex items-center justify-center shrink-0">
@@ -665,7 +666,7 @@ export default function CourseView() {
                                       <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-gray-300'} break-words text-sm`}>
                                         {lesson.title}
                                       </p>
-                                      {lesson.duration && <p className="text-gray-600 text-xs">{lesson.duration}</p>}
+                                      {lesson.duration && <p className="text-muted-foreground text-xs">{lesson.duration}</p>}
                                     </div>
                                   </button>
                                 );
@@ -706,7 +707,17 @@ export default function CourseView() {
               extractYouTubeId(currentLesson.youtube_url) ? (
                 <div ref={videoWrapperRef} className={`bg-background ${fsMode === 'pseudo' ? 'fixed inset-0 z-[9999]' : 'relative w-full h-full'}`}>
                   {/* YouTube player host — the IFrame API injects the iframe here */}
-                  <div ref={hostRef} className="w-full h-full [&>iframe]:w-full [&>iframe]:h-full" />
+                  <div ref={hostRef} className="w-full h-full [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:pointer-events-none" />
+                  {fsMode === 'pseudo' && (
+                    <button
+                      type="button"
+                      aria-label="יציאה ממסך מלא"
+                      onClick={toggleFullscreen}
+                      className="absolute top-4 left-4 z-40 w-11 h-11 rounded-full bg-background/60 backdrop-blur-sm flex items-center justify-center hover:bg-background/80 transition-colors"
+                    >
+                      <X className="w-6 h-6 text-foreground" />
+                    </button>
+                  )}
                   {/* App control overlay — blocks all direct interaction with the YouTube player */}
                   <div className="absolute inset-0 z-10">
                     {/* Center play/pause (exactly centered) */}
@@ -742,7 +753,7 @@ export default function CourseView() {
                           type="button"
                           onClick={() => setSpeedMenuOpen(o => !o)}
                           aria-label="מהירות נגינה"
-                          className="h-9 px-2 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors text-foreground text-xs font-medium focus-visible:ring-2 focus-visible:ring-[#c7af48]"
+                          className="h-11 min-w-[44px] px-2 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors text-foreground text-xs font-medium focus-visible:ring-2 focus-visible:ring-[#c7af48]"
                         >
                           {playbackRate}x
                         </button>
@@ -765,7 +776,7 @@ export default function CourseView() {
                         type="button"
                         aria-label={fsMode ? "צא ממסך מלא" : "מסך מלא"}
                         onClick={toggleFullscreen}
-                        className="w-9 h-9 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[#c7af48]"
+                        className="w-11 h-11 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[#c7af48]"
                       >
                         {fsMode ? <Minimize2 className="w-5 h-5 text-foreground" /> : <Maximize2 className="w-5 h-5 text-foreground" />}
                       </button>
@@ -839,7 +850,7 @@ export default function CourseView() {
                 <div key={chapter.id}>
                   <button
                     onClick={() => setExpandedChapters(prev => ({ ...prev, [chapter.id]: !prev[chapter.id] }))}
-                    className="w-full p-2 lg:p-4 flex items-center justify-between hover:bg-card/50 transition-colors focus-visible:ring-2 focus-visible:ring-[#c7af48]"
+                    className="w-full p-2 lg:p-4 min-h-[44px] flex items-center justify-between hover:bg-card/50 transition-colors focus-visible:ring-2 focus-visible:ring-[#c7af48]"
                   >
                     <div className="flex items-center gap-2 lg:gap-3">
                       <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-lg bg-[#c7af48]/10 flex items-center justify-center">
@@ -895,7 +906,7 @@ export default function CourseView() {
                                 <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-gray-300'} break-words text-sm`}>
                                   {lesson.title}
                                 </p>
-                                {lesson.duration && <p className="text-gray-600 text-xs">{lesson.duration}</p>}
+                                {lesson.duration && <p className="text-muted-foreground text-xs">{lesson.duration}</p>}
                               </div>
                             </button>
                           );

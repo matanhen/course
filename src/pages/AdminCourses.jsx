@@ -342,6 +342,7 @@ export default function AdminCourses() {
                             <DropdownMenuItem asChild>
                               <Link 
                                 to={createPageUrl(`AdminCourseEdit?id=${course.id}`)}
+                                aria-label={`עריכת קורס ${course.title}`}
                                 className="flex items-center gap-2 text-foreground"
                               >
                                 <Edit className="w-4 h-4" />
@@ -388,7 +389,7 @@ export default function AdminCourses() {
                     </div>
 
                     {/* Content */}
-                    <Link to={isManager ? '#' : createPageUrl(`AdminCourseEdit?id=${course.id}`)}>
+                    <Link to={isManager ? '#' : createPageUrl(`AdminCourseEdit?id=${course.id}`)} aria-label={`עריכת קורס ${course.title}`}>
                       <div className="p-5">
                         <h3 className="text-lg font-bold text-foreground group-hover:text-[#c7af48] transition-colors">
                           {course.title}

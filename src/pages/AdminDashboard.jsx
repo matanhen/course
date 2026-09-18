@@ -144,7 +144,7 @@ export default function AdminDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
           >
-            <Link to={createPageUrl(stat.link)}>
+            <Link to={createPageUrl(stat.link)} aria-label={`מעבר ל${stat.title}`}>
               <Card className="bg-card/50 border-border hover:border-[#c7af48]/30 transition-all p-6 group">
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-4`}>
                   <stat.icon className="w-6 h-6 text-foreground" />
@@ -162,7 +162,7 @@ export default function AdminDashboard() {
         <h2 className="text-xl font-bold text-foreground mb-6">פעולות מהירות</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {!isManager && (
-            <Link to={createPageUrl('AdminCourses')}>
+            <Link to={createPageUrl('AdminCourses')} aria-label="הוסף קורס חדש">
               <Card className="bg-card/50 border-border hover:border-[#c7af48]/50 p-6 transition-all group">
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 rounded-xl bg-[#c7af48]/10 flex items-center justify-center">
@@ -174,13 +174,13 @@ export default function AdminDashboard() {
                     </h3>
                     <p className="text-muted-foreground text-sm">צור קורס חדש עם פרקים ושיעורים</p>
                   </div>
-                  <ArrowLeft className="w-5 h-5 text-gray-600 mr-auto group-hover:text-[#c7af48] group-hover:-translate-x-1 transition-all" />
+                  <ArrowLeft className="w-5 h-5 text-muted-foreground mr-auto group-hover:text-[#c7af48] group-hover:-translate-x-1 transition-all" />
                 </div>
               </Card>
             </Link>
           )}
 
-          <Link to={createPageUrl('AdminClients')}>
+          <Link to={createPageUrl('AdminClients')} aria-label="נהל לקוחות">
             <Card className="bg-card/50 border-border hover:border-[#c7af48]/50 p-6 transition-all group">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-xl bg-purple-500/10 flex items-center justify-center">
@@ -192,7 +192,7 @@ export default function AdminDashboard() {
                   </h3>
                   <p className="text-muted-foreground text-sm">הוסף או הסר לקוחות מורשים</p>
                 </div>
-                <ArrowLeft className="w-5 h-5 text-gray-600 mr-auto group-hover:text-[#c7af48] group-hover:-translate-x-1 transition-all" />
+                <ArrowLeft className="w-5 h-5 text-muted-foreground mr-auto group-hover:text-[#c7af48] group-hover:-translate-x-1 transition-all" />
               </div>
             </Card>
           </Link>
@@ -206,7 +206,7 @@ export default function AdminDashboard() {
           <Card className="bg-card/50 border-border p-10 text-center">
             <BookOpen className="w-12 h-12 text-gray-700 mx-auto mb-4" />
             <p className="text-muted-foreground">אין קורסים עדיין</p>
-            <Link to={createPageUrl('AdminCourses')}>
+            <Link to={createPageUrl('AdminCourses')} aria-label="צור קורס ראשון">
               <Button className="mt-4 bg-[#c7af48] hover:bg-[#b39d3d] text-black">
                 צור קורס ראשון
               </Button>
@@ -219,7 +219,7 @@ export default function AdminDashboard() {
               const courseLessons = lessons.filter(l => l.course_id === course.id);
               
               return (
-                <Link key={course.id} to={isManager ? '#' : createPageUrl(`AdminCourseEdit?id=${course.id}`)}>
+                <Link key={course.id} to={isManager ? '#' : createPageUrl(`AdminCourseEdit?id=${course.id}`)} aria-label={`עריכת קורס ${course.title}`}>
                   <Card className="bg-card/50 border-border hover:border-[#c7af48]/30 transition-all overflow-hidden group">
                     <div className="aspect-video bg-secondary relative overflow-hidden">
                       {course.thumbnail ? (
