@@ -481,7 +481,7 @@ export default function CourseView() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c9b14d]"></div>
       </div>
     );
   }
@@ -498,7 +498,7 @@ export default function CourseView() {
           <h1 className="text-2xl font-bold text-foreground mb-4">אין לך גישה לקורס זה</h1>
           <p className="text-muted-foreground mb-8">קורס זה אינו זמין עבורך. פנה למנהל המערכת לקבלת גישה.</p>
           <Link to={createPageUrl('Home')}>
-            <Button className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold">
+            <Button className="bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold">
               חזור לקורסים שלי
             </Button>
           </Link>
@@ -510,7 +510,7 @@ export default function CourseView() {
   if (!course) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c9b14d]"></div>
       </div>
     );
   }
@@ -552,9 +552,9 @@ export default function CourseView() {
           {!isAdmin && totalCount > 0 && (
             <div className="hidden lg:flex items-center gap-2">
               <div className="h-2 w-32 bg-secondary rounded-full overflow-hidden">
-                <div className="h-full bg-[#c7af48] transition-all duration-500" style={{ width: `${progressPercent}%` }} />
+                <div className="h-full bg-[#c9b14d] transition-all duration-500" style={{ width: `${progressPercent}%` }} />
               </div>
-              <span className="text-[#c7af48] font-medium text-sm">{progressPercent}%</span>
+              <span className="text-[#c9b14d] font-medium text-sm">{progressPercent}%</span>
             </div>
           )}
         </div>
@@ -566,7 +566,7 @@ export default function CourseView() {
             href={course.external_button_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold rounded-lg px-4 py-2 text-sm transition-colors w-full sm:w-auto sm:mx-auto"
+            className="flex items-center justify-center gap-2 bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold rounded-lg px-4 py-2 text-sm transition-colors w-full sm:w-auto sm:mx-auto"
           >
             <ExternalLink className="w-4 h-4" />
             {course.external_button_text || 'מערכת לניהול הכסף >>'}
@@ -581,7 +581,7 @@ export default function CourseView() {
           <div className="px-4 py-2 bg-sidebar border-b border-border flex items-center justify-center lg:justify-start gap-2">
             <button
               onClick={() => setCourseContentOpen(prev => !prev)}
-              className="flex items-center gap-2 bg-[#105330] text-white hover:bg-[#0a3d20] px-3 py-1.5 min-h-[44px] rounded-lg transition-colors font-medium text-sm focus-visible:ring-2 focus-visible:ring-[#c7af48]"
+              className="flex items-center gap-2 bg-[#105330] text-white hover:bg-[#0a3d20] px-3 py-1.5 min-h-[44px] rounded-lg transition-colors font-medium text-sm focus-visible:ring-2 focus-visible:ring-[#c9b14d]"
             >
               <BookOpen className="w-4 h-4" />
               <span>תוכן הקורס</span>
@@ -610,11 +610,11 @@ export default function CourseView() {
                       <div key={chapter.id}>
                         <button
                           onClick={() => setExpandedChapters(prev => ({ ...prev, [chapter.id]: !prev[chapter.id] }))}
-                          className="w-full p-2 lg:p-4 min-h-[44px] flex items-center justify-between hover:bg-card/50 transition-colors focus-visible:ring-2 focus-visible:ring-[#c7af48]"
+                          className="w-full p-2 lg:p-4 min-h-[44px] flex items-center justify-between hover:bg-card/50 transition-colors focus-visible:ring-2 focus-visible:ring-[#c9b14d]"
                         >
                           <div className="flex items-center gap-2 lg:gap-3">
-                            <div className="w-6 h-6 lg:w-7 lg:h-7 rounded-lg bg-[#c7af48]/10 flex items-center justify-center shrink-0">
-                              <span className="text-[#c7af48] font-bold text-xs">{chapterIndex + 1}</span>
+                            <div className="w-6 h-6 lg:w-7 lg:h-7 rounded-lg bg-[#c9b14d]/10 flex items-center justify-center shrink-0">
+                              <span className="text-[#c9b14d] font-bold text-xs">{chapterIndex + 1}</span>
                             </div>
                             <div className="text-right">
                               <h4 className="text-foreground font-medium text-sm">{chapter.title}</h4>
@@ -642,14 +642,14 @@ export default function CourseView() {
                                   <button
                                     key={lesson.id}
                                     onClick={() => { selectLesson(lesson); setCourseContentOpen(false); }}
-                                    className={`w-full p-3 pr-8 lg:p-3 lg:pr-10 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right focus-visible:ring-2 focus-visible:ring-[#c7af48] ${
+                                    className={`w-full p-3 pr-8 lg:p-3 lg:pr-10 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right focus-visible:ring-2 focus-visible:ring-[#c9b14d] ${
                                       isCurrent
-                                        ? 'bg-[#c7af48]/10 border-r-2 border-[#c7af48]'
+                                        ? 'bg-[#c9b14d]/10 border-r-2 border-[#c9b14d]'
                                         : 'hover:bg-secondary/50'
                                     }`}
                                   >
                                     <div className={`w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center shrink-0 ${
-                                      isCurrent ? 'bg-[#c7af48]' : 'bg-secondary'
+                                      isCurrent ? 'bg-[#c9b14d]' : 'bg-secondary'
                                     }`}>
                                       {lesson.lesson_type === 'external_link' ? (
                                         <FileText className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-foreground" />
@@ -663,7 +663,7 @@ export default function CourseView() {
                                       </div>
                                     )}
                                     <div className="flex-1 min-w-0">
-                                      <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-muted-foreground'} break-words text-sm`}>
+                                      <p className={`${isCurrent ? 'text-[#c9b14d]' : 'text-muted-foreground'} break-words text-sm`}>
                                         {lesson.title}
                                       </p>
                                       {lesson.duration && <p className="text-muted-foreground text-xs">{lesson.duration}</p>}
@@ -686,7 +686,7 @@ export default function CourseView() {
           <div className={`relative bg-card ${currentLesson?.lesson_type === 'external_link' ? 'min-h-[60vh]' : 'aspect-video'}`}>
             {!currentLesson ? (
               <div className="w-full h-full flex items-center justify-center">
-                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#c7af48]"></div>
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#c9b14d]"></div>
               </div>
             ) : currentLesson.lesson_type === 'external_link' ? (
               currentLesson.external_url ? (
@@ -739,12 +739,12 @@ export default function CourseView() {
                       <div
                         ref={seekBarRef}
                         tabIndex={0}
-                        className="flex-1 h-2 bg-secondary rounded-full cursor-pointer relative touch-none focus-visible:ring-2 focus-visible:ring-[#c7af48]"
+                        className="flex-1 h-2 bg-secondary rounded-full cursor-pointer relative touch-none focus-visible:ring-2 focus-visible:ring-[#c9b14d]"
                         onPointerDown={onSeekPointerDown}
                         onPointerMove={onSeekPointerMove}
                         onPointerUp={onSeekPointerUp}
                       >
-                        <div className="absolute inset-y-0 left-0 bg-[#c7af48] rounded-full" style={{ width: `${videoProgress}%` }} />
+                        <div className="absolute inset-y-0 left-0 bg-[#c9b14d] rounded-full" style={{ width: `${videoProgress}%` }} />
                       </div>
                       <span className="text-foreground text-xs tabular-nums w-10 shrink-0">{formatTime(videoDuration)}</span>
                       <div className="relative shrink-0">
@@ -753,7 +753,7 @@ export default function CourseView() {
                           type="button"
                           onClick={() => setSpeedMenuOpen(o => !o)}
                           aria-label="מהירות נגינה"
-                          className="h-11 min-w-[44px] px-2 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors text-foreground text-xs font-medium focus-visible:ring-2 focus-visible:ring-[#c7af48]"
+                          className="h-11 min-w-[44px] px-2 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors text-foreground text-xs font-medium focus-visible:ring-2 focus-visible:ring-[#c9b14d]"
                         >
                           {playbackRate}x
                         </button>
@@ -764,7 +764,7 @@ export default function CourseView() {
                                 key={r}
                                 type="button"
                                 onClick={() => changeRate(r)}
-                                className={`block w-full px-3 py-2 text-xs text-foreground hover:bg-secondary transition-colors text-center ${r === playbackRate ? 'bg-[#c7af48]/20 text-[#c7af48]' : ''}`}
+                                className={`block w-full px-3 py-2 text-xs text-foreground hover:bg-secondary transition-colors text-center ${r === playbackRate ? 'bg-[#c9b14d]/20 text-[#c9b14d]' : ''}`}
                               >
                                 {r}x
                               </button>
@@ -776,7 +776,7 @@ export default function CourseView() {
                         type="button"
                         aria-label={fsMode ? "צא ממסך מלא" : "מסך מלא"}
                         onClick={toggleFullscreen}
-                        className="w-11 h-11 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[#c7af48]"
+                        className="w-11 h-11 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[#c9b14d]"
                       >
                         {fsMode ? <Minimize2 className="w-5 h-5 text-foreground" /> : <Maximize2 className="w-5 h-5 text-foreground" />}
                       </button>
@@ -805,7 +805,7 @@ export default function CourseView() {
                     <Button
                       onClick={handleLessonComplete}
                       disabled={isLessonCompleted(currentLesson.id)}
-                      className={`shrink-0 ${isLessonCompleted(currentLesson.id) ? 'bg-green-600 hover:bg-green-600' : 'bg-[#c7af48] hover:bg-[#b39d3d]'} text-black font-semibold`}
+                      className={`shrink-0 ${isLessonCompleted(currentLesson.id) ? 'bg-green-600 hover:bg-green-600' : 'bg-[#c9b14d] hover:bg-[#a89436]'} text-black font-semibold`}
                     >
                       {isLessonCompleted(currentLesson.id) ? (
                         <><CheckCircle2 className="w-4 h-4 ml-2" />הושלם</>
@@ -850,11 +850,11 @@ export default function CourseView() {
                 <div key={chapter.id}>
                   <button
                     onClick={() => setExpandedChapters(prev => ({ ...prev, [chapter.id]: !prev[chapter.id] }))}
-                    className="w-full p-2 lg:p-4 min-h-[44px] flex items-center justify-between hover:bg-card/50 transition-colors focus-visible:ring-2 focus-visible:ring-[#c7af48]"
+                    className="w-full p-2 lg:p-4 min-h-[44px] flex items-center justify-between hover:bg-card/50 transition-colors focus-visible:ring-2 focus-visible:ring-[#c9b14d]"
                   >
                     <div className="flex items-center gap-2 lg:gap-3">
-                      <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-lg bg-[#c7af48]/10 flex items-center justify-center">
-                        <span className="text-[#c7af48] font-bold text-xs lg:text-sm">{chapterIndex + 1}</span>
+                      <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-lg bg-[#c9b14d]/10 flex items-center justify-center">
+                        <span className="text-[#c9b14d] font-bold text-xs lg:text-sm">{chapterIndex + 1}</span>
                       </div>
                       <div className="text-right">
                         <h4 className="text-foreground font-medium text-sm lg:text-base">{chapter.title}</h4>
@@ -882,14 +882,14 @@ export default function CourseView() {
                             <button
                               key={lesson.id}
                               onClick={() => selectLesson(lesson)}
-                              className={`w-full p-3 pr-8 lg:p-4 lg:pr-12 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right focus-visible:ring-2 focus-visible:ring-[#c7af48] ${
+                              className={`w-full p-3 pr-8 lg:p-4 lg:pr-12 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right focus-visible:ring-2 focus-visible:ring-[#c9b14d] ${
                                 isCurrent
-                                  ? 'bg-[#c7af48]/10 border-r-2 border-[#c7af48]'
+                                  ? 'bg-[#c9b14d]/10 border-r-2 border-[#c9b14d]'
                                   : 'hover:bg-secondary/50'
                               }`}
                             >
                               <div className={`w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center shrink-0 ${
-                                isCurrent ? 'bg-[#c7af48]' : 'bg-secondary'
+                                isCurrent ? 'bg-[#c9b14d]' : 'bg-secondary'
                               }`}>
                                 {lesson.lesson_type === 'external_link' ? (
                                   <FileText className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-foreground" />
@@ -903,7 +903,7 @@ export default function CourseView() {
                                 </div>
                               )}
                               <div className="flex-1 min-w-0">
-                                <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-muted-foreground'} break-words text-sm`}>
+                                <p className={`${isCurrent ? 'text-[#c9b14d]' : 'text-muted-foreground'} break-words text-sm`}>
                                   {lesson.title}
                                 </p>
                                 {lesson.duration && <p className="text-muted-foreground text-xs">{lesson.duration}</p>}

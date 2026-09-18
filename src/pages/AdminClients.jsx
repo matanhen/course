@@ -613,7 +613,7 @@ export default function AdminClients() {
   if (!user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c9b14d]"></div>
       </div>
     );
   }
@@ -640,7 +640,7 @@ export default function AdminClients() {
           className="flex items-center justify-center transition-all"
           style={{ height: isRefreshing ? 48 : pullDistance, overflow: 'hidden' }}
         >
-          <RefreshCw className={`w-5 h-5 text-[#c7af48] ${isRefreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-5 h-5 text-[#c9b14d] ${isRefreshing ? 'animate-spin' : ''}`} />
         </div>
       )}
 
@@ -659,7 +659,7 @@ export default function AdminClients() {
         <div className="flex flex-col gap-3">
           <Button 
             onClick={() => setShowAddDialog(true)}
-            className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold"
+            className="bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold"
           >
             <Plus className="w-5 h-5 ml-2" />
             הוסף לקוח
@@ -674,7 +674,7 @@ export default function AdminClients() {
             variant={activeTab === 'clients' ? 'default' : 'outline'}
             onClick={() => setActiveTab('clients')}
             className={activeTab === 'clients' 
-              ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' 
+              ? 'bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold min-w-[44px] min-h-[44px]' 
               : 'border-border text-muted-foreground hover:bg-secondary min-w-[44px] min-h-[44px]'
             }
           >
@@ -685,7 +685,7 @@ export default function AdminClients() {
             variant={activeTab === 'consultants' ? 'default' : 'outline'}
             onClick={() => setActiveTab('consultants')}
             className={activeTab === 'consultants' 
-              ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' 
+              ? 'bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold min-w-[44px] min-h-[44px]' 
               : 'border-border text-muted-foreground hover:bg-secondary min-w-[44px] min-h-[44px]'
             }
           >
@@ -696,7 +696,7 @@ export default function AdminClients() {
             variant={activeTab === 'managers' ? 'default' : 'outline'}
             onClick={() => setActiveTab('managers')}
             className={activeTab === 'managers' 
-              ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' 
+              ? 'bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold min-w-[44px] min-h-[44px]' 
               : 'border-border text-muted-foreground hover:bg-secondary min-w-[44px] min-h-[44px]'
             }
           >
@@ -717,21 +717,21 @@ export default function AdminClients() {
                   <Button
                     variant={filterType === 'all' ? 'default' : 'outline'}
                     onClick={() => { setFilterType('all'); setSelectedCourseFilter(''); setSelectedConsultantFilter(''); }}
-                    className={filterType === 'all' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-border text-muted-foreground hover:bg-secondary min-w-[44px] min-h-[44px]'}
+                    className={filterType === 'all' ? 'bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-border text-muted-foreground hover:bg-secondary min-w-[44px] min-h-[44px]'}
                   >
                     כל הלקוחות ({clients.length})
                   </Button>
                   <Button
                     variant={filterType === 'course' ? 'default' : 'outline'}
                     onClick={() => setFilterType('course')}
-                    className={filterType === 'course' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-border text-muted-foreground hover:bg-secondary min-w-[44px] min-h-[44px]'}
+                    className={filterType === 'course' ? 'bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-border text-muted-foreground hover:bg-secondary min-w-[44px] min-h-[44px]'}
                   >
                     לפי קורס
                   </Button>
                   <Button
                     variant={filterType === 'consultant' ? 'default' : 'outline'}
                     onClick={() => setFilterType('consultant')}
-                    className={filterType === 'consultant' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-border text-muted-foreground hover:bg-secondary min-w-[44px] min-h-[44px]'}
+                    className={filterType === 'consultant' ? 'bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-border text-muted-foreground hover:bg-secondary min-w-[44px] min-h-[44px]'}
                   >
                     לפי יועץ
                   </Button>
@@ -789,7 +789,7 @@ export default function AdminClients() {
                 type="checkbox"
                 checked={selectedClientIds.size === filteredClients.length && filteredClients.length > 0}
                 onChange={toggleSelectAll}
-                className="w-5 h-5 accent-[#c7af48] cursor-pointer"
+                className="w-5 h-5 accent-[#c9b14d] cursor-pointer"
               />
               <span className="text-muted-foreground text-sm">
                 {selectedClientIds.size > 0 ? `${selectedClientIds.size} נבחרו` : 'בחר הכל'}
@@ -798,7 +798,7 @@ export default function AdminClients() {
                 <Button
                   size="sm"
                   onClick={() => setShowBulkAssignDialog(true)}
-                  className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold"
+                  className="bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold"
                 >
                   <UserPlus className="w-4 h-4 ml-1" />
                   שייך יועץ לנבחרים ({selectedClientIds.size})
@@ -810,7 +810,7 @@ export default function AdminClients() {
           {/* Clients List */}
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c9b14d]"></div>
             </div>
           ) : filteredClients.length === 0 ? (
             <Card className="bg-card/50 border-border p-10 text-center">
@@ -821,7 +821,7 @@ export default function AdminClients() {
               {!searchQuery && (
                 <Button 
                   onClick={() => setShowAddDialog(true)}
-                  className="mt-4 bg-[#c7af48] hover:bg-[#b39d3d] text-black"
+                  className="mt-4 bg-[#c9b14d] hover:bg-[#a89436] text-black"
                 >
                   הוסף לקוח ראשון
                 </Button>
@@ -838,7 +838,7 @@ export default function AdminClients() {
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ delay: index * 0.05 }}
                   >
-                    <Card className={`bg-card/50 border-border p-5 group hover:border-border transition-all ${selectedClientIds.has(client.id) ? 'border-[#c7af48]/40' : ''}`}>
+                    <Card className={`bg-card/50 border-border p-5 group hover:border-border transition-all ${selectedClientIds.has(client.id) ? 'border-[#c9b14d]/40' : ''}`}>
                       <div className="flex items-start justify-between gap-4 mb-4">
                         <div className="flex items-center gap-4">
                           {isAdmin && (
@@ -846,11 +846,11 @@ export default function AdminClients() {
                               type="checkbox"
                               checked={selectedClientIds.has(client.id)}
                               onChange={() => toggleSelectClient(client.id)}
-                              className="w-5 h-5 accent-[#c7af48] cursor-pointer shrink-0"
+                              className="w-5 h-5 accent-[#c9b14d] cursor-pointer shrink-0"
                               onClick={e => e.stopPropagation()}
                             />
                           )}
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#c7af48] to-[#e5d07a] flex items-center justify-center shrink-0">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#c9b14d] to-[#e5d07a] flex items-center justify-center shrink-0">
                             <span className="text-black font-bold text-lg">
                               {(client.name || client.email)[0].toUpperCase()}
                             </span>
@@ -882,7 +882,7 @@ export default function AdminClients() {
                               )}
                             </div>
                             {client.consultant_email && (
-                              <p className="text-[#c7af48] text-sm mt-1">
+                              <p className="text-[#c9b14d] text-sm mt-1">
                                 יועץ: {getConsultantName(client.consultant_email)}
                               </p>
                             )}
@@ -894,7 +894,7 @@ export default function AdminClients() {
                               variant="outline"
                               size="sm"
                               onClick={() => setShowAssignConsultantDialog({ client, consultant_email: client.consultant_email || '' })}
-                              className="text-[#c7af48] border-[#c7af48]/30 hover:bg-[#c7af48]/10 opacity-70 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity shrink-0"
+                              className="text-[#c9b14d] border-[#c9b14d]/30 hover:bg-[#c9b14d]/10 opacity-70 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity shrink-0"
                             >
                               <UserPlus className="w-4 h-4 ml-1" />
                               שייך יועץ
@@ -950,8 +950,8 @@ export default function AdminClients() {
                           </div>
                         </button>
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-lg bg-[#c7af48]/10 flex items-center justify-center">
-                            <TrendingUp className="w-4 h-4 text-[#c7af48]" />
+                          <div className="w-8 h-8 rounded-lg bg-[#c9b14d]/10 flex items-center justify-center">
+                            <TrendingUp className="w-4 h-4 text-[#c9b14d]" />
                           </div>
                           <div>
                             <p className="text-sm text-muted-foreground">התקדמות</p>
@@ -975,7 +975,7 @@ export default function AdminClients() {
           <div className="flex justify-end mb-6">
             <Button 
               onClick={() => setShowAddConsultantDialog(true)}
-              className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold"
+              className="bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold"
             >
               <Plus className="w-5 h-5 ml-2" />
               הוסף יועץ
@@ -993,7 +993,7 @@ export default function AdminClients() {
           <div className="flex justify-end mb-6">
             <Button 
               onClick={() => setShowAddManagerDialog(true)}
-              className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold"
+              className="bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold"
             >
               <Plus className="w-5 h-5 ml-2" />
               הוסף מנהל
@@ -1127,7 +1127,7 @@ export default function AdminClients() {
               <Button
                 type="submit"
                 disabled={addClientMutation.isPending || (!newClient.course_id && !isConsultant && !isManager && !isAdmin)}
-                className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold disabled:opacity-50"
+                className="flex-1 bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold disabled:opacity-50"
               >
                 {addClientMutation.isPending ? 'מוסיף...' : 'הוסף לקוח'}
               </Button>
@@ -1144,7 +1144,7 @@ export default function AdminClients() {
               <DialogTitle>קורסים של {selectedClientCourses?.name || selectedClientCourses?.email}</DialogTitle>
               <Button
                 onClick={() => setShowAddCourseDialog(true)}
-                className="bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold"
+                className="bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold"
                 size="sm"
               >
                 <Plus className="w-4 h-4 ml-1" />
@@ -1193,7 +1193,7 @@ export default function AdminClients() {
                           <span className="text-muted-foreground">•</span>
                           <span className={`font-medium ${
                             progressPercent === 100 ? 'text-green-400' :
-                            progressPercent > 0 ? 'text-[#c7af48]' : 'text-muted-foreground'
+                            progressPercent > 0 ? 'text-[#c9b14d]' : 'text-muted-foreground'
                           }`}>
                             {clientProgress.length}/{courseLessons.length} נצפו ({progressPercent}%)
                           </span>
@@ -1251,11 +1251,11 @@ export default function AdminClients() {
                           document.getElementById(`course-details-${course.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         }
                       }}
-                      className="p-4 bg-secondary/50 border border-border rounded-lg hover:border-[#c7af48]/50 transition-all text-right group"
+                      className="p-4 bg-secondary/50 border border-border rounded-lg hover:border-[#c9b14d]/50 transition-all text-right group"
                     >
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="text-foreground font-semibold group-hover:text-[#c7af48] transition-colors">
+                          <h4 className="text-foreground font-semibold group-hover:text-[#c9b14d] transition-colors">
                             {course.title}
                           </h4>
                           <p className="text-muted-foreground text-sm">
@@ -1265,7 +1265,7 @@ export default function AdminClients() {
                         <div className="flex items-center gap-2">
                           <span className={`text-lg font-bold ${
                             progressPercent === 100 ? 'text-green-400' :
-                            progressPercent > 0 ? 'text-[#c7af48]' : 'text-muted-foreground'
+                            progressPercent > 0 ? 'text-[#c9b14d]' : 'text-muted-foreground'
                           }`}>
                             {progressPercent}%
                           </span>
@@ -1287,7 +1287,7 @@ export default function AdminClients() {
               return (
                 <div key={course.id} id={`course-details-${course.id}`} className="space-y-3 pt-4 border-t border-border">
                   <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-                    <BookOpen className="w-5 h-5 text-[#c7af48]" />
+                    <BookOpen className="w-5 h-5 text-[#c9b14d]" />
                     {course.title}
                   </h3>
                   {courseChapters.map((chapter) => {
@@ -1425,7 +1425,7 @@ export default function AdminClients() {
               <Button
                 type="submit"
                 disabled={addCourseMutation.isPending || !selectedCourseToAdd}
-                className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold disabled:opacity-50"
+                className="flex-1 bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold disabled:opacity-50"
               >
                 {addCourseMutation.isPending ? 'מוסיף...' : 'הוסף קורס'}
               </Button>
@@ -1503,7 +1503,7 @@ export default function AdminClients() {
               <Button
                 type="submit"
                 disabled={updateClientMutation.isPending}
-                className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold disabled:opacity-50"
+                className="flex-1 bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold disabled:opacity-50"
               >
                 {updateClientMutation.isPending ? 'שומר...' : 'שמור שינויים'}
               </Button>
@@ -1550,7 +1550,7 @@ export default function AdminClients() {
               <Button
                 type="submit"
                 disabled={updateConsultantMutation.isPending}
-                className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold disabled:opacity-50"
+                className="flex-1 bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold disabled:opacity-50"
               >
                 {updateConsultantMutation.isPending ? 'שומר...' : 'שמור שינויים'}
               </Button>
@@ -1603,7 +1603,7 @@ export default function AdminClients() {
               <Button
                 type="submit"
                 disabled={assignConsultantMutation.isPending}
-                className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold disabled:opacity-50"
+                className="flex-1 bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold disabled:opacity-50"
               >
                 {assignConsultantMutation.isPending ? 'משייך...' : 'שייך יועץ'}
               </Button>
@@ -1644,7 +1644,7 @@ export default function AdminClients() {
               <Button
                 disabled={!bulkConsultantEmail || bulkAssignMutation.isPending}
                 onClick={() => bulkAssignMutation.mutate({ clientIds: selectedClientIds, consultant_email: bulkConsultantEmail === 'none' ? null : bulkConsultantEmail })}
-                className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold disabled:opacity-50"
+                className="flex-1 bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold disabled:opacity-50"
               >
                 {bulkAssignMutation.isPending ? 'משייך...' : 'שייך יועץ'}
               </Button>
@@ -1689,7 +1689,7 @@ export default function AdminClients() {
             </div>
             <div className="flex gap-3 pt-4">
               <Button type="button" variant="outline" onClick={() => setShowAddManagerDialog(false)} className="flex-1 border-red-700 text-red-400 hover:bg-red-500/10">ביטול</Button>
-              <Button type="submit" disabled={addManagerMutation.isPending} className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold disabled:opacity-50">
+              <Button type="submit" disabled={addManagerMutation.isPending} className="flex-1 bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold disabled:opacity-50">
                 {addManagerMutation.isPending ? 'מוסיף...' : 'הוסף מנהל'}
               </Button>
             </div>
@@ -1745,7 +1745,7 @@ export default function AdminClients() {
               <Button
                 type="submit"
                 disabled={addConsultantMutation.isPending}
-                className="flex-1 bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold disabled:opacity-50"
+                className="flex-1 bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold disabled:opacity-50"
               >
                 {addConsultantMutation.isPending ? 'מוסיף...' : 'הוסף יועץ'}
               </Button>
@@ -1808,7 +1808,7 @@ function ConsultantsList({ consultants, clients, onEditConsultant, getConsultant
                   <div className="flex items-center gap-2">
                     <div className="text-left">
                       <p className="text-sm text-muted-foreground">לקוחות</p>
-                      <p className="text-2xl font-bold text-[#c7af48]">{clientCount}</p>
+                      <p className="text-2xl font-bold text-[#c9b14d]">{clientCount}</p>
                     </div>
                     <Button
                       variant="ghost"
@@ -1839,7 +1839,7 @@ function ConsultantsList({ consultants, clients, onEditConsultant, getConsultant
                           </div>
                         ))}
                       {clientCount > 5 && (
-                        <div className="px-2 py-1 bg-secondary/50 rounded text-xs text-[#c7af48]">
+                        <div className="px-2 py-1 bg-secondary/50 rounded text-xs text-[#c9b14d]">
                           +{clientCount - 5} נוספים
                         </div>
                       )}

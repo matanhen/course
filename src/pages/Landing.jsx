@@ -46,12 +46,12 @@ export default function Landing() {
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6" dir="rtl">
       <style>{`
         .gold-gradient {
-          background: linear-gradient(135deg, #c7af48 0%, #e5d07a 50%, #c7af48 100%);
+          background: linear-gradient(135deg, #c9b14d 0%, #e5d07a 50%, #c9b14d 100%);
         }
         .glass-card {
-          background: rgba(255, 255, 255, 0.04);
+          background: rgba(255, 255, 255, 0.85);
           backdrop-filter: blur(12px);
-          border: 1px solid rgba(199, 175, 72, 0.15);
+          border: 1px solid rgba(201, 177, 77, 0.25);
         }
       `}</style>
 
@@ -63,7 +63,7 @@ export default function Landing() {
           </div>
           <h1 className="text-3xl font-bold text-foreground text-center leading-tight">
             האקדמיה של<br />
-            <span className="text-[#c7af48]">צעירים מתעשרים</span>
+            <span className="text-[#c9b14d]">צעירים מתעשרים</span>
           </h1>
         </div>
 
@@ -86,7 +86,7 @@ export default function Landing() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com"
-                  className="bg-card/80 border-border text-foreground placeholder:text-muted-foreground pr-11 py-6 focus:border-[#c7af48] focus:ring-[#c7af48]/20"
+                  className="bg-card/80 border-border text-foreground placeholder:text-muted-foreground pr-11 py-6 focus:border-[#c9b14d] focus:ring-[#c9b14d]/20"
                   dir="ltr"
                 />
               </div>

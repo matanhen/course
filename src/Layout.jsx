@@ -23,6 +23,7 @@ export default function Layout({ children, currentPageName }) {
   const [isAllowed, setIsAllowed] = useState(null);
   const [isConsultant, setIsConsultant] = useState(false);
   const [isManager, setIsManager] = useState(false);
+  const [logoUrl, setLogoUrl] = useState('');
 
   const [clientName, setClientName] = useState('');
   const navigate = useNavigate();
@@ -155,6 +156,24 @@ export default function Layout({ children, currentPageName }) {
     checkAuth();
   }, []);
 
+  useEffect(() => {
+    const loadLogo = async () => {
+      try {
+        const settings = await base44.entities.SiteSetting.list();
+        if (settings.length > 0 && settings[0].logo_url) setLogoUrl(settings[0].logo_url);
+      } catch {}
+    };
+    loadLogo();
+    const unsubscribe = base44.entities.SiteSetting.subscribe((event) => {
+      if (event.type === 'delete') {
+        setLogoUrl('');
+      } else {
+        setLogoUrl(event.data?.logo_url || '');
+      }
+    });
+    return unsubscribe;
+  }, []);
+
   const handleLogout = () => {
     base44.auth.logout();
   };
@@ -162,7 +181,7 @@ export default function Layout({ children, currentPageName }) {
   if (isAllowed === null || !user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center" dir="rtl">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c9b14d]"></div>
       </div>
     );
   }
@@ -215,18 +234,18 @@ export default function Layout({ children, currentPageName }) {
     <div className="min-h-screen bg-background" dir="rtl">
       <style>{`
         :root {
-          --gold: #c7af48;
-          --gold-dark: #b39d3d;
+          --gold: #c9b14d;
+          --gold-dark: #a89436;
         }
         
         .gold-gradient {
-          background: linear-gradient(135deg, #c7af48 0%, #e5d07a 50%, #c7af48 100%);
+          background: linear-gradient(135deg, #c9b14d 0%, #e5d07a 50%, #c9b14d 100%);
         }
         
         .glass-effect {
-          background: rgba(255, 255, 255, 0.05);
+          background: rgba(255, 255, 255, 0.75);
           backdrop-filter: blur(10px);
-          border: 1px solid rgba(199, 175, 72, 0.1);
+          border: 1px solid rgba(201, 177, 77, 0.25);
         }
         
 
@@ -241,7 +260,7 @@ export default function Layout({ children, currentPageName }) {
               variant="ghost"
               size="icon"
               onClick={() => setSidebarOpen(true)}
-              className="text-[#c7af48] min-w-[44px] min-h-[44px]"
+              className="text-[#c9b14d] min-w-[44px] min-h-[44px]"
             >
               <Menu className="w-6 h-6" />
             </Button>
@@ -250,14 +269,20 @@ export default function Layout({ children, currentPageName }) {
               variant="ghost"
               size="icon"
               onClick={() => navigate(-1)}
-              className="text-[#c7af48] min-w-[44px] min-h-[44px]"
+              className="text-[#c9b14d] min-w-[44px] min-h-[44px]"
             >
               <ArrowRight className="w-6 h-6" />
             </Button>
           )}
           <div className="flex items-center gap-2">
-            <GraduationCap className="w-6 h-6 text-[#c7af48]" />
-            <span className="font-bold text-foreground text-sm">האקדמיה של צעירים מתעשרים</span>
+            {logoUrl ? (
+              <img src={logoUrl} alt="לוגו האקדמיה" className="h-8 w-auto max-w-[170px] object-contain" />
+            ) : (
+              <>
+                <GraduationCap className="w-6 h-6 text-[#c9b14d]" />
+                <span className="font-bold text-foreground text-sm">האקדמיה של צעירים מתעשרים</span>
+              </>
+            )}
           </div>
           <div className="w-[44px]" />
         </div>
@@ -283,8 +308,14 @@ export default function Layout({ children, currentPageName }) {
             >
               <div className="flex items-center justify-between p-4 border-b border-border">
                 <div className="flex items-center gap-2">
-                  <GraduationCap className="w-6 h-6 text-[#c7af48]" />
-                  <span className="font-bold text-foreground">האקדמיה של צעירים מתעשרים</span>
+                  {logoUrl ? (
+                    <img src={logoUrl} alt="לוגו האקדמיה" className="h-8 w-auto max-w-[180px] object-contain" />
+                  ) : (
+                    <>
+                      <GraduationCap className="w-6 h-6 text-[#c9b14d]" />
+                      <span className="font-bold text-foreground">האקדמיה של צעירים מתעשרים</span>
+                    </>
+                  )}
                 </div>
                 <Button
                   variant="ghost"
@@ -304,7 +335,7 @@ export default function Layout({ children, currentPageName }) {
                     onClick={() => setSidebarOpen(false)}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                       currentPageName === link.page
-                        ? 'bg-[#c7af48]/10 text-[#c7af48]'
+                        ? 'bg-[#c9b14d]/10 text-[#c9b14d]'
                         : 'text-muted-foreground hover:text-foreground hover:bg-card'
                     }`}
                   >
@@ -348,13 +379,19 @@ export default function Layout({ children, currentPageName }) {
         style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="p-6 border-b border-border">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center">
-              <GraduationCap className="w-6 h-6 text-black" />
-            </div>
-            <div>
-              <h1 className="font-bold text-foreground text-sm">האקדמיה של צעירים מתעשרים</h1>
-              <p className="text-xs text-muted-foreground">{isAdmin ? 'ניהול' : isManager ? 'מנהל' : isConsultant ? 'יועץ' : 'לקוח'}</p>
-            </div>
+            {logoUrl ? (
+              <img src={logoUrl} alt="לוגו האקדמיה" className="h-10 w-auto max-w-[190px] object-contain" />
+            ) : (
+              <>
+                <div className="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center">
+                  <GraduationCap className="w-6 h-6 text-black" />
+                </div>
+                <div>
+                  <h1 className="font-bold text-foreground text-sm">האקדמיה של צעירים מתעשרים</h1>
+                  <p className="text-xs text-muted-foreground">{isAdmin ? 'ניהול' : isManager ? 'מנהל' : isConsultant ? 'יועץ' : 'לקוח'}</p>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -365,7 +402,7 @@ export default function Layout({ children, currentPageName }) {
               to={createPageUrl(link.page)}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 currentPageName === link.page
-                  ? 'bg-[#c7af48]/10 text-[#c7af48] border border-[#c7af48]/20'
+                  ? 'bg-[#c9b14d]/10 text-[#c9b14d] border border-[#c9b14d]/20'
                   : 'text-muted-foreground hover:text-foreground hover:bg-card'
               }`}
             >

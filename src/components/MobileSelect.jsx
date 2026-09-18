@@ -72,7 +72,7 @@ export default function MobileSelect({
                   }}
                   className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-right transition-colors ${
                     value === opt.value
-                      ? 'bg-[#c7af48]/10 text-[#c7af48]'
+                      ? 'bg-[#c9b14d]/10 text-[#c9b14d]'
                       : 'text-foreground hover:bg-secondary'
                   }`}
                 >

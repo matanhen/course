@@ -81,7 +81,7 @@ export default function Home() {
   if (coursesLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c9b14d]"></div>
       </div>
     );
   }
@@ -94,7 +94,7 @@ export default function Home() {
           className="flex items-center justify-center transition-all"
           style={{ height: isRefreshing ? 48 : pullDistance, overflow: 'hidden' }}
         >
-          <RefreshCw className={`w-5 h-5 text-[#c7af48] ${isRefreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-5 h-5 text-[#c9b14d] ${isRefreshing ? 'animate-spin' : ''}`} />
         </div>
       )}
 
@@ -130,7 +130,7 @@ export default function Home() {
                 transition={{ delay: index * 0.1 }}
               >
                 <Link to={createPageUrl(`CourseView?id=${course.id}`)} aria-label={`קורס ${course.title}`}>
-                  <Card className="group bg-card/50 border-border hover:border-[#c7af48]/50 transition-all duration-300 overflow-hidden">
+                  <Card className="group bg-card/50 border-border hover:border-[#c9b14d]/50 transition-all duration-300 overflow-hidden">
                     {/* Thumbnail */}
                     <div className="relative aspect-video bg-secondary overflow-hidden">
                       {course.thumbnail ? (
@@ -148,7 +148,7 @@ export default function Home() {
                       
                       {/* Play Button Overlay */}
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="w-16 h-16 rounded-full bg-[#c7af48] flex items-center justify-center transform scale-75 group-hover:scale-100 transition-transform">
+                        <div className="w-16 h-16 rounded-full bg-[#c9b14d] flex items-center justify-center transform scale-75 group-hover:scale-100 transition-transform">
                           <PlayCircle className="w-8 h-8 text-black" />
                         </div>
                       </div>
@@ -160,7 +160,7 @@ export default function Home() {
                             {progressPercent === 100 ? (
                               <CheckCircle2 className="w-4 h-4 text-green-400" />
                             ) : (
-                              <Clock className="w-4 h-4 text-[#c7af48]" />
+                              <Clock className="w-4 h-4 text-[#c9b14d]" />
                             )}
                             <span className="text-foreground text-sm font-medium">{progressPercent}%</span>
                           </div>
@@ -170,7 +170,7 @@ export default function Home() {
 
                     {/* Content */}
                     <div className="p-5">
-                      <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-[#c7af48] transition-colors">
+                      <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-[#c9b14d] transition-colors">
                         {course.title}
                       </h3>
                       {course.description && (
@@ -184,7 +184,7 @@ export default function Home() {
                           {lessonsCount} שיעורים
                         </span>
                         {progressPercent > 0 && (
-                          <span className="text-[#c7af48]">
+                          <span className="text-[#c9b14d]">
                             {progressPercent === 100 ? 'הושלם' : 'בתהליך'}
                           </span>
                         )}

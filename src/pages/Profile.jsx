@@ -55,7 +55,7 @@ export default function Profile() {
         {/* User Info */}
         <div className="bg-card/50 border border-border rounded-2xl p-6 mb-6">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 rounded-full bg-[#c7af48] flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-[#c9b14d] flex items-center justify-center">
               <span className="text-black text-2xl font-bold">
                 {user?.full_name?.[0] || user?.email?.[0] || '?'}
               </span>

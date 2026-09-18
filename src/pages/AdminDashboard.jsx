@@ -13,7 +13,9 @@ import {
   ArrowLeft,
   Plus,
   X,
-  RefreshCw
+  RefreshCw,
+  Upload,
+  Trash2
 } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,6 +23,7 @@ import { Button } from "@/components/ui/button";
 export default function AdminDashboard() {
   const [user, setUser] = useState(null);
   const [isManager, setIsManager] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const queryClient = useQueryClient();
   const { pullDistance, isRefreshing } = usePullToRefresh(async () => {
     await queryClient.invalidateQueries();
@@ -58,12 +61,44 @@ export default function AdminDashboard() {
     queryFn: () => base44.entities.Chapter.list(),
   });
 
+  const { data: siteSettings = [] } = useQuery({
+    queryKey: ['siteSettings'],
+    queryFn: () => base44.entities.SiteSetting.list(),
+  });
+
+  const logoPreview = siteSettings[0]?.logo_url || '';
+
+  const onLogoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingLogo(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadPublicFile({ file });
+      if (siteSettings.length > 0) {
+        await base44.entities.SiteSetting.update(siteSettings[0].id, { logo_url: file_url });
+      } else {
+        await base44.entities.SiteSetting.create({ logo_url: file_url });
+      }
+      await queryClient.invalidateQueries({ queryKey: ['siteSettings'] });
+    } catch {}
+    setUploadingLogo(false);
+    e.target.value = '';
+  };
+
+  const onLogoDelete = async () => {
+    if (siteSettings.length === 0) return;
+    try {
+      await base44.entities.SiteSetting.update(siteSettings[0].id, { logo_url: '' });
+      await queryClient.invalidateQueries({ queryKey: ['siteSettings'] });
+    } catch {}
+  };
+
   const stats = [
     { 
       title: 'קורסים', 
       value: courses.length, 
       icon: BookOpen, 
-      color: 'from-[#c7af48] to-[#e5d07a]',
+      color: 'from-[#c9b14d] to-[#e5d07a]',
       link: 'AdminCourses'
     },
     { 
@@ -92,7 +127,7 @@ export default function AdminDashboard() {
   if (!user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c7af48]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c9b14d]"></div>
       </div>
     );
   }
@@ -119,7 +154,7 @@ export default function AdminDashboard() {
           className="flex items-center justify-center transition-all"
           style={{ height: isRefreshing ? 48 : pullDistance, overflow: 'hidden' }}
         >
-          <RefreshCw className={`w-5 h-5 text-[#c7af48] ${isRefreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-5 h-5 text-[#c9b14d] ${isRefreshing ? 'animate-spin' : ''}`} />
         </div>
       )}
 
@@ -135,6 +170,33 @@ export default function AdminDashboard() {
         <p className="text-muted-foreground">נהל את הקורסים והלקוחות שלך</p>
       </div>
 
+      {user?.role === 'admin' && (
+        <Card className="bg-card/50 border-border p-6 mb-10">
+          <h2 className="text-lg font-bold text-foreground mb-1">לוגו האקדמיה</h2>
+          <p className="text-muted-foreground text-sm mb-4">העלה לוגו שיופיע בסרגל העליון ובתפריט הצדדי בכל המכשירים, מיד ולתמיד עד למחיקה או החלפה.</p>
+          <div className="flex items-center gap-4 flex-wrap">
+            {logoPreview ? (
+              <img src={logoPreview} alt="לוגו" className="h-16 w-auto max-w-[200px] object-contain border border-border rounded-lg p-2 bg-background" />
+            ) : (
+              <div className="h-16 w-32 flex items-center justify-center border border-dashed border-border rounded-lg text-muted-foreground text-xs">אין לוגו</div>
+            )}
+            <div className="flex gap-2">
+              <label className="cursor-pointer inline-flex items-center gap-2 bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold rounded-md px-4 py-2 text-sm transition-colors">
+                <Upload className="w-4 h-4" />
+                {uploadingLogo ? 'מעלה...' : 'העלה לוגו'}
+                <input type="file" accept="image/*" className="hidden" onChange={onLogoUpload} disabled={uploadingLogo} />
+              </label>
+              {logoPreview && (
+                <Button onClick={onLogoDelete} variant="outline" className="border-border text-muted-foreground hover:bg-secondary">
+                  <Trash2 className="w-4 h-4 ml-2" />
+                  מחק לוגו
+                </Button>
+              )}
+            </div>
+          </div>
+        </Card>
+      )}
+
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-10">
         {stats.map((stat, index) => (
@@ -145,12 +207,12 @@ export default function AdminDashboard() {
             transition={{ delay: index * 0.1 }}
           >
             <Link to={createPageUrl(stat.link)} aria-label={`מעבר ל${stat.title}`}>
-              <Card className="bg-card/50 border-border hover:border-[#c7af48]/30 transition-all p-6 group">
+              <Card className="bg-card/50 border-border hover:border-[#c9b14d]/30 transition-all p-6 group">
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-4`}>
                   <stat.icon className="w-6 h-6 text-foreground" />
                 </div>
                 <h3 className="text-3xl lg:text-4xl font-bold text-foreground mb-1">{stat.value}</h3>
-                <p className="text-muted-foreground group-hover:text-[#c7af48] transition-colors">{stat.title}</p>
+                <p className="text-muted-foreground group-hover:text-[#c9b14d] transition-colors">{stat.title}</p>
               </Card>
             </Link>
           </motion.div>
@@ -163,36 +225,36 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {!isManager && (
             <Link to={createPageUrl('AdminCourses')} aria-label="הוסף קורס חדש">
-              <Card className="bg-card/50 border-border hover:border-[#c7af48]/50 p-6 transition-all group">
+              <Card className="bg-card/50 border-border hover:border-[#c9b14d]/50 p-6 transition-all group">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-[#c7af48]/10 flex items-center justify-center">
-                    <Plus className="w-7 h-7 text-[#c7af48]" />
+                  <div className="w-14 h-14 rounded-xl bg-[#c9b14d]/10 flex items-center justify-center">
+                    <Plus className="w-7 h-7 text-[#c9b14d]" />
                   </div>
                   <div>
-                    <h3 className="text-foreground font-semibold group-hover:text-[#c7af48] transition-colors">
+                    <h3 className="text-foreground font-semibold group-hover:text-[#c9b14d] transition-colors">
                       הוסף קורס חדש
                     </h3>
                     <p className="text-muted-foreground text-sm">צור קורס חדש עם פרקים ושיעורים</p>
                   </div>
-                  <ArrowLeft className="w-5 h-5 text-muted-foreground mr-auto group-hover:text-[#c7af48] group-hover:-translate-x-1 transition-all" />
+                  <ArrowLeft className="w-5 h-5 text-muted-foreground mr-auto group-hover:text-[#c9b14d] group-hover:-translate-x-1 transition-all" />
                 </div>
               </Card>
             </Link>
           )}
 
           <Link to={createPageUrl('AdminClients')} aria-label="נהל לקוחות">
-            <Card className="bg-card/50 border-border hover:border-[#c7af48]/50 p-6 transition-all group">
+            <Card className="bg-card/50 border-border hover:border-[#c9b14d]/50 p-6 transition-all group">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-xl bg-purple-500/10 flex items-center justify-center">
                   <Users className="w-7 h-7 text-purple-500" />
                 </div>
                 <div>
-                  <h3 className="text-foreground font-semibold group-hover:text-[#c7af48] transition-colors">
+                  <h3 className="text-foreground font-semibold group-hover:text-[#c9b14d] transition-colors">
                     נהל לקוחות
                   </h3>
                   <p className="text-muted-foreground text-sm">הוסף או הסר לקוחות מורשים</p>
                 </div>
-                <ArrowLeft className="w-5 h-5 text-muted-foreground mr-auto group-hover:text-[#c7af48] group-hover:-translate-x-1 transition-all" />
+                <ArrowLeft className="w-5 h-5 text-muted-foreground mr-auto group-hover:text-[#c9b14d] group-hover:-translate-x-1 transition-all" />
               </div>
             </Card>
           </Link>
@@ -207,7 +269,7 @@ export default function AdminDashboard() {
             <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">אין קורסים עדיין</p>
             <Link to={createPageUrl('AdminCourses')} aria-label="צור קורס ראשון">
-              <Button className="mt-4 bg-[#c7af48] hover:bg-[#b39d3d] text-black">
+              <Button className="mt-4 bg-[#c9b14d] hover:bg-[#a89436] text-black">
                 צור קורס ראשון
               </Button>
             </Link>
@@ -220,7 +282,7 @@ export default function AdminDashboard() {
               
               return (
                 <Link key={course.id} to={isManager ? '#' : createPageUrl(`AdminCourseEdit?id=${course.id}`)} aria-label={`עריכת קורס ${course.title}`}>
-                  <Card className="bg-card/50 border-border hover:border-[#c7af48]/30 transition-all overflow-hidden group">
+                  <Card className="bg-card/50 border-border hover:border-[#c9b14d]/30 transition-all overflow-hidden group">
                     <div className="aspect-video bg-secondary relative overflow-hidden">
                       {course.thumbnail ? (
                         <img 
@@ -236,7 +298,7 @@ export default function AdminDashboard() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     </div>
                     <div className="p-4">
-                      <h3 className="text-foreground font-semibold group-hover:text-[#c7af48] transition-colors">
+                      <h3 className="text-foreground font-semibold group-hover:text-[#c9b14d] transition-colors">
                         {course.title}
                       </h3>
                       <p className="text-muted-foreground text-sm mt-1">

@@ -126,7 +126,7 @@ export default function MobileBottomNav() {
             onClick={() => handleTabPress(tab)}
             aria-label={tab.label}
             className={`flex-1 flex flex-col items-center justify-center gap-1 transition-colors min-h-[56px] py-2 ${
-              isActive ? 'text-[#c7af48]' : 'text-muted-foreground'
+              isActive ? 'text-[#c9b14d]' : 'text-muted-foreground'
             }`}
           >
             <tab.icon className="w-5 h-5" />
