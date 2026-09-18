@@ -395,7 +395,7 @@ export default function Layout({ children, currentPageName }) {
               )}
             </div>
           ) : (
-            <span className="text-white/70 text-xs">{isAdmin ? 'ניהול' : isManager ? 'מנהל' : isConsultant ? 'יועץ' : 'לקוח'}</span>
+            <div className="h-8" />
           )}
         </div>
 

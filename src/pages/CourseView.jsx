@@ -537,40 +537,25 @@ export default function CourseView() {
       `}</style>
       {/* Header */}
       <div className="hidden lg:flex sticky top-0 z-40 bg-[#105330] border-b border-white/10 px-6 py-3 items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link to={createPageUrl('Home')}>
-            <Button variant="ghost" size="icon" aria-label="חזרה" className="text-white hover:bg-white/10 min-w-[44px] min-h-[44px]">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
-          {logoUrl ? (
-            <img src={logoUrl} alt="לוגו האקדמיה" className="h-10 w-auto max-w-[180px] object-contain" />
-          ) : (
-            <h1 className="text-white font-bold truncate max-w-none">{course.title}</h1>
-          )}
-        </div>
-        <div className="flex items-center gap-4">
-          {!isAdmin && (
-            <p className="text-white/80 text-sm">{completedCount}/{totalCount} שיעורים הושלמו</p>
-          )}
-          {!isAdmin && totalCount > 0 && (
-            <div className="flex items-center gap-2">
-              <div className="h-2 w-32 bg-white/20 rounded-full overflow-hidden">
-                <div className="h-full bg-[#c9b14d] transition-all duration-500" style={{ width: `${progressPercent}%` }} />
-              </div>
-              <span className="text-[#c9b14d] font-medium text-sm">{progressPercent}%</span>
-            </div>
-          )}
-        </div>
+        <Link to={createPageUrl('Home')}>
+          <Button variant="ghost" size="icon" aria-label="חזרה" className="text-white hover:bg-white/10 min-w-[44px] min-h-[44px]">
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+        </Link>
+        {logoUrl ? (
+          <img src={logoUrl} alt="לוגו האקדמיה" className="h-12 w-auto max-w-[240px] object-contain" />
+        ) : (
+          <span className="text-white font-bold text-lg">האקדמיה לפיננסים</span>
+        )}
       </div>
 
       {course.external_button_url && (
-        <div className="bg-sidebar border-b border-border px-4 py-2">
+        <div className="bg-sidebar border-b border-border px-4 py-2 lg:mr-96">
           <a
             href={course.external_button_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold rounded-lg px-4 py-2 text-sm transition-colors w-full sm:w-auto sm:mx-auto"
+            className="flex items-center justify-center gap-2 bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors w-full sm:w-auto sm:mx-auto sm:min-w-[260px]"
           >
             <ExternalLink className="w-4 h-4" />
             {course.external_button_text || 'מערכת לניהול הכסף >>'}
@@ -687,7 +672,7 @@ export default function CourseView() {
           </AnimatePresence>
 
           {/* Video / Document player */}
-          <div className={`relative bg-card ${currentLesson?.lesson_type === 'external_link' ? 'min-h-[60vh]' : 'aspect-video'}`}>
+          <div className={`relative bg-card lg:max-w-2xl lg:mx-auto ${currentLesson?.lesson_type === 'external_link' ? 'min-h-[60vh]' : 'aspect-video'}`}>
             {!currentLesson ? (
               <div className="w-full h-full flex items-center justify-center">
                 <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#c9b14d]"></div>
@@ -797,9 +782,9 @@ export default function CourseView() {
 
           {/* Lesson info */}
           {currentLesson && (
-            <div className="p-3 lg:p-6 border-b border-border">
+            <div className="p-3 lg:p-6 border-b border-border lg:max-w-2xl lg:mx-auto">
               <div className="p-2.5 lg:p-4 bg-[#f3ead4] rounded-xl border border-black/10 mb-2 lg:mb-3">
-                <p className="text-black text-xs lg:text-sm font-bold mb-1">השיעור הנוכחי</p>
+                <p className="text-black text-xs lg:text-sm mb-1">השיעור הנוכחי</p>
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <h2 className="text-sm lg:text-xl font-bold text-black mb-0.5 truncate">{currentLesson.title}</h2>
@@ -822,7 +807,7 @@ export default function CourseView() {
 
               {nextLesson && (
                 <div className="mt-2 lg:mt-3 p-2.5 lg:p-4 bg-[#f3ead4] rounded-xl border border-black/10">
-                  <p className="text-black text-xs lg:text-sm font-bold mb-1">השיעור הבא</p>
+                  <p className="text-black text-xs lg:text-sm mb-1">השיעור הבא</p>
                   <button
                     onClick={() => selectLesson(nextLesson)}
                     className="w-full flex items-center gap-2 bg-[#105330] hover:bg-[#0a3d20] text-white font-bold rounded-lg px-3 py-2 text-sm transition-colors"

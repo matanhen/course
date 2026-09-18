@@ -9,12 +9,19 @@ export default function Landing() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [logoUrl, setLogoUrl] = useState('');
 
   // If already logged in, go straight to courses
   useEffect(() => {
     base44.auth.isAuthenticated().then(authed => {
       if (authed) window.location.href = '/Home';
     });
+  }, []);
+
+  useEffect(() => {
+    base44.entities.SiteSetting.list()
+      .then(s => { if (s[0]?.logo_url) setLogoUrl(s[0].logo_url); })
+      .catch(() => {});
   }, []);
 
   const handleLogin = async (e) => {
@@ -45,51 +52,48 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6" dir="rtl">
       <style>{`
-        .gold-gradient {
-          background: linear-gradient(135deg, #c9b14d 0%, #e5d07a 50%, #c9b14d 100%);
-        }
         .glass-card {
-          background: rgba(255, 255, 255, 0.85);
+          background: rgba(255, 255, 255, 0.9);
           backdrop-filter: blur(12px);
-          border: 1px solid rgba(201, 177, 77, 0.25);
+          border: 1px solid rgba(16, 83, 48, 0.2);
         }
       `}</style>
 
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex flex-col items-center mb-10">
-          <div className="w-20 h-20 rounded-2xl gold-gradient flex items-center justify-center mb-5 shadow-lg shadow-yellow-900/30">
-            <GraduationCap className="w-10 h-10 text-black" />
-          </div>
-          <h1 className="text-3xl font-bold text-foreground text-center leading-tight">
-            האקדמיה של<br />
-            <span className="text-[#c9b14d]">צעירים מתעשרים</span>
+          {logoUrl ? (
+            <img src={logoUrl} alt="האקדמיה לפיננסים" className="h-28 w-auto max-w-[260px] object-contain mb-5" />
+          ) : (
+            <div className="w-20 h-20 rounded-2xl bg-[#105330] flex items-center justify-center mb-5 shadow-lg shadow-green-900/30">
+              <GraduationCap className="w-10 h-10 text-white" />
+            </div>
+          )}
+          <h1 className="text-3xl font-bold text-center leading-tight text-[#105330]">
+            האקדמיה לפיננסים
           </h1>
         </div>
 
         {/* Card */}
         <div className="glass-card rounded-2xl p-8 shadow-2xl">
           <div className="mb-8 text-center">
-            <h2 className="text-xl font-bold text-foreground mb-1">ברוכים הבאים</h2>
-            <p className="text-muted-foreground text-sm">התחבר לחשבון שלך</p>
+            <p className="text-muted-foreground text-sm mb-1">ברוכים הבאים</p>
+            <h2 className="text-lg font-bold text-foreground">התחבר לחשבון שלך</h2>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-5">
             {/* Email */}
-            <div className="space-y-2">
-              <label className="text-muted-foreground text-sm font-medium">כתובת אימייל</label>
-              <div className="relative">
-                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="email@example.com"
-                  className="bg-card/80 border-border text-foreground placeholder:text-muted-foreground pr-11 py-6 focus:border-[#c9b14d] focus:ring-[#c9b14d]/20"
-                  dir="ltr"
-                />
-              </div>
+            <div className="relative">
+              <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <Input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="כתובת אימייל"
+                className="bg-card/80 border-border text-foreground placeholder:text-muted-foreground pr-11 py-6 focus:border-[#105330] focus:ring-[#105330]/20"
+                dir="rtl"
+              />
             </div>
 
 
@@ -104,11 +108,11 @@ export default function Landing() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full gold-gradient text-black font-bold py-6 text-base rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 mt-2"
+              className="w-full bg-[#105330] text-white font-bold py-6 text-base rounded-xl hover:bg-[#0a3d20] transition-colors disabled:opacity-50 mt-2"
             >
               {loading ? (
                 <div className="flex items-center gap-2 justify-center">
-                  <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   בודק...
                 </div>
               ) : (
@@ -122,7 +126,7 @@ export default function Landing() {
         </div>
 
         <p className="text-center text-muted-foreground text-xs mt-6">
-          צעירים מתעשרים © {new Date().getFullYear()}
+          האקדמיה לפיננסים © {new Date().getFullYear()}
         </p>
       </div>
     </div>
