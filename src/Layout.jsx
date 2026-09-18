@@ -375,7 +375,7 @@ export default function Layout({ children, currentPageName }) {
       <MobileBottomNav />
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col fixed top-0 right-0 bottom-0 w-56 bg-[#105330] border-l border-white/10"
+      <aside className={`hidden ${currentPageName !== 'CourseView' ? 'lg:flex' : ''} flex-col fixed top-0 right-0 bottom-0 w-56 bg-[#105330] border-l border-white/10`}
         style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="p-6 border-b border-white/10">
           {currentPageName !== 'CourseView' ? (
@@ -440,7 +440,7 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Main Content */}
-      <main className="lg:mr-56 pt-16 lg:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-0 min-h-screen">
+      <main className={`${currentPageName !== 'CourseView' ? 'lg:mr-56' : ''} pt-16 lg:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-0 min-h-screen`}>
         {children}
       </main>
     </div>

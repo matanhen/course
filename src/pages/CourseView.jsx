@@ -824,7 +824,7 @@ export default function CourseView() {
         </div>
 
         {/* Sidebar */}
-        <aside className="lg:fixed lg:right-56 lg:top-0 lg:bottom-0 lg:w-96 bg-[#105330] border-l border-white/10 overflow-y-auto overscroll-behavior-none">
+        <aside className="lg:fixed lg:right-0 lg:top-0 lg:bottom-0 lg:w-96 bg-[#105330] border-l border-white/10 overflow-y-auto overscroll-behavior-none">
           <div className="p-4 border-b border-white/10 sticky top-0 bg-[#105330] z-10">
             <h3 className="font-bold text-white">תוכן הקורס</h3>
             <p className="text-white/70 text-sm mt-1">

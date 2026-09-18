@@ -96,7 +96,7 @@ export default function Landing() {
 
             {/* Error */}
             {error && (
-              <div className="bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3 text-red-400 text-sm text-center">
+              <div className="bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3 text-red-600 font-bold text-sm text-center">
                 {error}
               </div>
             )}
