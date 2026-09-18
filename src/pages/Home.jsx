@@ -113,7 +113,7 @@ export default function Home() {
       {/* Courses Grid */}
       {courses.length === 0 ? (
         <div className="text-center py-20">
-          <BookOpen className="w-16 h-16 text-gray-700 mx-auto mb-4" />
+          <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
           <h2 className="text-xl text-muted-foreground">אין קורסים זמינים כרגע</h2>
         </div>
       ) : (
@@ -141,7 +141,7 @@ export default function Home() {
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <BookOpen className="w-16 h-16 text-zinc-700" />
+                          <BookOpen className="w-16 h-16 text-muted-foreground" />
                         </div>
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />

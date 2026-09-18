@@ -77,7 +77,7 @@ export default function Landing() {
           <form onSubmit={handleLogin} className="space-y-5">
             {/* Email */}
             <div className="space-y-2">
-              <label className="text-gray-300 text-sm font-medium">כתובת אימייל</label>
+              <label className="text-muted-foreground text-sm font-medium">כתובת אימייל</label>
               <div className="relative">
                 <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input

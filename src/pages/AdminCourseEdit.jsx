@@ -402,7 +402,7 @@ export default function AdminCourseEdit() {
             <h2 className="text-lg font-bold text-foreground mb-6">פרטי הקורס</h2>
             <div className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="title" className="text-gray-300">שם הקורס</Label>
+                <Label htmlFor="title" className="text-muted-foreground">שם הקורס</Label>
                 <Input
                   id="title"
                   value={editingCourse.title || ''}
@@ -411,7 +411,7 @@ export default function AdminCourseEdit() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="description" className="text-gray-300">תיאור</Label>
+                <Label htmlFor="description" className="text-muted-foreground">תיאור</Label>
                 <Textarea
                   id="description"
                   value={editingCourse.description || ''}
@@ -420,7 +420,7 @@ export default function AdminCourseEdit() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="thumbnail" className="text-gray-300">תמונת קורס</Label>
+                <Label htmlFor="thumbnail" className="text-muted-foreground">תמונת קורס</Label>
                 <div className="space-y-3">
                   {editingCourse.thumbnail && (
                     <div className="relative rounded-lg overflow-hidden aspect-video bg-secondary">
@@ -445,7 +445,7 @@ export default function AdminCourseEdit() {
                     variant="outline"
                     onClick={() => document.getElementById('thumbnail-upload').click()}
                     disabled={uploadingImage}
-                    className="w-full border-border text-gray-300 hover:bg-secondary"
+                    className="w-full border-border text-muted-foreground hover:bg-secondary"
                   >
                     {uploadingImage ? 'מעלה...' : 'העלה תמונה'}
                   </Button>
@@ -466,7 +466,7 @@ export default function AdminCourseEdit() {
                 </div>
               </div>
               <div className="flex items-center justify-between pt-2">
-                <Label className="text-gray-300">פרסום</Label>
+                <Label className="text-muted-foreground">פרסום</Label>
                 <Switch
                   checked={editingCourse.is_published}
                   onCheckedChange={(checked) => setEditingCourse({ ...editingCourse, is_published: checked })}
@@ -474,7 +474,7 @@ export default function AdminCourseEdit() {
               </div>
               <div className="space-y-3 pt-4 border-t border-border">
                 <div className="space-y-2">
-                  <Label className="text-gray-300">כפתור חיצוני - קישור</Label>
+                  <Label className="text-muted-foreground">כפתור חיצוני - קישור</Label>
                   <Input
                     value={editingCourse.external_button_url || ''}
                     onChange={(e) => setEditingCourse({ ...editingCourse, external_button_url: e.target.value })}
@@ -483,7 +483,7 @@ export default function AdminCourseEdit() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-gray-300">כפתור חיצוני - טקסט</Label>
+                  <Label className="text-muted-foreground">כפתור חיצוני - טקסט</Label>
                   <Input
                     value={editingCourse.external_button_text || ''}
                     onChange={(e) => setEditingCourse({ ...editingCourse, external_button_text: e.target.value })}
@@ -524,7 +524,7 @@ export default function AdminCourseEdit() {
 
           {sortedChapters.length === 0 ? (
             <Card className="bg-card/50 border-border p-10 text-center">
-              <BookOpen className="w-12 h-12 text-gray-700 mx-auto mb-4" />
+              <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground mb-4">אין פרקים עדיין</p>
               <Button
                 onClick={() => setShowChapterDialog(true)}
@@ -619,7 +619,7 @@ export default function AdminCourseEdit() {
                             <div
                               ref={provided.innerRef}
                               {...provided.droppableProps}
-                              className={`divide-y divide-zinc-800/50 ${
+                              className={`divide-y divide-border/50 ${
                                 snapshot.isDraggingOver ? 'bg-secondary/30' : ''
                               }`}
                             >
@@ -653,7 +653,7 @@ export default function AdminCourseEdit() {
                                             )}
                                           </div>
                                           <div>
-                                            <p className="text-gray-300">{lesson.title}</p>
+                                            <p className="text-muted-foreground">{lesson.title}</p>
                                             <div className="flex items-center gap-2">
                                               {lesson.duration && (
                                                 <p className="text-muted-foreground text-xs">{lesson.duration}</p>
@@ -735,7 +735,7 @@ export default function AdminCourseEdit() {
                 type="button"
                 variant="outline"
                 onClick={() => setShowChapterDialog(false)}
-                className="flex-1 border-border text-gray-300 hover:bg-secondary"
+                className="flex-1 border-border text-muted-foreground hover:bg-secondary"
               >
                 ביטול
               </Button>
@@ -846,7 +846,7 @@ export default function AdminCourseEdit() {
                 type="button"
                 variant="outline"
                 onClick={() => setShowLessonDialog(false)}
-                className="flex-1 border-border text-gray-300 hover:bg-secondary"
+                className="flex-1 border-border text-muted-foreground hover:bg-secondary"
               >
                 ביטול
               </Button>
@@ -877,7 +877,7 @@ export default function AdminCourseEdit() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3">
-            <AlertDialogCancel className="bg-secondary border-border text-foreground hover:bg-zinc-700">
+            <AlertDialogCancel className="bg-secondary border-border text-foreground hover:bg-secondary">
               ביטול
             </AlertDialogCancel>
             <AlertDialogAction

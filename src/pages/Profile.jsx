@@ -72,7 +72,7 @@ export default function Profile() {
           <Button
             onClick={() => base44.auth.logout('/')}
             variant="outline"
-            className="w-full justify-start border-border text-gray-300 hover:bg-secondary hover:text-foreground gap-3 py-6"
+            className="w-full justify-start border-border text-muted-foreground hover:bg-secondary hover:text-foreground gap-3 py-6"
           >
             <LogOut className="w-5 h-5" />
             התנתק
@@ -102,7 +102,7 @@ export default function Profile() {
                 >
                   מחק חשבון
                 </AlertDialogAction>
-                <AlertDialogCancel className="border-border text-gray-300 hover:bg-secondary">
+                <AlertDialogCancel className="border-border text-muted-foreground hover:bg-secondary">
                   ביטול
                 </AlertDialogCancel>
               </AlertDialogFooter>

@@ -29,6 +29,7 @@ export default function Layout({ children, currentPageName }) {
   const location = useLocation();
 
   // Root pages (tabs) — no back button on these
+  // Root tab pages — keep in sync with the tab paths defined in MobileBottomNav.jsx
   const rootPaths = ['/Home', '/home', '/Profile', '/AdminDashboard', '/AdminCourses', '/AdminClients'];
   const isRootPage = rootPaths.some(p => location.pathname === p);
 
@@ -178,7 +179,7 @@ export default function Layout({ children, currentPageName }) {
           <Button 
             onClick={handleLogout}
             variant="outline"
-            className="border-gray-700 text-gray-300 hover:bg-gray-800"
+            className="border-border text-muted-foreground hover:bg-secondary"
           >
             התנתק
           </Button>
@@ -398,7 +399,7 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Main Content */}
-      <main className="lg:mr-56 pt-16 lg:pt-0 pb-20 lg:pb-0 min-h-screen">
+      <main className="lg:mr-56 pt-16 lg:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-0 min-h-screen">
         {children}
       </main>
     </div>

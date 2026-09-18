@@ -264,7 +264,7 @@ export default function AdminCourses() {
         </div>
       ) : filteredCourses.length === 0 ? (
         <Card className="bg-card/50 border-border p-10 text-center">
-          <BookOpen className="w-12 h-12 text-gray-700 mx-auto mb-4" />
+          <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
           <p className="text-muted-foreground">
             {searchQuery ? 'לא נמצאו קורסים' : 'אין קורסים עדיין'}
           </p>
@@ -303,7 +303,7 @@ export default function AdminCourses() {
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <BookOpen className="w-12 h-12 text-zinc-700" />
+                          <BookOpen className="w-12 h-12 text-muted-foreground" />
                         </div>
                       )}
                       
@@ -312,7 +312,7 @@ export default function AdminCourses() {
                         <div className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 ${
                           course.is_published 
                             ? 'bg-green-500/20 text-green-400' 
-                            : 'bg-gray-500/20 text-muted-foreground'
+                            : 'bg-muted text-muted-foreground'
                         }`}>
                           {course.is_published ? (
                             <Eye className="w-3 h-3" />
@@ -469,7 +469,7 @@ export default function AdminCourses() {
                     variant="outline"
                     onClick={() => document.getElementById('image-upload').click()}
                     disabled={uploadingImage}
-                    className="flex-1 border-border text-gray-300 hover:bg-secondary"
+                    className="flex-1 border-border text-muted-foreground hover:bg-secondary"
                   >
                     {uploadingImage ? 'מעלה...' : 'העלה תמונה'}
                   </Button>
@@ -503,7 +503,7 @@ export default function AdminCourses() {
                 type="button"
                 variant="outline"
                 onClick={() => setShowAddDialog(false)}
-                className="flex-1 border-border text-gray-300 hover:bg-secondary"
+                className="flex-1 border-border text-muted-foreground hover:bg-secondary"
               >
                 ביטול
               </Button>
@@ -530,7 +530,7 @@ export default function AdminCourses() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3">
-            <AlertDialogCancel className="bg-secondary border-border text-foreground hover:bg-zinc-700">
+            <AlertDialogCancel className="bg-secondary border-border text-foreground hover:bg-secondary">
               ביטול
             </AlertDialogCancel>
             <AlertDialogAction

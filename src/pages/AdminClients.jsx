@@ -675,7 +675,7 @@ export default function AdminClients() {
             onClick={() => setActiveTab('clients')}
             className={activeTab === 'clients' 
               ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' 
-              : 'border-border text-gray-300 hover:bg-secondary min-w-[44px] min-h-[44px]'
+              : 'border-border text-muted-foreground hover:bg-secondary min-w-[44px] min-h-[44px]'
             }
           >
             <Users className="w-4 h-4 ml-2" />
@@ -686,7 +686,7 @@ export default function AdminClients() {
             onClick={() => setActiveTab('consultants')}
             className={activeTab === 'consultants' 
               ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' 
-              : 'border-border text-gray-300 hover:bg-secondary min-w-[44px] min-h-[44px]'
+              : 'border-border text-muted-foreground hover:bg-secondary min-w-[44px] min-h-[44px]'
             }
           >
             <User className="w-4 h-4 ml-2" />
@@ -697,7 +697,7 @@ export default function AdminClients() {
             onClick={() => setActiveTab('managers')}
             className={activeTab === 'managers' 
               ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' 
-              : 'border-border text-gray-300 hover:bg-secondary min-w-[44px] min-h-[44px]'
+              : 'border-border text-muted-foreground hover:bg-secondary min-w-[44px] min-h-[44px]'
             }
           >
             <Users className="w-4 h-4 ml-2" />
@@ -717,21 +717,21 @@ export default function AdminClients() {
                   <Button
                     variant={filterType === 'all' ? 'default' : 'outline'}
                     onClick={() => { setFilterType('all'); setSelectedCourseFilter(''); setSelectedConsultantFilter(''); }}
-                    className={filterType === 'all' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-border text-gray-300 hover:bg-secondary min-w-[44px] min-h-[44px]'}
+                    className={filterType === 'all' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-border text-muted-foreground hover:bg-secondary min-w-[44px] min-h-[44px]'}
                   >
                     כל הלקוחות ({clients.length})
                   </Button>
                   <Button
                     variant={filterType === 'course' ? 'default' : 'outline'}
                     onClick={() => setFilterType('course')}
-                    className={filterType === 'course' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-border text-gray-300 hover:bg-secondary min-w-[44px] min-h-[44px]'}
+                    className={filterType === 'course' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-border text-muted-foreground hover:bg-secondary min-w-[44px] min-h-[44px]'}
                   >
                     לפי קורס
                   </Button>
                   <Button
                     variant={filterType === 'consultant' ? 'default' : 'outline'}
                     onClick={() => setFilterType('consultant')}
-                    className={filterType === 'consultant' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-border text-gray-300 hover:bg-secondary min-w-[44px] min-h-[44px]'}
+                    className={filterType === 'consultant' ? 'bg-[#c7af48] hover:bg-[#b39d3d] text-black font-semibold min-w-[44px] min-h-[44px]' : 'border-border text-muted-foreground hover:bg-secondary min-w-[44px] min-h-[44px]'}
                   >
                     לפי יועץ
                   </Button>
@@ -814,7 +814,7 @@ export default function AdminClients() {
             </div>
           ) : filteredClients.length === 0 ? (
             <Card className="bg-card/50 border-border p-10 text-center">
-              <Users className="w-12 h-12 text-gray-700 mx-auto mb-4" />
+              <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground">
                 {searchQuery ? 'לא נמצאו לקוחות' : 'אין לקוחות מורשים עדיין'}
               </p>
@@ -1001,7 +1001,7 @@ export default function AdminClients() {
           </div>
           {managers.length === 0 ? (
             <Card className="bg-card/50 border-border p-10 text-center">
-              <Users className="w-12 h-12 text-gray-700 mx-auto mb-4" />
+              <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground">אין מנהלים במערכת</p>
             </Card>
           ) : (
@@ -1155,7 +1155,7 @@ export default function AdminClients() {
           <div className="mt-4 space-y-3">
             {getClientCourses(selectedClientCourses?.email).length === 0 ? (
               <div className="text-center py-8">
-                <BookOpen className="w-12 h-12 text-gray-700 mx-auto mb-3" />
+                <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                 <p className="text-muted-foreground">אין קורסים מורשים ללקוח זה</p>
               </div>
             ) : (
@@ -1173,7 +1173,7 @@ export default function AdminClients() {
                 return (
                   <Card key={course.id} className="bg-secondary/50 border-border p-4">
                     <div className="flex items-start gap-4">
-                      <div className="w-16 h-16 rounded-lg bg-zinc-700 overflow-hidden shrink-0">
+                      <div className="w-16 h-16 rounded-lg bg-secondary overflow-hidden shrink-0">
                         {course.thumbnail ? (
                           <img 
                             src={course.thumbnail} 
@@ -1326,7 +1326,7 @@ export default function AdminClients() {
                                       ? 'bg-green-500' 
                                       : progressPercent > 0
                                         ? 'bg-yellow-500'
-                                        : 'bg-zinc-700'
+                                        : 'bg-secondary'
                                   }`}>
                                     {isCompleted ? (
                                       <CheckCircle2 className="w-4 h-4 text-foreground" />
@@ -1335,7 +1335,7 @@ export default function AdminClients() {
                                     )}
                                   </div>
                                   <div>
-                                    <p className="text-gray-300">{lesson.title}</p>
+                                    <p className="text-muted-foreground">{lesson.title}</p>
                                     {lesson.duration && (
                                       <p className="text-xs text-muted-foreground">{lesson.duration}</p>
                                     )}
@@ -1346,7 +1346,7 @@ export default function AdminClients() {
                                     ? 'bg-green-500/20 text-green-400' 
                                     : progressPercent > 0
                                       ? 'bg-yellow-500/20 text-yellow-400'
-                                      : 'bg-zinc-700 text-muted-foreground'
+                                      : 'bg-secondary text-muted-foreground'
                                 }`}>
                                   {isCompleted ? 'נצפה' : progressPercent > 0 ? `בתהליך ${progressPercent}%` : 'לא נצפה'}
                                 </div>
@@ -1375,7 +1375,7 @@ export default function AdminClients() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3">
-            <AlertDialogCancel className="bg-secondary border-border text-foreground hover:bg-zinc-700">
+            <AlertDialogCancel className="bg-secondary border-border text-foreground hover:bg-secondary">
               ביטול
             </AlertDialogCancel>
             <AlertDialogAction
@@ -1445,7 +1445,7 @@ export default function AdminClients() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3">
-            <AlertDialogCancel className="bg-secondary border-border text-foreground hover:bg-zinc-700">
+            <AlertDialogCancel className="bg-secondary border-border text-foreground hover:bg-secondary">
               ביטול
             </AlertDialogCancel>
             <AlertDialogAction
@@ -1571,7 +1571,7 @@ export default function AdminClients() {
               <Input
                 value={showAssignConsultantDialog?.client?.name || showAssignConsultantDialog?.client?.email || ''}
                 disabled
-                className="bg-secondary border-border text-gray-300"
+                className="bg-secondary border-border text-muted-foreground"
               />
             </div>
             <div className="space-y-2">
@@ -1761,7 +1761,7 @@ function ConsultantsList({ consultants, clients, onEditConsultant, getConsultant
   if (consultants.length === 0) {
     return (
       <Card className="bg-card/50 border-border p-10 text-center">
-        <User className="w-12 h-12 text-gray-700 mx-auto mb-4" />
+        <User className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
         <p className="text-muted-foreground">אין יועצים במערכת</p>
       </Card>
     );

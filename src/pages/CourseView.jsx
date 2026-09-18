@@ -530,7 +530,7 @@ export default function CourseView() {
         }
       `}</style>
       {/* Header */}
-      <div className="sticky top-0 z-40 glass-effect border-b border-border px-4 py-3 lg:px-6">
+      <div className="sticky top-0 z-40 glass-effect border-b border-border px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] lg:px-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to={createPageUrl('Home')}>
@@ -600,7 +600,7 @@ export default function CourseView() {
                 transition={{ duration: 0.25 }}
                 className="overflow-hidden bg-sidebar border-b border-border"
               >
-                <div className="divide-y divide-zinc-800 max-h-[60vh] overflow-y-auto overscroll-behavior-none">
+                <div className="divide-y divide-border max-h-[60vh] overflow-y-auto overscroll-behavior-none">
                   {sortedChapters.map((chapter, chapterIndex) => {
                     const chapterLessons = getLessonsForChapter(chapter.id);
                     const chapterCompletedCount = chapterLessons.filter(l => isLessonCompleted(l.id)).length;
@@ -663,7 +663,7 @@ export default function CourseView() {
                                       </div>
                                     )}
                                     <div className="flex-1 min-w-0">
-                                      <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-gray-300'} break-words text-sm`}>
+                                      <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-muted-foreground'} break-words text-sm`}>
                                         {lesson.title}
                                       </p>
                                       {lesson.duration && <p className="text-muted-foreground text-xs">{lesson.duration}</p>}
@@ -739,7 +739,7 @@ export default function CourseView() {
                       <div
                         ref={seekBarRef}
                         tabIndex={0}
-                        className="flex-1 h-2 bg-zinc-700 rounded-full cursor-pointer relative touch-none focus-visible:ring-2 focus-visible:ring-[#c7af48]"
+                        className="flex-1 h-2 bg-secondary rounded-full cursor-pointer relative touch-none focus-visible:ring-2 focus-visible:ring-[#c7af48]"
                         onPointerDown={onSeekPointerDown}
                         onPointerMove={onSeekPointerMove}
                         onPointerUp={onSeekPointerUp}
@@ -840,7 +840,7 @@ export default function CourseView() {
             </p>
           </div>
 
-          <div className="divide-y divide-zinc-800">
+          <div className="divide-y divide-border">
             {sortedChapters.map((chapter, chapterIndex) => {
               const chapterLessons = getLessonsForChapter(chapter.id);
               const chapterCompletedCount = chapterLessons.filter(l => isLessonCompleted(l.id)).length;
@@ -903,7 +903,7 @@ export default function CourseView() {
                                 </div>
                               )}
                               <div className="flex-1 min-w-0">
-                                <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-gray-300'} break-words text-sm`}>
+                                <p className={`${isCurrent ? 'text-[#c7af48]' : 'text-muted-foreground'} break-words text-sm`}>
                                   {lesson.title}
                                 </p>
                                 {lesson.duration && <p className="text-muted-foreground text-xs">{lesson.duration}</p>}

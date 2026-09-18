@@ -204,7 +204,7 @@ export default function AdminDashboard() {
         <h2 className="text-xl font-bold text-foreground mb-6">קורסים אחרונים</h2>
         {courses.length === 0 ? (
           <Card className="bg-card/50 border-border p-10 text-center">
-            <BookOpen className="w-12 h-12 text-gray-700 mx-auto mb-4" />
+            <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">אין קורסים עדיין</p>
             <Link to={createPageUrl('AdminCourses')} aria-label="צור קורס ראשון">
               <Button className="mt-4 bg-[#c7af48] hover:bg-[#b39d3d] text-black">
@@ -230,7 +230,7 @@ export default function AdminDashboard() {
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <BookOpen className="w-12 h-12 text-zinc-700" />
+                          <BookOpen className="w-12 h-12 text-muted-foreground" />
                         </div>
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
