@@ -10,12 +10,22 @@ export default function Landing() {
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [logoUrl, setLogoUrl] = useState('');
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
-  // If already logged in, go straight to courses
+  // If already logged in (token saved on this device), go straight to courses
   useEffect(() => {
-    base44.auth.isAuthenticated().then(authed => {
-      if (authed) window.location.href = '/Home';
-    });
+    let cancelled = false;
+    base44.auth.isAuthenticated()
+      .then(authed => {
+        if (cancelled) return;
+        if (authed) {
+          window.location.href = '/Home';
+        } else {
+          setCheckingAuth(false);
+        }
+      })
+      .catch(() => !cancelled && setCheckingAuth(false));
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
@@ -48,6 +58,14 @@ export default function Landing() {
       setLoading(false);
     }
   };
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen bg-[#105330] flex items-center justify-center" dir="rtl">
+        <div className="w-10 h-10 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#105330] flex flex-col items-center justify-center p-6" dir="rtl">
