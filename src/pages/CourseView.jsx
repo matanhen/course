@@ -797,22 +797,23 @@ export default function CourseView() {
 
           {/* Lesson info */}
           {currentLesson && (
-            <div className="p-4 lg:p-6 border-b border-border">
-              <div className="p-4 bg-black rounded-xl border border-white/10 mb-3 lg:mb-6">
-                <p className="text-white text-sm mb-2">השיעור הנוכחי</p>
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <h2 className="text-base lg:text-2xl font-bold text-white mb-2">{currentLesson.title}</h2>
-                    {currentLesson.duration && <p className="text-white/70">משך: {currentLesson.duration}</p>}
+            <div className="p-3 lg:p-6 border-b border-border">
+              <div className="p-2.5 lg:p-4 bg-[#f3ead4] rounded-xl border border-black/10 mb-2 lg:mb-3">
+                <p className="text-black text-xs lg:text-sm font-bold mb-1">השיעור הנוכחי</p>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <h2 className="text-sm lg:text-xl font-bold text-black mb-0.5 truncate">{currentLesson.title}</h2>
+                    {currentLesson.duration && <p className="text-black/60 text-xs">משך: {currentLesson.duration}</p>}
                   </div>
                   {!isAdmin && (
                     <Button
                       onClick={handleLessonComplete}
                       disabled={isLessonCompleted(currentLesson.id)}
+                      size="sm"
                       className={`shrink-0 ${isLessonCompleted(currentLesson.id) ? 'bg-green-600 hover:bg-green-600' : 'bg-[#c9b14d] hover:bg-[#a89436]'} text-black font-semibold`}
                     >
                       {isLessonCompleted(currentLesson.id) ? (
-                        <><CheckCircle2 className="w-4 h-4 ml-2" />הושלם</>
+                        <><CheckCircle2 className="w-3.5 h-3.5 ml-1" />הושלם</>
                       ) : 'סמן כנצפה'}
                     </Button>
                   )}
@@ -820,14 +821,14 @@ export default function CourseView() {
               </div>
 
               {nextLesson && (
-                <div className="mt-3 lg:mt-6 p-4 bg-black rounded-xl border border-white/10">
-                  <p className="text-white text-sm mb-2">השיעור הבא</p>
+                <div className="mt-2 lg:mt-3 p-2.5 lg:p-4 bg-[#f3ead4] rounded-xl border border-black/10">
+                  <p className="text-black text-xs lg:text-sm font-bold mb-1">השיעור הבא</p>
                   <button
                     onClick={() => selectLesson(nextLesson)}
-                    className="w-full flex items-center gap-3 bg-[#105330] hover:bg-[#0a3d20] text-white font-bold rounded-lg px-4 py-3 transition-colors"
+                    className="w-full flex items-center gap-2 bg-[#105330] hover:bg-[#0a3d20] text-white font-bold rounded-lg px-3 py-2 text-sm transition-colors"
                   >
-                    <PlayCircle className="w-5 h-5 shrink-0" />
-                    <span className="text-right flex-1">{nextLesson.title}</span>
+                    <PlayCircle className="w-4 h-4 shrink-0" />
+                    <span className="text-right flex-1 truncate">{nextLesson.title}</span>
                   </button>
                 </div>
               )}

@@ -378,21 +378,25 @@ export default function Layout({ children, currentPageName }) {
       <aside className="hidden lg:flex flex-col fixed top-0 right-0 bottom-0 w-56 bg-[#105330] border-l border-white/10"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="p-6 border-b border-white/10">
-          <div className="flex items-center gap-3">
-            {logoUrl ? (
-              <img src={logoUrl} alt="לוגו האקדמיה" className="h-12 w-auto max-w-[160px] object-contain" />
-            ) : (
-              <>
-                <div className="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center">
-                  <GraduationCap className="w-6 h-6 text-black" />
-                </div>
-                <div>
-                  <h1 className="font-bold text-white text-sm">האקדמיה של צעירים מתעשרים</h1>
-                  <p className="text-xs text-white/70">{isAdmin ? 'ניהול' : isManager ? 'מנהל' : isConsultant ? 'יועץ' : 'לקוח'}</p>
-                </div>
-              </>
-            )}
-          </div>
+          {currentPageName !== 'CourseView' ? (
+            <div className="flex items-center gap-3">
+              {logoUrl ? (
+                <img src={logoUrl} alt="לוגו האקדמיה" className="h-12 w-auto max-w-[160px] object-contain" />
+              ) : (
+                <>
+                  <div className="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center">
+                    <GraduationCap className="w-6 h-6 text-black" />
+                  </div>
+                  <div>
+                    <h1 className="font-bold text-white text-sm">האקדמיה של צעירים מתעשרים</h1>
+                    <p className="text-xs text-white/70">{isAdmin ? 'ניהול' : isManager ? 'מנהל' : isConsultant ? 'יועץ' : 'לקוח'}</p>
+                  </div>
+                </>
+              )}
+            </div>
+          ) : (
+            <span className="text-white/70 text-xs">{isAdmin ? 'ניהול' : isManager ? 'מנהל' : isConsultant ? 'יועץ' : 'לקוח'}</span>
+          )}
         </div>
 
         <nav className="flex-1 p-4 space-y-2">
