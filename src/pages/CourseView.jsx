@@ -49,6 +49,12 @@ export default function CourseView() {
   const initialLessonSet = useRef(false);
   const updateProgressMutationRef = useRef(null);
   const progressRef = useRef([]);
+  const [logoUrl, setLogoUrl] = useState('');
+  useEffect(() => {
+    base44.entities.SiteSetting.list()
+      .then(s => { if (s[0]?.logo_url) setLogoUrl(s[0].logo_url); })
+      .catch(() => {});
+  }, []);
 
   // Load user once
   useEffect(() => {
@@ -530,28 +536,26 @@ export default function CourseView() {
         }
       `}</style>
       {/* Header */}
-      <div className="sticky top-0 z-40 glass-effect border-b border-border px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] lg:px-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to={createPageUrl('Home')}>
-              <Button variant="ghost" size="icon" aria-label="חזרה" className="text-muted-foreground hover:text-foreground min-w-[44px] min-h-[44px]">
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-foreground font-bold truncate max-w-[200px] lg:max-w-none">
-                {course.title}
-              </h1>
-              {!isAdmin && (
-                <p className="text-muted-foreground text-sm">
-                  {completedCount}/{totalCount} שיעורים הושלמו
-                </p>
-              )}
-            </div>
-          </div>
+      <div className="hidden lg:flex sticky top-0 z-40 bg-[#105330] border-b border-white/10 px-6 py-3 items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Link to={createPageUrl('Home')}>
+            <Button variant="ghost" size="icon" aria-label="חזרה" className="text-white hover:bg-white/10 min-w-[44px] min-h-[44px]">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+          </Link>
+          {logoUrl ? (
+            <img src={logoUrl} alt="לוגו האקדמיה" className="h-10 w-auto max-w-[180px] object-contain" />
+          ) : (
+            <h1 className="text-white font-bold truncate max-w-none">{course.title}</h1>
+          )}
+        </div>
+        <div className="flex items-center gap-4">
+          {!isAdmin && (
+            <p className="text-white/80 text-sm">{completedCount}/{totalCount} שיעורים הושלמו</p>
+          )}
           {!isAdmin && totalCount > 0 && (
-            <div className="hidden lg:flex items-center gap-2">
-              <div className="h-2 w-32 bg-secondary rounded-full overflow-hidden">
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-32 bg-white/20 rounded-full overflow-hidden">
                 <div className="h-full bg-[#c9b14d] transition-all duration-500" style={{ width: `${progressPercent}%` }} />
               </div>
               <span className="text-[#c9b14d] font-medium text-sm">{progressPercent}%</span>
@@ -632,7 +636,7 @@ export default function CourseView() {
                               animate={{ height: 'auto', opacity: 1 }}
                               exit={{ height: 0, opacity: 0 }}
                               transition={{ duration: 0.15 }}
-                              className="overflow-hidden bg-card/30"
+                              className="overflow-hidden bg-transparent"
                             >
                               {chapterLessons.map((lesson, lessonIndex) => {
                                 const isCompleted = isLessonCompleted(lesson.id);
@@ -735,7 +739,7 @@ export default function CourseView() {
                     </div>
                     {/* Bottom controls: seek bar, speed, fullscreen */}
                     <div className="absolute bottom-0 left-0 right-0 px-2 pb-2 pt-6 flex items-center gap-2 bg-gradient-to-t from-black/80 to-transparent" dir="ltr">
-                      <span className="text-foreground text-xs tabular-nums w-10 text-right shrink-0">{formatTime(videoTime)}</span>
+                      <span className="text-white font-bold text-xs tabular-nums w-10 text-right shrink-0">{formatTime(videoTime)}</span>
                       <div
                         ref={seekBarRef}
                         tabIndex={0}
@@ -744,9 +748,9 @@ export default function CourseView() {
                         onPointerMove={onSeekPointerMove}
                         onPointerUp={onSeekPointerUp}
                       >
-                        <div className="absolute inset-y-0 left-0 bg-[#c9b14d] rounded-full" style={{ width: `${videoProgress}%` }} />
+                        <div className="absolute inset-y-0 left-0 bg-[#105330] rounded-full" style={{ width: `${videoProgress}%` }} />
                       </div>
-                      <span className="text-foreground text-xs tabular-nums w-10 shrink-0">{formatTime(videoDuration)}</span>
+                      <span className="text-white font-bold text-xs tabular-nums w-10 shrink-0">{formatTime(videoDuration)}</span>
                       <div className="relative shrink-0">
                         {speedMenuOpen && <div className="fixed inset-0 z-20" onClick={() => setSpeedMenuOpen(false)} />}
                         <button
@@ -793,13 +797,13 @@ export default function CourseView() {
 
           {/* Lesson info */}
           {currentLesson && (
-            <div className="p-6 border-b border-border">
-              <div className="p-4 bg-card/50 rounded-xl border border-white mb-6">
-                <p className="text-foreground text-sm mb-2">השיעור הנוכחי</p>
+            <div className="p-4 lg:p-6 border-b border-border">
+              <div className="p-4 bg-black rounded-xl border border-white/10 mb-3 lg:mb-6">
+                <p className="text-white text-sm mb-2">השיעור הנוכחי</p>
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h2 className="text-base lg:text-2xl font-bold text-foreground mb-2">{currentLesson.title}</h2>
-                    {currentLesson.duration && <p className="text-muted-foreground">משך: {currentLesson.duration}</p>}
+                    <h2 className="text-base lg:text-2xl font-bold text-white mb-2">{currentLesson.title}</h2>
+                    {currentLesson.duration && <p className="text-white/70">משך: {currentLesson.duration}</p>}
                   </div>
                   {!isAdmin && (
                     <Button
@@ -816,8 +820,8 @@ export default function CourseView() {
               </div>
 
               {nextLesson && (
-                <div className="mt-6 p-4 bg-card/50 rounded-xl border border-white">
-                  <p className="text-foreground text-sm mb-2">השיעור הבא</p>
+                <div className="mt-3 lg:mt-6 p-4 bg-black rounded-xl border border-white/10">
+                  <p className="text-white text-sm mb-2">השיעור הבא</p>
                   <button
                     onClick={() => selectLesson(nextLesson)}
                     className="w-full flex items-center gap-3 bg-[#105330] hover:bg-[#0a3d20] text-white font-bold rounded-lg px-4 py-3 transition-colors"
@@ -872,7 +876,7 @@ export default function CourseView() {
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="overflow-hidden bg-card/30"
+                        className="overflow-hidden bg-transparent"
                       >
                         {chapterLessons.map((lesson, lessonIndex) => {
                           const isCompleted = isLessonCompleted(lesson.id);

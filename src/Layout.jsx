@@ -380,7 +380,7 @@ export default function Layout({ children, currentPageName }) {
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center gap-3">
             {logoUrl ? (
-              <img src={logoUrl} alt="לוגו האקדמיה" className="h-14 w-auto max-w-[200px] object-contain" />
+              <img src={logoUrl} alt="לוגו האקדמיה" className="h-12 w-auto max-w-[160px] object-contain" />
             ) : (
               <>
                 <div className="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center">
