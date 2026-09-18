@@ -118,40 +118,50 @@ button:focus-visible {
     --sidebar-accent-foreground: 149 68% 19%;
     --sidebar-border: 40 20% 86%;
     --sidebar-ring: 48 53% 55%;
+    --gold: #c9b14d;
+    --gold-dark: #a89436;
+    --green-primary: #105330;
+    --green-dark: #0a3d24;
+    --cream-bg: #f3ead4;
   }
   .dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 0 0% 4%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --background: 150 15% 8%;
+    --foreground: 40 30% 95%;
+    --card: 150 12% 12%;
+    --card-foreground: 40 30% 95%;
+    --popover: 150 12% 12%;
+    --popover-foreground: 40 30% 95%;
+    --primary: 149 55% 28%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 150 10% 16%;
+    --secondary-foreground: 40 30% 95%;
+    --muted: 150 10% 16%;
+    --muted-foreground: 40 20% 70%;
+    --accent: 48 53% 60%;
+    --accent-foreground: 150 18% 12%;
+    --destructive: 0 62.8% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 150 10% 22%;
+    --input: 150 10% 22%;
+    --ring: 48 53% 60%;
+    --chart-1: 149 55% 45%;
+    --chart-2: 48 53% 60%;
+    --chart-3: 150 40% 55%;
+    --chart-4: 40 60% 60%;
+    --chart-5: 170 50% 55%;
+    --sidebar-background: 150 18% 10%;
+    --sidebar-foreground: 40 30% 95%;
+    --sidebar-primary: 149 55% 28%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 48 53% 60%;
+    --sidebar-accent-foreground: 150 18% 12%;
+    --sidebar-border: 150 10% 20%;
+    --sidebar-ring: 48 53% 60%;
+    --gold: #e5c76b;
+    --gold-dark: #c9b14d;
+    --green-primary: #15663f;
+    --green-dark: #0d4a2e;
+    --cream-bg: #efe4cc;
   }
 }
 
@@ -164,4 +174,14 @@ button:focus-visible {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.gold-gradient {
+  background: linear-gradient(135deg, var(--gold) 0%, #e5d07a 50%, var(--gold) 100%);
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--gold) 25%, transparent);
 }

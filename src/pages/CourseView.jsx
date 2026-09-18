@@ -487,7 +487,7 @@ export default function CourseView() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c9b14d]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--gold)]"></div>
       </div>
     );
   }
@@ -504,7 +504,7 @@ export default function CourseView() {
           <h1 className="text-2xl font-bold text-foreground mb-4">אין לך גישה לקורס זה</h1>
           <p className="text-muted-foreground mb-8">קורס זה אינו זמין עבורך. פנה למנהל המערכת לקבלת גישה.</p>
           <Link to={createPageUrl('Home')}>
-            <Button className="bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold">
+            <Button className="bg-[var(--gold)] hover:bg-[var(--gold-dark)] text-black font-semibold">
               חזור לקורסים שלי
             </Button>
           </Link>
@@ -516,7 +516,7 @@ export default function CourseView() {
   if (!course) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c9b14d]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--gold)]"></div>
       </div>
     );
   }
@@ -536,7 +536,7 @@ export default function CourseView() {
         }
       `}</style>
       {/* Header */}
-      <div className="hidden lg:flex sticky top-0 z-40 bg-[#105330] border-b border-white/10 lg:mr-96 px-6 py-3 items-center relative">
+      <div className="hidden lg:flex sticky top-0 z-40 bg-[var(--green-primary)] border-b border-white/10 lg:mr-96 px-6 py-3 items-center relative">
         <Link to={createPageUrl('Home')}>
           <Button variant="ghost" size="icon" aria-label="חזרה" className="text-white hover:bg-white/10 min-w-[44px] min-h-[44px]">
             <ArrowLeft className="w-5 h-5" />
@@ -557,7 +557,7 @@ export default function CourseView() {
             href={course.external_button_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors w-full sm:w-auto sm:min-w-[260px]"
+            className="flex items-center justify-center gap-2 bg-[var(--gold)] hover:bg-[var(--gold-dark)] text-black font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors w-full sm:w-auto sm:min-w-[260px]"
           >
             <ExternalLink className="w-4 h-4" />
             {course.external_button_text || 'מערכת לניהול הכסף >>'}
@@ -572,7 +572,7 @@ export default function CourseView() {
           <div className="px-4 py-2 bg-sidebar border-b border-border flex items-center justify-center lg:justify-start gap-2">
             <button
               onClick={() => setCourseContentOpen(prev => !prev)}
-              className="flex items-center gap-2 bg-[#105330] text-white hover:bg-[#0a3d20] px-3 py-1.5 min-h-[44px] rounded-lg transition-colors font-medium text-sm focus-visible:ring-2 focus-visible:ring-[#c9b14d]"
+              className="flex items-center gap-2 bg-[var(--green-primary)] text-white hover:bg-[var(--green-dark)] px-3 py-1.5 min-h-[44px] rounded-lg transition-colors font-medium text-sm focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
             >
               <BookOpen className="w-4 h-4" />
               <span>תוכן הקורס</span>
@@ -589,7 +589,7 @@ export default function CourseView() {
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.25 }}
-                className="overflow-hidden bg-[#105330] border-b border-white/10"
+                className="overflow-hidden bg-[var(--green-primary)] border-b border-white/10"
               >
                 <div className="divide-y divide-white/10 max-h-[60vh] overflow-y-auto overscroll-auto">
                   {sortedChapters.map((chapter, chapterIndex) => {
@@ -601,7 +601,7 @@ export default function CourseView() {
                       <div key={chapter.id}>
                         <button
                           onClick={() => setExpandedChapters(prev => ({ ...prev, [chapter.id]: !prev[chapter.id] }))}
-                          className="w-full p-2 lg:p-4 min-h-[44px] flex items-center justify-between hover:bg-white/10 transition-colors focus-visible:ring-2 focus-visible:ring-[#c9b14d]"
+                          className="w-full p-2 lg:p-4 min-h-[44px] flex items-center justify-between hover:bg-white/10 transition-colors focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
                         >
                           <div className="flex items-center gap-2 lg:gap-3">
                             <div className="w-6 h-6 lg:w-7 lg:h-7 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
@@ -633,14 +633,14 @@ export default function CourseView() {
                                   <button
                                     key={lesson.id}
                                     onClick={() => { selectLesson(lesson); setCourseContentOpen(false); }}
-                                    className={`w-full p-3 pr-8 lg:p-3 lg:pr-10 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right focus-visible:ring-2 focus-visible:ring-[#c9b14d] ${
+                                    className={`w-full p-3 pr-8 lg:p-3 lg:pr-10 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right focus-visible:ring-2 focus-visible:ring-[var(--gold)] ${
                                       isCurrent
-                                        ? 'bg-[#c9b14d]/15 border-r-2 border-[#c9b14d]'
+                                        ? 'bg-[var(--gold)]/15 border-r-2 border-[var(--gold)]'
                                         : 'hover:bg-white/10'
                                     }`}
                                   >
                                     <div className={`w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center shrink-0 ${
-                                      isCurrent ? 'bg-[#c9b14d]' : 'bg-white/15'
+                                      isCurrent ? 'bg-[var(--gold)]' : 'bg-white/15'
                                     }`}>
                                       {lesson.lesson_type === 'external_link' ? (
                                         <FileText className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" />
@@ -650,11 +650,11 @@ export default function CourseView() {
                                     </div>
                                     {isCompleted && (
                                       <div className="w-4 h-4 lg:w-5 lg:h-5 rounded-full bg-white flex items-center justify-center shrink-0">
-                                        <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-[#105330]" strokeWidth={3} />
+                                        <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-[var(--green-primary)]" strokeWidth={3} />
                                       </div>
                                     )}
                                     <div className="flex-1 min-w-0">
-                                      <p className={`${isCurrent ? 'text-[#c9b14d] font-bold' : 'text-white'} break-words text-sm`}>
+                                      <p className={`${isCurrent ? 'text-[var(--gold)] font-bold' : 'text-white'} break-words text-sm`}>
                                         {lesson.title}
                                       </p>
                                       {lesson.duration && <p className="text-white/60 text-xs">{lesson.duration}</p>}
@@ -677,7 +677,7 @@ export default function CourseView() {
           <div className={`relative bg-card ${currentLesson?.lesson_type === 'external_link' ? 'min-h-[60vh]' : 'aspect-video'}`}>
             {!currentLesson ? (
               <div className="w-full h-full flex items-center justify-center">
-                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#c9b14d]"></div>
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[var(--gold)]"></div>
               </div>
             ) : currentLesson.lesson_type === 'external_link' ? (
               currentLesson.external_url ? (
@@ -730,12 +730,12 @@ export default function CourseView() {
                       <div
                         ref={seekBarRef}
                         tabIndex={0}
-                        className="flex-1 h-2 bg-secondary rounded-full cursor-pointer relative touch-none focus-visible:ring-2 focus-visible:ring-[#c9b14d]"
+                        className="flex-1 h-2 bg-secondary rounded-full cursor-pointer relative touch-none focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
                         onPointerDown={onSeekPointerDown}
                         onPointerMove={onSeekPointerMove}
                         onPointerUp={onSeekPointerUp}
                       >
-                        <div className="absolute inset-y-0 left-0 bg-[#105330] rounded-full" style={{ width: `${videoProgress}%` }} />
+                        <div className="absolute inset-y-0 left-0 bg-[var(--green-primary)] rounded-full" style={{ width: `${videoProgress}%` }} />
                       </div>
                       <span className="text-white font-bold text-xs tabular-nums w-10 shrink-0">{formatTime(videoDuration)}</span>
                       <div className="relative shrink-0">
@@ -744,7 +744,7 @@ export default function CourseView() {
                           type="button"
                           onClick={() => setSpeedMenuOpen(o => !o)}
                           aria-label="מהירות נגינה"
-                          className="h-11 min-w-[44px] px-2 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors text-foreground text-xs font-medium focus-visible:ring-2 focus-visible:ring-[#c9b14d]"
+                          className="h-11 min-w-[44px] px-2 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors text-foreground text-xs font-medium focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
                         >
                           {playbackRate}x
                         </button>
@@ -755,7 +755,7 @@ export default function CourseView() {
                                 key={r}
                                 type="button"
                                 onClick={() => changeRate(r)}
-                                className={`block w-full px-3 py-2 text-xs text-foreground hover:bg-secondary transition-colors text-center ${r === playbackRate ? 'bg-[#c9b14d]/20 text-[#c9b14d]' : ''}`}
+                                className={`block w-full px-3 py-2 text-xs text-foreground hover:bg-secondary transition-colors text-center ${r === playbackRate ? 'bg-[var(--gold)]/20 text-[var(--gold)]' : ''}`}
                               >
                                 {r}x
                               </button>
@@ -767,7 +767,7 @@ export default function CourseView() {
                         type="button"
                         aria-label={fsMode ? "צא ממסך מלא" : "מסך מלא"}
                         onClick={toggleFullscreen}
-                        className="w-11 h-11 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[#c9b14d]"
+                        className="w-11 h-11 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
                       >
                         {fsMode ? <Minimize2 className="w-5 h-5 text-foreground" /> : <Maximize2 className="w-5 h-5 text-foreground" />}
                       </button>
@@ -785,7 +785,7 @@ export default function CourseView() {
           {/* Lesson info */}
           {currentLesson && (
             <div className="p-3 lg:p-6 border-b border-border">
-              <div className="p-2.5 lg:p-4 bg-[#f3ead4] rounded-xl border border-black/10 mb-2 lg:mb-3">
+              <div className="p-2.5 lg:p-4 bg-[var(--cream-bg)] rounded-xl border border-black/10 mb-2 lg:mb-3">
                 <p className="text-black text-xs lg:text-sm mb-1">השיעור הנוכחי</p>
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
@@ -797,7 +797,7 @@ export default function CourseView() {
                       onClick={handleLessonComplete}
                       disabled={isLessonCompleted(currentLesson.id)}
                       size="sm"
-                      className={`shrink-0 ${isLessonCompleted(currentLesson.id) ? 'bg-green-600 hover:bg-green-600' : 'bg-[#c9b14d] hover:bg-[#a89436]'} text-black font-semibold`}
+                      className={`shrink-0 ${isLessonCompleted(currentLesson.id) ? 'bg-green-600 hover:bg-green-600' : 'bg-[var(--gold)] hover:bg-[var(--gold-dark)]'} text-black font-semibold`}
                     >
                       {isLessonCompleted(currentLesson.id) ? (
                         <><CheckCircle2 className="w-3.5 h-3.5 ml-1" />הושלם</>
@@ -808,11 +808,11 @@ export default function CourseView() {
               </div>
 
               {nextLesson && (
-                <div className="mt-2 lg:mt-3 p-2.5 lg:p-4 bg-[#f3ead4] rounded-xl border border-black/10">
+                <div className="mt-2 lg:mt-3 p-2.5 lg:p-4 bg-[var(--cream-bg)] rounded-xl border border-black/10">
                   <p className="text-black text-xs lg:text-sm mb-1">השיעור הבא</p>
                   <button
                     onClick={() => selectLesson(nextLesson)}
-                    className="w-full flex items-center gap-2 bg-[#105330] hover:bg-[#0a3d20] text-white font-bold rounded-lg px-3 py-2 text-sm transition-colors"
+                    className="w-full flex items-center gap-2 bg-[var(--green-primary)] hover:bg-[var(--green-dark)] text-white font-bold rounded-lg px-3 py-2 text-sm transition-colors"
                   >
                     <PlayCircle className="w-4 h-4 shrink-0" />
                     <span className="text-right flex-1 truncate">{nextLesson.title}</span>
@@ -824,8 +824,8 @@ export default function CourseView() {
         </div>
 
         {/* Sidebar */}
-        <aside className="lg:fixed lg:right-0 lg:top-0 lg:bottom-0 lg:w-96 bg-[#105330] border-l border-white/10 overflow-y-auto overscroll-behavior-none">
-          <div className="p-4 border-b border-white/10 sticky top-0 bg-[#105330] z-10">
+        <aside className="lg:fixed lg:right-0 lg:top-0 lg:bottom-0 lg:w-96 bg-[var(--green-primary)] border-l border-white/10 overflow-y-auto overscroll-behavior-none">
+          <div className="p-4 border-b border-white/10 sticky top-0 bg-[var(--green-primary)] z-10">
             <h3 className="font-bold text-white">תוכן הקורס</h3>
             <p className="text-white/70 text-sm mt-1">
               {sortedChapters.length} פרקים • {lessons.length} שיעורים
@@ -842,7 +842,7 @@ export default function CourseView() {
                 <div key={chapter.id}>
                   <button
                     onClick={() => setExpandedChapters(prev => ({ ...prev, [chapter.id]: !prev[chapter.id] }))}
-                    className="w-full p-2 lg:p-4 min-h-[44px] flex items-center justify-between hover:bg-white/10 transition-colors focus-visible:ring-2 focus-visible:ring-[#c9b14d]"
+                    className="w-full p-2 lg:p-4 min-h-[44px] flex items-center justify-between hover:bg-white/10 transition-colors focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
                   >
                     <div className="flex items-center gap-2 lg:gap-3">
                       <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-lg bg-white/15 flex items-center justify-center">
@@ -874,14 +874,14 @@ export default function CourseView() {
                             <button
                               key={lesson.id}
                               onClick={() => selectLesson(lesson)}
-                              className={`w-full p-3 pr-8 lg:p-4 lg:pr-12 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right focus-visible:ring-2 focus-visible:ring-[#c9b14d] ${
+                              className={`w-full p-3 pr-8 lg:p-4 lg:pr-12 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right focus-visible:ring-2 focus-visible:ring-[var(--gold)] ${
                                 isCurrent
-                                  ? 'bg-[#c9b14d]/15 border-r-2 border-[#c9b14d]'
+                                  ? 'bg-[var(--gold)]/15 border-r-2 border-[var(--gold)]'
                                   : 'hover:bg-white/10'
                               }`}
                             >
                               <div className={`w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center shrink-0 ${
-                                isCurrent ? 'bg-[#c9b14d]' : 'bg-white/15'
+                                isCurrent ? 'bg-[var(--gold)]' : 'bg-white/15'
                               }`}>
                                 {lesson.lesson_type === 'external_link' ? (
                                   <FileText className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" />
@@ -891,11 +891,11 @@ export default function CourseView() {
                               </div>
                               {isCompleted && (
                                 <div className="w-4 h-4 lg:w-5 lg:h-5 rounded-full bg-white flex items-center justify-center shrink-0">
-                                  <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-[#105330]" strokeWidth={3} />
+                                  <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-[var(--green-primary)]" strokeWidth={3} />
                                 </div>
                               )}
                               <div className="flex-1 min-w-0">
-                                <p className={`${isCurrent ? 'text-[#c9b14d] font-bold' : 'text-white'} break-words text-sm`}>
+                                <p className={`${isCurrent ? 'text-[var(--gold)] font-bold' : 'text-white'} break-words text-sm`}>
                                   {lesson.title}
                                 </p>
                                 {lesson.duration && <p className="text-white/60 text-xs">{lesson.duration}</p>}

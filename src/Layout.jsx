@@ -181,7 +181,7 @@ export default function Layout({ children, currentPageName }) {
   if (isAllowed === null || !user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center" dir="rtl">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c9b14d]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--gold)]"></div>
       </div>
     );
   }
@@ -232,27 +232,8 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className="min-h-screen bg-background" dir="rtl">
-      <style>{`
-        :root {
-          --gold: #c9b14d;
-          --gold-dark: #a89436;
-        }
-        
-        .gold-gradient {
-          background: linear-gradient(135deg, #c9b14d 0%, #e5d07a 50%, #c9b14d 100%);
-        }
-        
-        .glass-effect {
-          background: rgba(255, 255, 255, 0.75);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(201, 177, 77, 0.25);
-        }
-        
-
-      `}</style>
-
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#105330]"
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[var(--green-primary)]"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="flex items-center justify-between px-4 py-2.5">
           {isRootPage ? (
@@ -279,7 +260,7 @@ export default function Layout({ children, currentPageName }) {
               <img src={logoUrl} alt="לוגו האקדמיה" className="h-11 w-auto max-w-[210px] object-contain" />
             ) : (
               <>
-                <GraduationCap className="w-7 h-7 text-[#c9b14d]" />
+                <GraduationCap className="w-7 h-7 text-[var(--gold)]" />
                 <span className="font-bold text-white text-sm">האקדמיה של צעירים מתעשרים</span>
               </>
             )}
@@ -304,7 +285,7 @@ export default function Layout({ children, currentPageName }) {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 w-72 bg-[#105330] z-50 lg:hidden border-l border-white/10"
+              className="fixed top-0 right-0 bottom-0 w-72 bg-[var(--green-primary)] z-50 lg:hidden border-l border-white/10"
             >
               <div className="flex items-center justify-between p-4 border-b border-white/10">
                 <div className="flex items-center gap-2">
@@ -312,7 +293,7 @@ export default function Layout({ children, currentPageName }) {
                     <img src={logoUrl} alt="לוגו האקדמיה" className="h-12 w-auto max-w-[220px] object-contain" />
                   ) : (
                     <>
-                      <GraduationCap className="w-7 h-7 text-[#c9b14d]" />
+                      <GraduationCap className="w-7 h-7 text-[var(--gold)]" />
                       <span className="font-bold text-white">האקדמיה של צעירים מתעשרים</span>
                     </>
                   )}
@@ -335,7 +316,7 @@ export default function Layout({ children, currentPageName }) {
                     onClick={() => setSidebarOpen(false)}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                       currentPageName === link.page
-                        ? 'bg-[#c9b14d]/15 text-[#c9b14d] font-bold'
+                        ? 'bg-[var(--gold)]/15 text-[var(--gold)] font-bold'
                         : 'text-white font-bold hover:text-white hover:bg-white/10'
                     }`}
                   >
@@ -375,7 +356,7 @@ export default function Layout({ children, currentPageName }) {
       <MobileBottomNav />
 
       {/* Desktop Sidebar */}
-      <aside className={`hidden ${currentPageName !== 'CourseView' ? 'lg:flex' : ''} flex-col fixed top-0 right-0 bottom-0 w-56 bg-[#105330] border-l border-white/10`}
+      <aside className={`hidden ${currentPageName !== 'CourseView' ? 'lg:flex' : ''} flex-col fixed top-0 right-0 bottom-0 w-56 bg-[var(--green-primary)] border-l border-white/10`}
         style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="p-6 border-b border-white/10">
           {currentPageName !== 'CourseView' ? (
@@ -406,7 +387,7 @@ export default function Layout({ children, currentPageName }) {
               to={createPageUrl(link.page)}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 currentPageName === link.page
-                  ? 'bg-[#c9b14d]/15 text-[#c9b14d] border border-[#c9b14d]/30 font-bold'
+                  ? 'bg-[var(--gold)]/15 text-[var(--gold)] border border-[var(--gold)]/30 font-bold'
                   : 'text-white font-bold hover:text-white hover:bg-white/10'
               }`}
             >
