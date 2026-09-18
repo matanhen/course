@@ -581,7 +581,7 @@ export default function CourseView() {
           <div className="px-4 py-2 bg-sidebar border-b border-border flex items-center justify-center lg:justify-start gap-2">
             <button
               onClick={() => setCourseContentOpen(prev => !prev)}
-              className="flex items-center gap-2 bg-[#105330] text-foreground hover:bg-[#0a3d20] px-3 py-1.5 min-h-[44px] rounded-lg transition-colors font-medium text-sm focus-visible:ring-2 focus-visible:ring-[#c7af48]"
+              className="flex items-center gap-2 bg-[#105330] text-white hover:bg-[#0a3d20] px-3 py-1.5 min-h-[44px] rounded-lg transition-colors font-medium text-sm focus-visible:ring-2 focus-visible:ring-[#c7af48]"
             >
               <BookOpen className="w-4 h-4" />
               <span>תוכן הקורס</span>
@@ -600,7 +600,7 @@ export default function CourseView() {
                 transition={{ duration: 0.25 }}
                 className="overflow-hidden bg-sidebar border-b border-border"
               >
-                <div className="divide-y divide-border max-h-[60vh] overflow-y-auto overscroll-behavior-none">
+                <div className="divide-y divide-border max-h-[60vh] overflow-y-auto overscroll-auto">
                   {sortedChapters.map((chapter, chapterIndex) => {
                     const chapterLessons = getLessonsForChapter(chapter.id);
                     const chapterCompletedCount = chapterLessons.filter(l => isLessonCompleted(l.id)).length;
@@ -659,7 +659,7 @@ export default function CourseView() {
                                     </div>
                                     {isCompleted && (
                                       <div className="w-4 h-4 lg:w-5 lg:h-5 rounded-full bg-[#105330] flex items-center justify-center shrink-0">
-                                        <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-foreground" strokeWidth={3} />
+                                        <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" strokeWidth={3} />
                                       </div>
                                     )}
                                     <div className="flex-1 min-w-0">
@@ -820,7 +820,7 @@ export default function CourseView() {
                   <p className="text-foreground text-sm mb-2">השיעור הבא</p>
                   <button
                     onClick={() => selectLesson(nextLesson)}
-                    className="w-full flex items-center gap-3 bg-[#105330] hover:bg-[#0a3d20] text-foreground font-bold rounded-lg px-4 py-3 transition-colors"
+                    className="w-full flex items-center gap-3 bg-[#105330] hover:bg-[#0a3d20] text-white font-bold rounded-lg px-4 py-3 transition-colors"
                   >
                     <PlayCircle className="w-5 h-5 shrink-0" />
                     <span className="text-right flex-1">{nextLesson.title}</span>
@@ -899,7 +899,7 @@ export default function CourseView() {
                               </div>
                               {isCompleted && (
                                 <div className="w-4 h-4 lg:w-5 lg:h-5 rounded-full bg-[#105330] flex items-center justify-center shrink-0">
-                                  <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-foreground" strokeWidth={3} />
+                                  <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" strokeWidth={3} />
                                 </div>
                               )}
                               <div className="flex-1 min-w-0">
