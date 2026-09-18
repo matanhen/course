@@ -252,15 +252,15 @@ export default function Layout({ children, currentPageName }) {
       `}</style>
 
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 glass-effect"
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#105330]"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-        <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center justify-between px-4 py-2.5">
           {isRootPage ? (
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setSidebarOpen(true)}
-              className="text-[#c9b14d] min-w-[44px] min-h-[44px]"
+              className="text-white hover:bg-white/10 min-w-[44px] min-h-[44px]"
             >
               <Menu className="w-6 h-6" />
             </Button>
@@ -269,18 +269,18 @@ export default function Layout({ children, currentPageName }) {
               variant="ghost"
               size="icon"
               onClick={() => navigate(-1)}
-              className="text-[#c9b14d] min-w-[44px] min-h-[44px]"
+              className="text-white hover:bg-white/10 min-w-[44px] min-h-[44px]"
             >
               <ArrowRight className="w-6 h-6" />
             </Button>
           )}
           <div className="flex items-center gap-2">
             {logoUrl ? (
-              <img src={logoUrl} alt="לוגו האקדמיה" className="h-8 w-auto max-w-[170px] object-contain" />
+              <img src={logoUrl} alt="לוגו האקדמיה" className="h-11 w-auto max-w-[210px] object-contain" />
             ) : (
               <>
-                <GraduationCap className="w-6 h-6 text-[#c9b14d]" />
-                <span className="font-bold text-foreground text-sm">האקדמיה של צעירים מתעשרים</span>
+                <GraduationCap className="w-7 h-7 text-[#c9b14d]" />
+                <span className="font-bold text-white text-sm">האקדמיה של צעירים מתעשרים</span>
               </>
             )}
           </div>
@@ -304,16 +304,16 @@ export default function Layout({ children, currentPageName }) {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 w-72 bg-sidebar z-50 lg:hidden border-l border-border"
+              className="fixed top-0 right-0 bottom-0 w-72 bg-[#105330] z-50 lg:hidden border-l border-white/10"
             >
-              <div className="flex items-center justify-between p-4 border-b border-border">
+              <div className="flex items-center justify-between p-4 border-b border-white/10">
                 <div className="flex items-center gap-2">
                   {logoUrl ? (
-                    <img src={logoUrl} alt="לוגו האקדמיה" className="h-8 w-auto max-w-[180px] object-contain" />
+                    <img src={logoUrl} alt="לוגו האקדמיה" className="h-12 w-auto max-w-[220px] object-contain" />
                   ) : (
                     <>
-                      <GraduationCap className="w-6 h-6 text-[#c9b14d]" />
-                      <span className="font-bold text-foreground">האקדמיה של צעירים מתעשרים</span>
+                      <GraduationCap className="w-7 h-7 text-[#c9b14d]" />
+                      <span className="font-bold text-white">האקדמיה של צעירים מתעשרים</span>
                     </>
                   )}
                 </div>
@@ -321,7 +321,7 @@ export default function Layout({ children, currentPageName }) {
                   variant="ghost"
                   size="icon"
                   onClick={() => setSidebarOpen(false)}
-                  className="text-muted-foreground min-w-[44px] min-h-[44px]"
+                  className="text-white hover:bg-white/10 min-w-[44px] min-h-[44px]"
                 >
                   <X className="w-5 h-5" />
                 </Button>
@@ -335,17 +335,17 @@ export default function Layout({ children, currentPageName }) {
                     onClick={() => setSidebarOpen(false)}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                       currentPageName === link.page
-                        ? 'bg-[#c9b14d]/10 text-[#c9b14d]'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-card'
+                        ? 'bg-[#c9b14d]/15 text-[#c9b14d] font-bold'
+                        : 'text-white font-bold hover:text-white hover:bg-white/10'
                     }`}
                   >
                     <link.icon className="w-5 h-5" />
-                    <span className="font-medium">{link.name}</span>
+                    <span className="font-bold">{link.name}</span>
                   </Link>
                 ))}
               </nav>
 
-              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
+              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10">
                 <div className="flex items-center gap-3 mb-4 px-2">
                   <div className="w-10 h-10 rounded-full gold-gradient flex items-center justify-center">
                     <span className="text-black font-bold">
@@ -353,14 +353,14 @@ export default function Layout({ children, currentPageName }) {
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-foreground font-medium truncate">{clientName || user?.full_name || user?.email?.split('@')[0] || 'משתמש'}</p>
-                    <p className="text-muted-foreground text-sm truncate">{user?.email}</p>
+                    <p className="text-white font-bold truncate">{clientName || user?.full_name || user?.email?.split('@')[0] || 'משתמש'}</p>
+                    <p className="text-white/70 text-sm truncate">{user?.email}</p>
                   </div>
                 </div>
                 <Button
                   onClick={handleLogout}
                   variant="ghost"
-                  className="w-full justify-start text-muted-foreground hover:text-red-400 hover:bg-red-500/10"
+                  className="w-full justify-start text-white/80 hover:text-red-300 hover:bg-red-500/15"
                 >
                   <LogOut className="w-5 h-5 ml-2" />
                   התנתק
@@ -375,20 +375,20 @@ export default function Layout({ children, currentPageName }) {
       <MobileBottomNav />
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col fixed top-0 right-0 bottom-0 w-56 bg-sidebar border-l border-border"
+      <aside className="hidden lg:flex flex-col fixed top-0 right-0 bottom-0 w-56 bg-[#105330] border-l border-white/10"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-        <div className="p-6 border-b border-border">
+        <div className="p-6 border-b border-white/10">
           <div className="flex items-center gap-3">
             {logoUrl ? (
-              <img src={logoUrl} alt="לוגו האקדמיה" className="h-10 w-auto max-w-[190px] object-contain" />
+              <img src={logoUrl} alt="לוגו האקדמיה" className="h-14 w-auto max-w-[200px] object-contain" />
             ) : (
               <>
                 <div className="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center">
                   <GraduationCap className="w-6 h-6 text-black" />
                 </div>
                 <div>
-                  <h1 className="font-bold text-foreground text-sm">האקדמיה של צעירים מתעשרים</h1>
-                  <p className="text-xs text-muted-foreground">{isAdmin ? 'ניהול' : isManager ? 'מנהל' : isConsultant ? 'יועץ' : 'לקוח'}</p>
+                  <h1 className="font-bold text-white text-sm">האקדמיה של צעירים מתעשרים</h1>
+                  <p className="text-xs text-white/70">{isAdmin ? 'ניהול' : isManager ? 'מנהל' : isConsultant ? 'יועץ' : 'לקוח'}</p>
                 </div>
               </>
             )}
@@ -402,17 +402,17 @@ export default function Layout({ children, currentPageName }) {
               to={createPageUrl(link.page)}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 currentPageName === link.page
-                  ? 'bg-[#c9b14d]/10 text-[#c9b14d] border border-[#c9b14d]/20'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-card'
+                  ? 'bg-[#c9b14d]/15 text-[#c9b14d] border border-[#c9b14d]/30 font-bold'
+                  : 'text-white font-bold hover:text-white hover:bg-white/10'
               }`}
             >
               <link.icon className="w-5 h-5" />
-              <span className="font-medium">{link.name}</span>
+              <span className="font-bold">{link.name}</span>
             </Link>
           ))}
         </nav>
 
-        <div className="p-4 border-t border-border">
+        <div className="p-4 border-t border-white/10">
           <div className="flex items-center gap-3 mb-4 px-2">
             <div className="w-10 h-10 rounded-full gold-gradient flex items-center justify-center">
               <span className="text-black font-bold">
@@ -420,14 +420,14 @@ export default function Layout({ children, currentPageName }) {
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-foreground font-medium truncate">{clientName || user?.full_name || user?.email?.split('@')[0] || 'משתמש'}</p>
-              <p className="text-muted-foreground text-sm truncate">{user?.email}</p>
+              <p className="text-white font-bold truncate">{clientName || user?.full_name || user?.email?.split('@')[0] || 'משתמש'}</p>
+              <p className="text-white/70 text-sm truncate">{user?.email}</p>
             </div>
           </div>
           <Button
             onClick={handleLogout}
             variant="ghost"
-            className="w-full justify-start text-muted-foreground hover:text-red-400 hover:bg-red-500/10"
+            className="w-full justify-start text-white/80 hover:text-red-300 hover:bg-red-500/15"
           >
             <LogOut className="w-5 h-5 ml-2" />
             התנתק

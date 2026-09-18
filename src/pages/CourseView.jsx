@@ -598,9 +598,9 @@ export default function CourseView() {
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.25 }}
-                className="overflow-hidden bg-sidebar border-b border-border"
+                className="overflow-hidden bg-[#105330] border-b border-white/10"
               >
-                <div className="divide-y divide-border max-h-[60vh] overflow-y-auto overscroll-auto">
+                <div className="divide-y divide-white/10 max-h-[60vh] overflow-y-auto overscroll-auto">
                   {sortedChapters.map((chapter, chapterIndex) => {
                     const chapterLessons = getLessonsForChapter(chapter.id);
                     const chapterCompletedCount = chapterLessons.filter(l => isLessonCompleted(l.id)).length;
@@ -610,18 +610,18 @@ export default function CourseView() {
                       <div key={chapter.id}>
                         <button
                           onClick={() => setExpandedChapters(prev => ({ ...prev, [chapter.id]: !prev[chapter.id] }))}
-                          className="w-full p-2 lg:p-4 min-h-[44px] flex items-center justify-between hover:bg-card/50 transition-colors focus-visible:ring-2 focus-visible:ring-[#c9b14d]"
+                          className="w-full p-2 lg:p-4 min-h-[44px] flex items-center justify-between hover:bg-white/10 transition-colors focus-visible:ring-2 focus-visible:ring-[#c9b14d]"
                         >
                           <div className="flex items-center gap-2 lg:gap-3">
-                            <div className="w-6 h-6 lg:w-7 lg:h-7 rounded-lg bg-[#c9b14d]/10 flex items-center justify-center shrink-0">
-                              <span className="text-[#c9b14d] font-bold text-xs">{chapterIndex + 1}</span>
+                            <div className="w-6 h-6 lg:w-7 lg:h-7 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
+                              <span className="text-white font-bold text-xs">{chapterIndex + 1}</span>
                             </div>
                             <div className="text-right">
-                              <h4 className="text-foreground font-medium text-sm">{chapter.title}</h4>
-                              <p className="text-muted-foreground text-sm">{chapterCompletedCount}/{chapterLessons.length} הושלמו</p>
+                              <h4 className="text-white font-bold text-sm">{chapter.title}</h4>
+                              <p className="text-white/70 text-sm">{chapterCompletedCount}/{chapterLessons.length} הושלמו</p>
                             </div>
                           </div>
-                          {isExpanded ? <ChevronUp className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-muted-foreground shrink-0" /> : <ChevronDown className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-muted-foreground shrink-0" />}
+                          {isExpanded ? <ChevronUp className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-white/70 shrink-0" /> : <ChevronDown className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-white/70 shrink-0" />}
                         </button>
 
                         <AnimatePresence initial={false}>
@@ -644,29 +644,29 @@ export default function CourseView() {
                                     onClick={() => { selectLesson(lesson); setCourseContentOpen(false); }}
                                     className={`w-full p-3 pr-8 lg:p-3 lg:pr-10 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right focus-visible:ring-2 focus-visible:ring-[#c9b14d] ${
                                       isCurrent
-                                        ? 'bg-[#c9b14d]/10 border-r-2 border-[#c9b14d]'
-                                        : 'hover:bg-secondary/50'
+                                        ? 'bg-[#c9b14d]/15 border-r-2 border-[#c9b14d]'
+                                        : 'hover:bg-white/10'
                                     }`}
                                   >
                                     <div className={`w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center shrink-0 ${
-                                      isCurrent ? 'bg-[#c9b14d]' : 'bg-secondary'
+                                      isCurrent ? 'bg-[#c9b14d]' : 'bg-white/15'
                                     }`}>
                                       {lesson.lesson_type === 'external_link' ? (
-                                        <FileText className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-foreground" />
+                                        <FileText className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" />
                                       ) : (
-                                        <span className="text-xs text-foreground">{lessonIndex + 1}</span>
+                                        <span className="text-xs text-white">{lessonIndex + 1}</span>
                                       )}
                                     </div>
                                     {isCompleted && (
-                                      <div className="w-4 h-4 lg:w-5 lg:h-5 rounded-full bg-[#105330] flex items-center justify-center shrink-0">
-                                        <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" strokeWidth={3} />
+                                      <div className="w-4 h-4 lg:w-5 lg:h-5 rounded-full bg-white flex items-center justify-center shrink-0">
+                                        <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-[#105330]" strokeWidth={3} />
                                       </div>
                                     )}
                                     <div className="flex-1 min-w-0">
-                                      <p className={`${isCurrent ? 'text-[#c9b14d]' : 'text-muted-foreground'} break-words text-sm`}>
+                                      <p className={`${isCurrent ? 'text-[#c9b14d] font-bold' : 'text-white'} break-words text-sm`}>
                                         {lesson.title}
                                       </p>
-                                      {lesson.duration && <p className="text-muted-foreground text-xs">{lesson.duration}</p>}
+                                      {lesson.duration && <p className="text-white/60 text-xs">{lesson.duration}</p>}
                                     </div>
                                   </button>
                                 );
@@ -832,15 +832,15 @@ export default function CourseView() {
         </div>
 
         {/* Sidebar */}
-        <aside className="lg:fixed lg:right-0 lg:top-[57px] lg:bottom-0 lg:w-96 bg-sidebar border-l border-border overflow-y-auto overscroll-behavior-none">
-          <div className="p-4 border-b border-border sticky top-0 bg-sidebar z-10">
-            <h3 className="font-bold text-foreground">תוכן הקורס</h3>
-            <p className="text-muted-foreground text-sm mt-1">
+        <aside className="lg:fixed lg:right-0 lg:top-[57px] lg:bottom-0 lg:w-96 bg-[#105330] border-l border-white/10 overflow-y-auto overscroll-behavior-none">
+          <div className="p-4 border-b border-white/10 sticky top-0 bg-[#105330] z-10">
+            <h3 className="font-bold text-white">תוכן הקורס</h3>
+            <p className="text-white/70 text-sm mt-1">
               {sortedChapters.length} פרקים • {lessons.length} שיעורים
             </p>
           </div>
 
-          <div className="divide-y divide-border">
+          <div className="divide-y divide-white/10">
             {sortedChapters.map((chapter, chapterIndex) => {
               const chapterLessons = getLessonsForChapter(chapter.id);
               const chapterCompletedCount = chapterLessons.filter(l => isLessonCompleted(l.id)).length;
@@ -850,18 +850,18 @@ export default function CourseView() {
                 <div key={chapter.id}>
                   <button
                     onClick={() => setExpandedChapters(prev => ({ ...prev, [chapter.id]: !prev[chapter.id] }))}
-                    className="w-full p-2 lg:p-4 min-h-[44px] flex items-center justify-between hover:bg-card/50 transition-colors focus-visible:ring-2 focus-visible:ring-[#c9b14d]"
+                    className="w-full p-2 lg:p-4 min-h-[44px] flex items-center justify-between hover:bg-white/10 transition-colors focus-visible:ring-2 focus-visible:ring-[#c9b14d]"
                   >
                     <div className="flex items-center gap-2 lg:gap-3">
-                      <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-lg bg-[#c9b14d]/10 flex items-center justify-center">
-                        <span className="text-[#c9b14d] font-bold text-xs lg:text-sm">{chapterIndex + 1}</span>
+                      <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-lg bg-white/15 flex items-center justify-center">
+                        <span className="text-white font-bold text-xs lg:text-sm">{chapterIndex + 1}</span>
                       </div>
                       <div className="text-right">
-                        <h4 className="text-foreground font-medium text-sm lg:text-base">{chapter.title}</h4>
-                        <p className="text-muted-foreground text-sm">{chapterCompletedCount}/{chapterLessons.length} הושלמו</p>
+                        <h4 className="text-white font-bold text-sm lg:text-base">{chapter.title}</h4>
+                        <p className="text-white/70 text-sm">{chapterCompletedCount}/{chapterLessons.length} הושלמו</p>
                       </div>
                     </div>
-                    {isExpanded ? <ChevronUp className="w-4 h-4 lg:w-5 lg:h-5 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5 text-muted-foreground" />}
+                    {isExpanded ? <ChevronUp className="w-4 h-4 lg:w-5 lg:h-5 text-white/70" /> : <ChevronDown className="w-4 h-4 lg:w-5 lg:h-5 text-white/70" />}
                   </button>
 
                   <AnimatePresence initial={false}>
@@ -884,29 +884,29 @@ export default function CourseView() {
                               onClick={() => selectLesson(lesson)}
                               className={`w-full p-3 pr-8 lg:p-4 lg:pr-12 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right focus-visible:ring-2 focus-visible:ring-[#c9b14d] ${
                                 isCurrent
-                                  ? 'bg-[#c9b14d]/10 border-r-2 border-[#c9b14d]'
-                                  : 'hover:bg-secondary/50'
+                                  ? 'bg-[#c9b14d]/15 border-r-2 border-[#c9b14d]'
+                                  : 'hover:bg-white/10'
                               }`}
                             >
                               <div className={`w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center shrink-0 ${
-                                isCurrent ? 'bg-[#c9b14d]' : 'bg-secondary'
+                                isCurrent ? 'bg-[#c9b14d]' : 'bg-white/15'
                               }`}>
                                 {lesson.lesson_type === 'external_link' ? (
-                                  <FileText className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-foreground" />
+                                  <FileText className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" />
                                 ) : (
-                                  <span className="text-xs text-foreground">{lessonIndex + 1}</span>
+                                  <span className="text-xs text-white">{lessonIndex + 1}</span>
                                 )}
                               </div>
                               {isCompleted && (
-                                <div className="w-4 h-4 lg:w-5 lg:h-5 rounded-full bg-[#105330] flex items-center justify-center shrink-0">
-                                  <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" strokeWidth={3} />
+                                <div className="w-4 h-4 lg:w-5 lg:h-5 rounded-full bg-white flex items-center justify-center shrink-0">
+                                  <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-[#105330]" strokeWidth={3} />
                                 </div>
                               )}
                               <div className="flex-1 min-w-0">
-                                <p className={`${isCurrent ? 'text-[#c9b14d]' : 'text-muted-foreground'} break-words text-sm`}>
+                                <p className={`${isCurrent ? 'text-[#c9b14d] font-bold' : 'text-white'} break-words text-sm`}>
                                   {lesson.title}
                                 </p>
-                                {lesson.duration && <p className="text-muted-foreground text-xs">{lesson.duration}</p>}
+                                {lesson.duration && <p className="text-white/60 text-xs">{lesson.duration}</p>}
                               </div>
                             </button>
                           );
