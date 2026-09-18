@@ -50,7 +50,7 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6" dir="rtl">
+    <div className="min-h-screen bg-[#105330] flex flex-col items-center justify-center p-6" dir="rtl">
       <style>{`
         .glass-card {
           background: rgba(255, 255, 255, 0.9);
@@ -63,15 +63,12 @@ export default function Landing() {
         {/* Logo */}
         <div className="flex flex-col items-center mb-10">
           {logoUrl ? (
-            <img src={logoUrl} alt="האקדמיה לפיננסים" className="h-28 w-auto max-w-[260px] object-contain mb-5" />
+            <img src={logoUrl} alt="האקדמיה לפיננסים" className="h-28 w-auto max-w-[260px] object-contain" />
           ) : (
-            <div className="w-20 h-20 rounded-2xl bg-[#105330] flex items-center justify-center mb-5 shadow-lg shadow-green-900/30">
-              <GraduationCap className="w-10 h-10 text-white" />
+            <div className="w-20 h-20 rounded-2xl bg-white flex items-center justify-center shadow-lg">
+              <GraduationCap className="w-10 h-10 text-[#105330]" />
             </div>
           )}
-          <h1 className="text-3xl font-bold text-center leading-tight text-[#105330]">
-            האקדמיה לפיננסים
-          </h1>
         </div>
 
         {/* Card */}
@@ -125,8 +122,8 @@ export default function Landing() {
           </form>
         </div>
 
-        <p className="text-center text-muted-foreground text-xs mt-6">
-          האקדמיה לפיננסים © {new Date().getFullYear()}
+        <p className="text-center text-white/70 text-xs mt-6">
+          © {new Date().getFullYear()}
         </p>
       </div>
     </div>

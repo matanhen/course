@@ -536,26 +536,28 @@ export default function CourseView() {
         }
       `}</style>
       {/* Header */}
-      <div className="hidden lg:flex sticky top-0 z-40 bg-[#105330] border-b border-white/10 px-6 py-3 items-center justify-between">
+      <div className="hidden lg:flex sticky top-0 z-40 bg-[#105330] border-b border-white/10 lg:mr-96 px-6 py-3 items-center relative">
         <Link to={createPageUrl('Home')}>
           <Button variant="ghost" size="icon" aria-label="חזרה" className="text-white hover:bg-white/10 min-w-[44px] min-h-[44px]">
             <ArrowLeft className="w-5 h-5" />
           </Button>
         </Link>
-        {logoUrl ? (
-          <img src={logoUrl} alt="לוגו האקדמיה" className="h-12 w-auto max-w-[240px] object-contain" />
-        ) : (
-          <span className="text-white font-bold text-lg">האקדמיה לפיננסים</span>
-        )}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center">
+          {logoUrl ? (
+            <img src={logoUrl} alt="לוגו האקדמיה" className="h-12 w-auto max-w-[240px] object-contain" />
+          ) : (
+            <span className="text-white font-bold text-lg">האקדמיה לפיננסים</span>
+          )}
+        </div>
       </div>
 
       {course.external_button_url && (
-        <div className="bg-sidebar border-b border-border px-4 py-2 lg:mr-96">
+        <div className="bg-sidebar border-b border-border px-4 py-2 lg:mr-96 flex justify-start">
           <a
             href={course.external_button_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors w-full sm:w-auto sm:mx-auto sm:min-w-[260px]"
+            className="flex items-center justify-center gap-2 bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors w-full sm:w-auto sm:min-w-[260px]"
           >
             <ExternalLink className="w-4 h-4" />
             {course.external_button_text || 'מערכת לניהול הכסף >>'}
@@ -672,7 +674,7 @@ export default function CourseView() {
           </AnimatePresence>
 
           {/* Video / Document player */}
-          <div className={`relative bg-card lg:max-w-2xl lg:mx-auto ${currentLesson?.lesson_type === 'external_link' ? 'min-h-[60vh]' : 'aspect-video'}`}>
+          <div className={`relative bg-card ${currentLesson?.lesson_type === 'external_link' ? 'min-h-[60vh]' : 'aspect-video'}`}>
             {!currentLesson ? (
               <div className="w-full h-full flex items-center justify-center">
                 <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#c9b14d]"></div>
@@ -782,7 +784,7 @@ export default function CourseView() {
 
           {/* Lesson info */}
           {currentLesson && (
-            <div className="p-3 lg:p-6 border-b border-border lg:max-w-2xl lg:mx-auto">
+            <div className="p-3 lg:p-6 border-b border-border">
               <div className="p-2.5 lg:p-4 bg-[#f3ead4] rounded-xl border border-black/10 mb-2 lg:mb-3">
                 <p className="text-black text-xs lg:text-sm mb-1">השיעור הנוכחי</p>
                 <div className="flex items-center justify-between gap-3">
@@ -822,7 +824,7 @@ export default function CourseView() {
         </div>
 
         {/* Sidebar */}
-        <aside className="lg:fixed lg:right-0 lg:top-[57px] lg:bottom-0 lg:w-96 bg-[#105330] border-l border-white/10 overflow-y-auto overscroll-behavior-none">
+        <aside className="lg:fixed lg:right-56 lg:top-0 lg:bottom-0 lg:w-96 bg-[#105330] border-l border-white/10 overflow-y-auto overscroll-behavior-none">
           <div className="p-4 border-b border-white/10 sticky top-0 bg-[#105330] z-10">
             <h3 className="font-bold text-white">תוכן הקורס</h3>
             <p className="text-white/70 text-sm mt-1">
