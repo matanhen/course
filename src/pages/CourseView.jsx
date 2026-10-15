@@ -704,7 +704,7 @@ export default function CourseView() {
                       type="button"
                       aria-label="יציאה ממסך מלא"
                       onClick={toggleFullscreen}
-                      className="absolute top-4 left-4 z-40 w-9 h-9 lg:w-11 lg:h-11 rounded-full bg-background/60 backdrop-blur-sm flex items-center justify-center hover:bg-background/80 transition-colors"
+                      className="absolute top-4 left-4 z-40 w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-background/60 backdrop-blur-sm flex items-center justify-center hover:bg-background/80 transition-colors"
                     >
                       <X className="w-6 h-6 text-foreground" />
                     </button>
@@ -744,7 +744,7 @@ export default function CourseView() {
                           type="button"
                           onClick={() => setSpeedMenuOpen(o => !o)}
                           aria-label="מהירות נגינה"
-                          className="h-9 min-w-[36px] px-1.5 lg:h-11 lg:min-w-[44px] lg:px-2 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors text-foreground text-xs font-medium focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
+                          className="h-7 min-w-[28px] px-1 lg:h-8 lg:min-w-[32px] lg:px-1.5 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors text-foreground text-xs font-medium focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
                         >
                           {playbackRate}x
                         </button>
@@ -767,7 +767,7 @@ export default function CourseView() {
                         type="button"
                         aria-label={fsMode ? "צא ממסך מלא" : "מסך מלא"}
                         onClick={toggleFullscreen}
-                        className="w-9 h-9 lg:w-11 lg:h-11 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
+                        className="w-7 h-7 lg:w-8 lg:h-8 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
                       >
                         {fsMode ? <Minimize2 className="w-5 h-5 text-foreground" /> : <Maximize2 className="w-5 h-5 text-foreground" />}
                       </button>
