@@ -235,37 +235,37 @@ export default function Layout({ children, currentPageName }) {
       {/* Mobile Header */}
       <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[var(--green-primary)]"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-        <div className="flex items-center justify-between px-4 py-2.5">
+        <div className="flex items-center justify-between px-3 py-1">
           {isRootPage ? (
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setSidebarOpen(true)}
-              className="text-white hover:bg-white/10 min-w-[44px] min-h-[44px]"
+              className="text-white hover:bg-white/10 min-w-[36px] min-h-[36px]"
             >
-              <Menu className="w-6 h-6" />
+              <Menu className="w-5 h-5" />
             </Button>
           ) : (
             <Button
               variant="ghost"
               size="icon"
               onClick={() => navigate(-1)}
-              className="text-white hover:bg-white/10 min-w-[44px] min-h-[44px]"
+              className="text-white hover:bg-white/10 min-w-[36px] min-h-[36px]"
             >
-              <ArrowRight className="w-6 h-6" />
+              <ArrowRight className="w-5 h-5" />
             </Button>
           )}
           <div className="flex items-center gap-2">
             {logoUrl ? (
-              <img src={logoUrl} alt="לוגו האקדמיה" className="h-11 w-auto max-w-[210px] object-contain" />
+              <img src={logoUrl} alt="לוגו האקדמיה" className="h-8 w-auto max-w-[180px] object-contain" />
             ) : (
               <>
-                <GraduationCap className="w-7 h-7 text-[var(--gold)]" />
-                <span className="font-bold text-white text-sm">האקדמיה של צעירים מתעשרים</span>
+                <GraduationCap className="w-6 h-6 text-[var(--gold)]" />
+                <span className="font-bold text-white text-xs">האקדמיה של צעירים מתעשרים</span>
               </>
             )}
           </div>
-          <div className="w-[44px]" />
+          <div className="w-[36px]" />
         </div>
       </header>
 
@@ -421,7 +421,7 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Main Content */}
-      <main className={`${currentPageName !== 'CourseView' ? 'lg:mr-56' : ''} pt-16 lg:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-0 min-h-screen`}>
+      <main className={`${currentPageName !== 'CourseView' ? 'lg:mr-56' : ''} pt-12 lg:pt-0 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-0 min-h-screen`}>
         {children}
       </main>
     </div>

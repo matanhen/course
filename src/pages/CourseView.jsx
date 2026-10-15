@@ -104,7 +104,7 @@ export default function CourseView() {
   const { data: progress = [] } = useQuery({
     queryKey: ['progress', normalizedEmail, courseId],
     queryFn: () => base44.entities.LessonProgress.filter({ user_email: normalizedEmail, course_id: courseId }),
-    enabled: !!normalizedEmail && !!courseId && !isAdmin,
+    enabled: !!normalizedEmail && !!courseId,
     staleTime: 30_000,
   });
 
@@ -350,13 +350,13 @@ export default function CourseView() {
 
   // Mark the current lesson as watched as soon as the user opens it
   useEffect(() => {
-    if (!currentLesson || isAdmin || !normalizedEmail) return;
+    if (!currentLesson || !normalizedEmail) return;
     updateProgressMutationRef.current?.mutate({
       lessonId: currentLesson.id,
       progressPercent: 100,
       completed: true,
     });
-  }, [currentLesson?.id, isAdmin, normalizedEmail]);
+  }, [currentLesson?.id, normalizedEmail]);
 
   // YouTube player — uses the official IFrame Player API inside a host div
   // (React never owns the iframe, avoiding reconciliation conflicts) to
@@ -557,7 +557,7 @@ export default function CourseView() {
             href={course.external_button_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 bg-[var(--gold)] hover:bg-[var(--gold-dark)] text-black font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors w-full sm:w-auto sm:min-w-[260px]"
+            className="flex items-center justify-center gap-2 bg-[var(--gold)] hover:bg-[var(--gold-dark)] text-black font-semibold rounded-lg px-3 py-1.5 text-xs transition-colors w-auto sm:px-5 sm:py-2.5 sm:text-sm sm:min-w-[260px]"
           >
             <ExternalLink className="w-4 h-4" />
             {course.external_button_text || 'מערכת לניהול הכסף >>'}
@@ -572,7 +572,7 @@ export default function CourseView() {
           <div className="px-4 py-2 bg-sidebar border-b border-border flex items-center justify-center lg:justify-start gap-2">
             <button
               onClick={() => setCourseContentOpen(prev => !prev)}
-              className="flex items-center gap-2 bg-[var(--green-primary)] text-white hover:bg-[var(--green-dark)] px-3 py-1.5 min-h-[44px] rounded-lg transition-colors font-medium text-sm focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
+              className="flex items-center gap-2 bg-[var(--green-primary)] text-white hover:bg-[var(--green-dark)] px-2 py-1 text-xs rounded-lg transition-colors font-medium focus-visible:ring-2 focus-visible:ring-[var(--gold)] sm:px-3 sm:py-1.5 sm:text-sm sm:min-h-[44px]"
             >
               <BookOpen className="w-4 h-4" />
               <span>תוכן הקורס</span>
@@ -649,8 +649,8 @@ export default function CourseView() {
                                       )}
                                     </div>
                                     {isCompleted && (
-                                      <div className="w-4 h-4 lg:w-5 lg:h-5 rounded-full bg-white flex items-center justify-center shrink-0">
-                                        <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-[var(--green-primary)]" strokeWidth={3} />
+                                      <div className="w-5 h-5 rounded-full bg-[var(--gold)] flex items-center justify-center shrink-0">
+                                        <Check className="w-3 h-3 text-black" strokeWidth={3} />
                                       </div>
                                     )}
                                     <div className="flex-1 min-w-0">
@@ -785,40 +785,44 @@ export default function CourseView() {
           {/* Lesson info */}
           {currentLesson && (
             <div className="p-3 lg:p-6 border-b border-border">
-              <div className="p-2.5 lg:p-4 bg-[var(--cream-bg)] rounded-xl border border-black/10 mb-2 lg:mb-3">
-                <p className="text-black text-xs lg:text-sm mb-1">השיעור הנוכחי</p>
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <h2 className="text-sm lg:text-xl font-bold text-black mb-0.5 truncate">{currentLesson.title}</h2>
-                    {currentLesson.duration && <p className="text-black/60 text-xs">משך: {currentLesson.duration}</p>}
+              <div className="flex gap-2 lg:block">
+                {/* Current lesson */}
+                <div className="flex-1 min-w-0 p-2.5 lg:p-4 bg-[var(--cream-bg)] rounded-xl border border-black/10 lg:mb-3">
+                  <p className="text-black text-xs lg:text-sm mb-1">השיעור הנוכחי</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <h2 className="text-sm lg:text-xl font-bold text-black mb-0.5 truncate">{currentLesson.title}</h2>
+                      {currentLesson.duration && <p className="text-black/60 text-xs">משך: {currentLesson.duration}</p>}
+                    </div>
+                    {!isAdmin && (
+                      <Button
+                        onClick={handleLessonComplete}
+                        disabled={isLessonCompleted(currentLesson.id)}
+                        size="sm"
+                        className={`shrink-0 ${isLessonCompleted(currentLesson.id) ? 'bg-green-600 hover:bg-green-600' : 'bg-[var(--gold)] hover:bg-[var(--gold-dark)]'} text-black font-semibold`}
+                      >
+                        {isLessonCompleted(currentLesson.id) ? (
+                          <><CheckCircle2 className="w-3.5 h-3.5 ml-1" />הושלם</>
+                        ) : 'סמן כנצפה'}
+                      </Button>
+                    )}
                   </div>
-                  {!isAdmin && (
-                    <Button
-                      onClick={handleLessonComplete}
-                      disabled={isLessonCompleted(currentLesson.id)}
-                      size="sm"
-                      className={`shrink-0 ${isLessonCompleted(currentLesson.id) ? 'bg-green-600 hover:bg-green-600' : 'bg-[var(--gold)] hover:bg-[var(--gold-dark)]'} text-black font-semibold`}
-                    >
-                      {isLessonCompleted(currentLesson.id) ? (
-                        <><CheckCircle2 className="w-3.5 h-3.5 ml-1" />הושלם</>
-                      ) : 'סמן כנצפה'}
-                    </Button>
-                  )}
                 </div>
-              </div>
 
-              {nextLesson && (
-                <div className="mt-2 lg:mt-3 p-2.5 lg:p-4 bg-[var(--cream-bg)] rounded-xl border border-black/10">
-                  <p className="text-black text-xs lg:text-sm mb-1">השיעור הבא</p>
-                  <button
-                    onClick={() => selectLesson(nextLesson)}
-                    className="w-full flex items-center gap-2 bg-[var(--green-primary)] hover:bg-[var(--green-dark)] text-white font-bold rounded-lg px-3 py-2 text-sm transition-colors"
-                  >
-                    <PlayCircle className="w-4 h-4 shrink-0" />
-                    <span className="text-right flex-1 truncate">{nextLesson.title}</span>
-                  </button>
-                </div>
-              )}
+                {/* Next lesson */}
+                {nextLesson && (
+                  <div className="flex-1 min-w-0 p-2.5 lg:p-4 bg-[var(--cream-bg)] rounded-xl border border-black/10 lg:mt-3">
+                    <p className="text-black text-xs lg:text-sm mb-1">השיעור הבא</p>
+                    <button
+                      onClick={() => selectLesson(nextLesson)}
+                      className="w-full flex items-center gap-2 bg-[var(--green-primary)] hover:bg-[var(--green-dark)] text-white font-bold rounded-lg px-3 py-2 text-sm transition-colors"
+                    >
+                      <PlayCircle className="w-4 h-4 shrink-0" />
+                      <span className="text-right flex-1 truncate">{nextLesson.title}</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -890,8 +894,8 @@ export default function CourseView() {
                                 )}
                               </div>
                               {isCompleted && (
-                                <div className="w-4 h-4 lg:w-5 lg:h-5 rounded-full bg-white flex items-center justify-center shrink-0">
-                                  <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-[var(--green-primary)]" strokeWidth={3} />
+                                <div className="w-5 h-5 rounded-full bg-[var(--gold)] flex items-center justify-center shrink-0">
+                                  <Check className="w-3 h-3 text-black" strokeWidth={3} />
                                 </div>
                               )}
                               <div className="flex-1 min-w-0">
