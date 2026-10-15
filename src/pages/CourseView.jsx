@@ -552,7 +552,7 @@ export default function CourseView() {
       </div>
 
       {course.external_button_url && (
-        <div className="bg-sidebar border-b border-border px-4 py-2 lg:mr-96 flex justify-start">
+        <div className="bg-sidebar border-b border-border px-4 py-1 lg:mr-96 flex justify-center">
           <a
             href={course.external_button_url}
             target="_blank"
@@ -704,7 +704,7 @@ export default function CourseView() {
                       type="button"
                       aria-label="יציאה ממסך מלא"
                       onClick={toggleFullscreen}
-                      className="absolute top-4 left-4 z-40 w-11 h-11 rounded-full bg-background/60 backdrop-blur-sm flex items-center justify-center hover:bg-background/80 transition-colors"
+                      className="absolute top-4 left-4 z-40 w-9 h-9 lg:w-11 lg:h-11 rounded-full bg-background/60 backdrop-blur-sm flex items-center justify-center hover:bg-background/80 transition-colors"
                     >
                       <X className="w-6 h-6 text-foreground" />
                     </button>
@@ -744,7 +744,7 @@ export default function CourseView() {
                           type="button"
                           onClick={() => setSpeedMenuOpen(o => !o)}
                           aria-label="מהירות נגינה"
-                          className="h-11 min-w-[44px] px-2 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors text-foreground text-xs font-medium focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
+                          className="h-9 min-w-[36px] px-1.5 lg:h-11 lg:min-w-[44px] lg:px-2 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors text-foreground text-xs font-medium focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
                         >
                           {playbackRate}x
                         </button>
@@ -767,7 +767,7 @@ export default function CourseView() {
                         type="button"
                         aria-label={fsMode ? "צא ממסך מלא" : "מסך מלא"}
                         onClick={toggleFullscreen}
-                        className="w-11 h-11 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
+                        className="w-9 h-9 lg:w-11 lg:h-11 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
                       >
                         {fsMode ? <Minimize2 className="w-5 h-5 text-foreground" /> : <Maximize2 className="w-5 h-5 text-foreground" />}
                       </button>
@@ -791,7 +791,7 @@ export default function CourseView() {
                   <p className="text-black text-xs lg:text-sm mb-1">השיעור הנוכחי</p>
                   <div className="flex items-center justify-between gap-2">
                     <div className="min-w-0">
-                      <h2 className="text-sm lg:text-xl font-bold text-black mb-0.5 truncate">{currentLesson.title}</h2>
+                      <h2 className="text-sm lg:text-xl font-bold text-black mb-0.5 break-words leading-snug">{currentLesson.title}</h2>
                       {currentLesson.duration && <p className="text-black/60 text-xs">משך: {currentLesson.duration}</p>}
                     </div>
                     {!isAdmin && (
@@ -815,10 +815,10 @@ export default function CourseView() {
                     <p className="text-black text-xs lg:text-sm mb-1">השיעור הבא</p>
                     <button
                       onClick={() => selectLesson(nextLesson)}
-                      className="w-full flex items-center gap-2 bg-[var(--green-primary)] hover:bg-[var(--green-dark)] text-white font-bold rounded-lg px-3 py-2 text-sm transition-colors"
+                      className="w-full flex items-center gap-2 bg-[var(--green-primary)] hover:bg-[var(--green-dark)] text-white font-bold rounded-lg px-2.5 py-1.5 text-xs transition-colors"
                     >
                       <PlayCircle className="w-4 h-4 shrink-0" />
-                      <span className="text-right flex-1 truncate">{nextLesson.title}</span>
+                      <span className="text-right flex-1 break-words leading-snug">{nextLesson.title}</span>
                     </button>
                   </div>
                 )}
