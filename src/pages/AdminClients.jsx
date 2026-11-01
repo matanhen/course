@@ -453,18 +453,52 @@ export default function AdminClients() {
     }
   }, [showAddDialog, isConsultant, isAdmin, courses]);
 
-  const filteredClients = clients
-    .filter(client => {
-      // Consultants only see their own clients; managers and admins see all
-      if (isConsultant && !hasFullAccess) {
-        return client.consultant_email === user.email;
+  // Precomputed per-client maps so filtering and card rendering stay O(1)
+  const { clientStats, accessByEmail } = useMemo(() => {
+    const access = new Map();
+    for (const a of clientAccess) {
+      let set = access.get(a.email);
+      if (!set) { set = new Set(); access.set(a.email, set); }
+      set.add(a.course_id);
+    }
+
+    const completedByEmail = new Map();
+    for (const p of allProgress) {
+      if (!p.completed) continue;
+      let m = completedByEmail.get(p.user_email);
+      if (!m) { m = new Map(); completedByEmail.set(p.user_email, m); }
+      m.set(p.course_id, (m.get(p.course_id) || 0) + 1);
+    }
+
+    const lessonsByCourse = new Map();
+    for (const l of lessons) {
+      lessonsByCourse.set(l.course_id, (lessonsByCourse.get(l.course_id) || 0) + 1);
+    }
+
+    const stats = new Map();
+    for (const [email, courseIds] of access) {
+      let totalLessons = 0;
+      let completedLessons = 0;
+      const completedMap = completedByEmail.get(email);
+      for (const courseId of courseIds) {
+        totalLessons += lessonsByCourse.get(courseId) || 0;
+        completedLessons += completedMap?.get(courseId) || 0;
       }
-      return true;
-    })
-    .filter(client => {
+      stats.set(email, { courseCount: courseIds.size, totalLessons, completedLessons });
+    }
+
+    return { clientStats: stats, accessByEmail: access };
+  }, [clientAccess, lessons, allProgress]);
+
+  const filteredClients = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    return clients.filter(client => {
+      // Consultants only see their own clients; managers and admins see all
+      if (isConsultant && !hasFullAccess && client.consultant_email !== user?.email) return false;
+
       if (isAdmin) {
         if (filterType === 'course' && selectedCourseFilter) {
-          if (!clientAccess.some(a => a.email === client.email && a.course_id === selectedCourseFilter)) return false;
+          if (!accessByEmail.get(client.email)?.has(selectedCourseFilter)) return false;
         } else if (filterType === 'consultant' && selectedConsultantFilter) {
           if (client.consultant_email !== selectedConsultantFilter) return false;
         }
@@ -474,24 +508,12 @@ export default function AdminClients() {
       }
       // Hide consultants and managers from the clients list
       if (client.is_consultant || client.is_manager) return false;
-      return true;
-    })
-    .filter(client =>
-      client.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      client.name?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
 
-  const getClientProgress = (clientEmail) => {
-    const clientCourseIds = getClientCourses(clientEmail).map(c => c.id);
-    return allProgress.filter(
-      p => p.user_email === clientEmail && p.completed && clientCourseIds.includes(p.course_id)
-    ).length;
-  };
-
-  const getTotalLessons = (clientEmail) => {
-    const clientCourseIds = getClientCourses(clientEmail).map(c => c.id);
-    return lessons.filter(l => clientCourseIds.includes(l.course_id)).length;
-  };
+      if (!query) return true;
+      return client.email.toLowerCase().includes(query) ||
+        (client.name?.toLowerCase().includes(query) ?? false);
+    });
+  }, [clients, isConsultant, hasFullAccess, user?.email, isAdmin, isManager, filterType, selectedCourseFilter, selectedConsultantFilter, accessByEmail, searchQuery]);
 
   const getClientCourses = (clientEmail) => {
     const accessList = clientAccess.filter(a => a.email === clientEmail);
@@ -568,14 +590,16 @@ export default function AdminClients() {
     return clients.filter(c => c.consultant_email === consultantEmail).length;
   };
 
+  const consultantNameByEmail = useMemo(() => {
+    const map = new Map();
+    clients.forEach(c => { if (c.is_consultant && c.name) map.set(c.email, c.name); });
+    allUsers.forEach(u => { if (u.full_name) map.set(u.email, u.full_name); });
+    return map;
+  }, [clients, allUsers]);
+
   const getConsultantName = (email) => {
     if (!email) return '';
-    // Search in allUsers (admin only) first, then in AllowedClient records
-    const userMatch = allUsers.find(u => u.email === email);
-    if (userMatch?.full_name) return userMatch.full_name;
-    const clientMatch = clients.find(c => c.email === email && c.is_consultant);
-    if (clientMatch?.name) return clientMatch.name;
-    return email;
+    return consultantNameByEmail.get(email) || email;
   };
 
   const bulkAssignMutation = useMutation({
@@ -836,7 +860,7 @@ export default function AdminClients() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, x: -20 }}
-                    transition={{ delay: index * 0.05 }}
+                    transition={{ delay: Math.min(index, 8) * 0.02 }}
                   >
                     <Card className={`bg-card/50 border-border p-5 group hover:border-border transition-all ${selectedClientIds.has(client.id) ? 'border-[#c9b14d]/40' : ''}`}>
                       <div className="flex items-start justify-between gap-4 mb-4">
@@ -932,7 +956,7 @@ export default function AdminClients() {
                           </div>
                           <div className="text-right">
                             <p className="text-sm text-muted-foreground group-hover/stat:text-blue-400 transition-colors">קורסים מורשים</p>
-                            <p className="text-foreground font-semibold">{getClientCourses(client.email).length}</p>
+                            <p className="text-foreground font-semibold">{clientStats.get(client.email)?.courseCount || 0}</p>
                           </div>
                         </button>
                         <button
@@ -945,7 +969,7 @@ export default function AdminClients() {
                           <div className="text-right">
                             <p className="text-sm text-muted-foreground group-hover/stat:text-green-400 transition-colors">שיעורים נצפו</p>
                             <p className="text-foreground font-semibold">
-                              {getClientProgress(client.email)}/{getTotalLessons(client.email)}
+                              {clientStats.get(client.email)?.completedLessons || 0}/{clientStats.get(client.email)?.totalLessons || 0}
                             </p>
                           </div>
                         </button>
@@ -956,9 +980,12 @@ export default function AdminClients() {
                           <div>
                             <p className="text-sm text-muted-foreground">התקדמות</p>
                             <p className="text-foreground font-semibold">
-                              {getTotalLessons(client.email) > 0 
-                                ? Math.round((getClientProgress(client.email) / getTotalLessons(client.email)) * 100)
-                                : 0}%
+                              {(() => {
+                                const s = clientStats.get(client.email);
+                                return s && s.totalLessons > 0
+                                  ? Math.round((s.completedLessons / s.totalLessons) * 100)
+                                  : 0;
+                              })()}%
                             </p>
                           </div>
                         </div>
