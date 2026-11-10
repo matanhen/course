@@ -241,7 +241,7 @@ export default function Layout({ children, currentPageName }) {
               variant="ghost"
               size="icon"
               onClick={() => setSidebarOpen(true)}
-              className="text-white hover:bg-white/10 min-w-[36px] min-h-[36px]"
+              className="text-white hover:bg-white/10 min-w-[44px] min-h-[44px]"
             >
               <Menu className="w-5 h-5" />
             </Button>
@@ -250,7 +250,7 @@ export default function Layout({ children, currentPageName }) {
               variant="ghost"
               size="icon"
               onClick={() => navigate(-1)}
-              className="text-white hover:bg-white/10 min-w-[36px] min-h-[36px]"
+              className="text-white hover:bg-white/10 min-w-[44px] min-h-[44px]"
             >
               <ArrowRight className="w-5 h-5" />
             </Button>

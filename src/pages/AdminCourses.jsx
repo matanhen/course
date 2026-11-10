@@ -95,6 +95,20 @@ export default function AdminCourses() {
 
   const addCourseMutation = useMutation({
     mutationFn: (data) => base44.entities.Course.create(data),
+    onMutate: async (data) => {
+      await queryClient.cancelQueries({ queryKey: ['courses'] });
+      const previousCourses = queryClient.getQueryData(['courses']);
+      queryClient.setQueryData(['courses'], (old = []) => [
+        { id: `optimistic-course-${Date.now()}`, created_date: new Date().toISOString(), ...data },
+        ...old,
+      ]);
+      return { previousCourses };
+    },
+    onError: (error, data, context) => {
+      if (context?.previousCourses) {
+        queryClient.setQueryData(['courses'], context.previousCourses);
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['courses']);
       setShowAddDialog(false);
@@ -116,6 +130,29 @@ export default function AdminCourses() {
       }
       await base44.entities.Course.delete(courseId);
     },
+    onMutate: async (courseId) => {
+      await queryClient.cancelQueries({ queryKey: ['courses'] });
+      await queryClient.cancelQueries({ queryKey: ['chapters'] });
+      await queryClient.cancelQueries({ queryKey: ['lessons'] });
+      const previousCourses = queryClient.getQueryData(['courses']);
+      const previousChapters = queryClient.getQueryData(['chapters']);
+      const previousLessons = queryClient.getQueryData(['lessons']);
+      queryClient.setQueryData(['courses'], (old = []) => old.filter(c => c.id !== courseId));
+      queryClient.setQueryData(['chapters'], (old = []) => old.filter(c => c.course_id !== courseId));
+      queryClient.setQueryData(['lessons'], (old = []) => old.filter(l => l.course_id !== courseId));
+      return { previousCourses, previousChapters, previousLessons };
+    },
+    onError: (error, courseId, context) => {
+      if (context?.previousCourses) {
+        queryClient.setQueryData(['courses'], context.previousCourses);
+      }
+      if (context?.previousChapters) {
+        queryClient.setQueryData(['chapters'], context.previousChapters);
+      }
+      if (context?.previousLessons) {
+        queryClient.setQueryData(['lessons'], context.previousLessons);
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['courses']);
       queryClient.invalidateQueries(['chapters']);
@@ -127,6 +164,19 @@ export default function AdminCourses() {
   const togglePublishMutation = useMutation({
     mutationFn: ({ id, is_published }) => 
       base44.entities.Course.update(id, { is_published }),
+    onMutate: async ({ id, is_published }) => {
+      await queryClient.cancelQueries({ queryKey: ['courses'] });
+      const previousCourses = queryClient.getQueryData(['courses']);
+      queryClient.setQueryData(['courses'], (old = []) =>
+        old.map(c => (c.id === id ? { ...c, is_published } : c))
+      );
+      return { previousCourses };
+    },
+    onError: (error, variables, context) => {
+      if (context?.previousCourses) {
+        queryClient.setQueryData(['courses'], context.previousCourses);
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['courses']);
     },

@@ -289,6 +289,29 @@ export default function AdminClients() {
       
       return client;
     },
+    onMutate: async (data) => {
+      const normalizedEmail = data.email.toLowerCase();
+      await queryClient.cancelQueries({ queryKey: ['clients'] });
+      const previousClients = queryClient.getQueryData(['clients']);
+      queryClient.setQueryData(['clients'], (old = []) => {
+        if (old.some(c => c.email === normalizedEmail)) return old;
+        return [{
+          id: `optimistic-client-${normalizedEmail}`,
+          email: normalizedEmail,
+          name: data.name || '',
+          consultant_email: data.consultant_email && data.consultant_email !== '__none__'
+            ? data.consultant_email
+            : (user?.user_type === 'consultant' ? user.email : null),
+          created_date: new Date().toISOString(),
+        }, ...old];
+      });
+      return { previousClients };
+    },
+    onError: (error, data, context) => {
+      if (context?.previousClients) {
+        queryClient.setQueryData(['clients'], context.previousClients);
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['clients']);
       queryClient.invalidateQueries(['clientAccess']);
@@ -403,6 +426,23 @@ export default function AdminClients() {
       }
       await base44.entities.AllowedClient.delete(client.id);
     },
+    onMutate: async (client) => {
+      await queryClient.cancelQueries({ queryKey: ['clients'] });
+      await queryClient.cancelQueries({ queryKey: ['clientAccess'] });
+      const previousClients = queryClient.getQueryData(['clients']);
+      const previousAccess = queryClient.getQueryData(['clientAccess']);
+      queryClient.setQueryData(['clients'], (old = []) => old.filter(c => c.id !== client.id));
+      queryClient.setQueryData(['clientAccess'], (old = []) => old.filter(a => a.email !== client.email));
+      return { previousClients, previousAccess };
+    },
+    onError: (error, client, context) => {
+      if (context?.previousClients) {
+        queryClient.setQueryData(['clients'], context.previousClients);
+      }
+      if (context?.previousAccess) {
+        queryClient.setQueryData(['clientAccess'], context.previousAccess);
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['clients']);
       queryClient.invalidateQueries(['clientAccess']);
@@ -416,6 +456,19 @@ export default function AdminClients() {
       const access = clientAccess.find(a => a.email === email && a.course_id === course_id);
       return base44.entities.ClientCourseAccess.delete(access.id);
     },
+    onMutate: async ({ email, course_id }) => {
+      await queryClient.cancelQueries({ queryKey: ['clientAccess'] });
+      const previousAccess = queryClient.getQueryData(['clientAccess']);
+      queryClient.setQueryData(['clientAccess'], (old = []) =>
+        old.filter(a => !(a.email === email && a.course_id === course_id))
+      );
+      return { previousAccess };
+    },
+    onError: (error, variables, context) => {
+      if (context?.previousAccess) {
+        queryClient.setQueryData(['clientAccess'], context.previousAccess);
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['clientAccess']);
       setRemoveAccess(null);
@@ -428,6 +481,21 @@ export default function AdminClients() {
         email: email,
         course_id: course_id
       });
+    },
+    onMutate: async ({ email, course_id }) => {
+      await queryClient.cancelQueries({ queryKey: ['clientAccess'] });
+      const previousAccess = queryClient.getQueryData(['clientAccess']);
+      queryClient.setQueryData(['clientAccess'], (old = []) =>
+        old.some(a => a.email === email && a.course_id === course_id)
+          ? old
+          : [...old, { id: `optimistic-access-${email}-${course_id}`, email, course_id }]
+      );
+      return { previousAccess };
+    },
+    onError: (error, variables, context) => {
+      if (context?.previousAccess) {
+        queryClient.setQueryData(['clientAccess'], context.previousAccess);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['clientAccess']);
