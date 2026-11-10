@@ -61,14 +61,22 @@ export default function Landing() {
 
   if (checkingAuth) {
     return (
-      <div className="min-h-screen bg-[#105330] flex items-center justify-center" dir="rtl">
+      <div
+        className="min-h-screen bg-[#105330] flex items-center justify-center"
+        style={{ paddingLeft: 'env(safe-area-inset-left)', paddingRight: 'env(safe-area-inset-right)' }}
+        dir="rtl"
+      >
         <div className="w-10 h-10 border-4 border-white/30 border-t-white rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#105330] flex flex-col items-center justify-center p-6" dir="rtl">
+    <div
+      className="min-h-screen bg-[#105330] flex flex-col items-center justify-center p-6"
+      style={{ paddingLeft: 'calc(1.5rem + env(safe-area-inset-left))', paddingRight: 'calc(1.5rem + env(safe-area-inset-right))' }}
+      dir="rtl"
+    >
       <style>{`
         .glass-card {
           background: rgba(255, 255, 255, 0.9);

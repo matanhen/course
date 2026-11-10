@@ -136,7 +136,8 @@ button:focus-visible {
     --secondary: 150 10% 16%;
     --secondary-foreground: 40 30% 95%;
     --muted: 150 10% 16%;
-    --muted-foreground: 40 20% 70%;
+    /* WCAG AA against the dark background (≈11:1) */
+    --muted-foreground: 40 20% 75%;
     --accent: 48 53% 60%;
     --accent-foreground: 150 18% 12%;
     --destructive: 0 62.8% 45%;
@@ -173,6 +174,17 @@ button:focus-visible {
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Visible keyboard focus on every interactive element and card link */
+  a:focus-visible,
+  button:focus-visible,
+  [role="button"]:focus-visible,
+  [role="slider"]:focus-visible,
+  [tabindex]:focus-visible,
+  summary:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
   }
 }
 

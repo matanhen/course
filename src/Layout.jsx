@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { base44 } from '@/api/base44Client';
-import MobileBottomNav from '@/components/MobileBottomNav';
+import MobileBottomNav, { popCurrentTab } from '@/components/MobileBottomNav';
 import { 
   BookOpen, 
   Users, 
@@ -249,7 +249,8 @@ export default function Layout({ children, currentPageName }) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate(-1)}
+              onClick={() => { if (!popCurrentTab(navigate, location)) navigate(-1); }}
+              aria-label="חזרה"
               className="text-white hover:bg-white/10 min-w-[44px] min-h-[44px]"
             >
               <ArrowRight className="w-5 h-5" />
@@ -286,6 +287,11 @@ export default function Layout({ children, currentPageName }) {
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               className="fixed top-0 right-0 bottom-0 w-72 bg-[var(--green-primary)] z-50 lg:hidden border-l border-white/10"
+              style={{
+                paddingTop: 'env(safe-area-inset-top)',
+                paddingLeft: 'env(safe-area-inset-left)',
+                paddingRight: 'env(safe-area-inset-right)'
+              }}
             >
               <div className="flex items-center justify-between p-4 border-b border-white/10">
                 <div className="flex items-center gap-2">
@@ -357,7 +363,11 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Desktop Sidebar */}
       <aside className={`hidden ${currentPageName !== 'CourseView' ? 'lg:flex' : ''} flex-col fixed top-0 right-0 bottom-0 w-56 bg-[var(--green-primary)] border-l border-white/10`}
-        style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        style={{
+          paddingTop: 'env(safe-area-inset-top)',
+          paddingLeft: 'env(safe-area-inset-left)',
+          paddingRight: 'env(safe-area-inset-right)'
+        }}>
         <div className="p-6 border-b border-white/10">
           {currentPageName !== 'CourseView' ? (
             <div className="flex items-center gap-3">

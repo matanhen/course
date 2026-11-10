@@ -536,7 +536,14 @@ export default function CourseView() {
         }
       `}</style>
       {/* Header */}
-      <div className="hidden lg:flex sticky top-0 z-40 bg-[var(--green-primary)] border-b border-white/10 lg:mr-96 px-6 py-3 items-center relative">
+      <div
+        className="hidden lg:flex sticky top-0 z-40 bg-[var(--green-primary)] border-b border-white/10 lg:mr-96 px-6 py-3 items-center relative"
+        style={{
+          paddingTop: 'calc(0.75rem + env(safe-area-inset-top))',
+          paddingLeft: 'calc(1.5rem + env(safe-area-inset-left))',
+          paddingRight: 'calc(1.5rem + env(safe-area-inset-right))'
+        }}
+      >
         <Link to={createPageUrl('Home')}>
           <Button variant="ghost" size="icon" aria-label="חזרה" className="text-white hover:bg-white/10 min-w-[44px] min-h-[44px]">
             <ArrowLeft className="w-5 h-5" />
@@ -734,6 +741,11 @@ export default function CourseView() {
                       <div
                         ref={seekBarRef}
                         tabIndex={0}
+                        role="slider"
+                        aria-label="פס התקדמות הסרטון"
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-valuenow={videoProgress}
                         className="flex-1 h-6 flex items-center cursor-pointer relative touch-none rounded-full focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
                         onPointerDown={onSeekPointerDown}
                         onPointerMove={onSeekPointerMove}
@@ -834,7 +846,10 @@ export default function CourseView() {
         </div>
 
         {/* Sidebar */}
-        <aside className="lg:fixed lg:right-0 lg:top-0 lg:bottom-0 lg:w-96 bg-[var(--green-primary)] border-l border-white/10 overflow-y-auto overscroll-behavior-none">
+        <aside
+          className="lg:fixed lg:right-0 lg:top-0 lg:bottom-0 lg:w-96 bg-[var(--green-primary)] border-l border-white/10 overflow-y-auto overscroll-behavior-none"
+          style={{ paddingLeft: 'env(safe-area-inset-left)', paddingRight: 'env(safe-area-inset-right)' }}
+        >
           <div className="p-4 border-b border-white/10 sticky top-0 bg-[var(--green-primary)] z-10">
             <h3 className="font-bold text-white">תוכן הקורס</h3>
             <p className="text-white/70 text-sm mt-1">

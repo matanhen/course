@@ -38,8 +38,31 @@ const DEFAULT_TABS = getTabsForRole(null, false, false);
 const tabHistory = {};
 const scrollPositions = {};
 
+// Tabs currently rendered — lets the exported helpers resolve the active tab
+let activeTabs = DEFAULT_TABS;
+
 const getTabForPath = (pathname, tabs) =>
   tabs.find(t => t.path === pathname || (t.path === '/Home' && pathname === '/home')) || tabs[0];
+
+// Pop the active tab's navigation stack. Returns true when it navigated to a
+// previous in-tab entry, false when the stack holds only the tab root.
+export const popCurrentTab = (navigate, location) => {
+  const fullPath = location.pathname + (location.search || '');
+  const tab = getTabForPath(location.pathname, activeTabs);
+  const stack = [...(tabHistory[tab.path] || [tab.path])];
+
+  if (stack.length > 1 && (stack[stack.length - 1] === fullPath || stack[stack.length - 1] === location.pathname)) {
+    stack.pop();
+  }
+
+  if (stack.length > 1) {
+    const dest = stack[stack.length - 1];
+    tabHistory[tab.path] = stack;
+    navigate(dest);
+    return true;
+  }
+  return false;
+};
 
 export default function MobileBottomNav() {
   const location = useLocation();
@@ -72,7 +95,18 @@ export default function MobileBottomNav() {
     return () => { cancelled = true; };
   }, []);
 
+  activeTabs = tabs;
+
   const currentTab = getTabForPath(location.pathname, tabs);
+
+  // Keep the active tab's stack in sync with in-tab navigation
+  useEffect(() => {
+    const fullPath = location.pathname + location.search;
+    const tab = getTabForPath(location.pathname, tabs);
+    const stack = tabHistory[tab.path] || [tab.path];
+    if (stack[stack.length - 1] !== fullPath) stack.push(fullPath);
+    tabHistory[tab.path] = stack;
+  }, [location.pathname, location.search, tabs]);
 
   // Save scroll position for the current full path
   useEffect(() => {
