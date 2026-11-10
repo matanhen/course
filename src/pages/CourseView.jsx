@@ -642,7 +642,7 @@ export default function CourseView() {
                                     onClick={() => { selectLesson(lesson); setCourseContentOpen(false); }}
                                     className={`w-full p-3 pr-8 lg:p-3 lg:pr-10 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right focus-visible:ring-2 focus-visible:ring-[var(--gold)] ${
                                       isCurrent
-                                        ? 'bg-[var(--gold)]/15 border-r-2 border-[var(--gold)]'
+                                        ? 'bg-accent/15 border-r-2 border-[var(--gold)]'
                                         : 'hover:bg-white/10'
                                     }`}
                                   >
@@ -773,7 +773,7 @@ export default function CourseView() {
                                 key={r}
                                 type="button"
                                 onClick={() => changeRate(r)}
-                                className={`block w-full px-3 py-2 text-xs text-foreground hover:bg-secondary transition-colors text-center ${r === playbackRate ? 'bg-[var(--gold)]/20 text-[var(--gold)]' : ''}`}
+                                className={`block w-full px-3 py-2 text-xs text-foreground hover:bg-secondary transition-colors text-center ${r === playbackRate ? 'bg-accent/20 text-[var(--gold)]' : ''}`}
                               >
                                 {r}x
                               </button>
@@ -901,7 +901,7 @@ export default function CourseView() {
                               onClick={() => selectLesson(lesson)}
                               className={`w-full p-3 pr-8 lg:p-4 lg:pr-12 min-h-[44px] flex items-center gap-2 lg:gap-3 transition-all text-right focus-visible:ring-2 focus-visible:ring-[var(--gold)] ${
                                 isCurrent
-                                  ? 'bg-[var(--gold)]/15 border-r-2 border-[var(--gold)]'
+                                  ? 'bg-accent/15 border-r-2 border-[var(--gold)]'
                                   : 'hover:bg-white/10'
                               }`}
                             >

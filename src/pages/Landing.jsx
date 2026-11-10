@@ -114,7 +114,7 @@ export default function Landing() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="כתובת אימייל"
-                className="bg-card/80 border-border text-foreground placeholder:text-muted-foreground pr-11 py-6 focus:border-[var(--green-primary)] focus:ring-[var(--green-primary)]/20"
+                className="bg-card/80 border-border text-foreground placeholder:text-muted-foreground pr-11 py-6 focus:border-[var(--green-primary)] focus:ring-primary/20"
                 dir="rtl"
               />
             </div>

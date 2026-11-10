@@ -207,7 +207,7 @@ export default function AdminDashboard() {
             transition={{ delay: index * 0.1 }}
           >
             <Link to={createPageUrl(stat.link)} aria-label={`מעבר ל${stat.title}`}>
-              <Card className="bg-card/50 border-border hover:border-[var(--gold)]/30 transition-all p-6 group">
+              <Card className="bg-card/50 border-border hover:border-accent/30 transition-all p-6 group">
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-4`}>
                   <stat.icon className="w-6 h-6 text-foreground" />
                 </div>
@@ -225,9 +225,9 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {!isManager && (
             <Link to={createPageUrl('AdminCourses')} aria-label="הוסף קורס חדש">
-              <Card className="bg-card/50 border-border hover:border-[var(--gold)]/50 p-6 transition-all group">
+              <Card className="bg-card/50 border-border hover:border-accent/50 p-6 transition-all group">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-[var(--gold)]/10 flex items-center justify-center">
+                  <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center">
                     <Plus className="w-7 h-7 text-[var(--gold)]" />
                   </div>
                   <div>
@@ -243,7 +243,7 @@ export default function AdminDashboard() {
           )}
 
           <Link to={createPageUrl('AdminClients')} aria-label="נהל לקוחות">
-            <Card className="bg-card/50 border-border hover:border-[var(--gold)]/50 p-6 transition-all group">
+            <Card className="bg-card/50 border-border hover:border-accent/50 p-6 transition-all group">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-xl bg-purple-500/10 flex items-center justify-center">
                   <Users className="w-7 h-7 text-purple-500" />
@@ -282,7 +282,7 @@ export default function AdminDashboard() {
               
               return (
                 <Link key={course.id} to={isManager ? '#' : createPageUrl(`AdminCourseEdit?id=${course.id}`)} aria-label={`עריכת קורס ${course.title}`}>
-                  <Card className="bg-card/50 border-border hover:border-[var(--gold)]/30 transition-all overflow-hidden group">
+                  <Card className="bg-card/50 border-border hover:border-accent/30 transition-all overflow-hidden group">
                     <div className="aspect-video bg-secondary relative overflow-hidden">
                       {course.thumbnail ? (
                         <img 

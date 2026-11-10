@@ -930,7 +930,7 @@ export default function AdminClients() {
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ delay: Math.min(index, 8) * 0.02 }}
                   >
-                    <Card className={`bg-card/50 border-border p-5 group hover:border-border transition-all ${selectedClientIds.has(client.id) ? 'border-[var(--gold)]/40' : ''}`}>
+                    <Card className={`bg-card/50 border-border p-5 group hover:border-border transition-all ${selectedClientIds.has(client.id) ? 'border-accent/40' : ''}`}>
                       <div className="flex items-start justify-between gap-4 mb-4">
                         <div className="flex items-center gap-4">
                           {isAdmin && (
@@ -986,7 +986,7 @@ export default function AdminClients() {
                               variant="outline"
                               size="sm"
                               onClick={() => setShowAssignConsultantDialog({ client, consultant_email: client.consultant_email || '' })}
-                              className="text-[var(--gold)] border-[var(--gold)]/30 hover:bg-[var(--gold)]/10 opacity-70 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity shrink-0"
+                              className="text-[var(--gold)] border-accent/30 hover:bg-accent/10 opacity-70 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity shrink-0"
                             >
                               <UserPlus className="w-4 h-4 ml-1" />
                               שייך יועץ
@@ -1042,7 +1042,7 @@ export default function AdminClients() {
                           </div>
                         </button>
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-lg bg-[var(--gold)]/10 flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
                             <TrendingUp className="w-4 h-4 text-[var(--gold)]" />
                           </div>
                           <div>
@@ -1346,7 +1346,7 @@ export default function AdminClients() {
                           document.getElementById(`course-details-${course.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         }
                       }}
-                      className="p-4 bg-secondary/50 border border-border rounded-lg hover:border-[var(--gold)]/50 transition-all text-right group"
+                      className="p-4 bg-secondary/50 border border-border rounded-lg hover:border-accent/50 transition-all text-right group"
                     >
                       <div className="flex items-center justify-between">
                         <div>

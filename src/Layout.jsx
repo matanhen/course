@@ -322,7 +322,7 @@ export default function Layout({ children, currentPageName }) {
                     onClick={() => setSidebarOpen(false)}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                       currentPageName === link.page
-                        ? 'bg-[var(--gold)]/15 text-[var(--gold)] font-bold'
+                        ? 'bg-accent/15 text-[var(--gold)] font-bold'
                         : 'text-white font-bold hover:text-white hover:bg-white/10'
                     }`}
                   >
@@ -397,7 +397,7 @@ export default function Layout({ children, currentPageName }) {
               to={createPageUrl(link.page)}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                 currentPageName === link.page
-                  ? 'bg-[var(--gold)]/15 text-[var(--gold)] border border-[var(--gold)]/30 font-bold'
+                  ? 'bg-accent/15 text-[var(--gold)] border border-accent/30 font-bold'
                   : 'text-white font-bold hover:text-white hover:bg-white/10'
               }`}
             >

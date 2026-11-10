@@ -130,7 +130,7 @@ export default function Home() {
                 transition={{ delay: index * 0.1 }}
               >
                 <Link to={createPageUrl(`CourseView?id=${course.id}`)} aria-label={`קורס ${course.title}`}>
-                  <Card className="group bg-card/50 border-border hover:border-[var(--gold)]/50 transition-all duration-300 overflow-hidden">
+                  <Card className="group bg-card/50 border-border hover:border-accent/50 transition-all duration-300 overflow-hidden">
                     {/* Thumbnail */}
                     <div className="relative aspect-video bg-secondary overflow-hidden">
                       {course.thumbnail ? (

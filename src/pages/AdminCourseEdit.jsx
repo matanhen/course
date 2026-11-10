@@ -629,7 +629,7 @@ export default function AdminCourseEdit() {
                                     >
                                       <GripVertical className="w-5 h-5 text-muted-foreground hover:text-muted-foreground" />
                                     </div>
-                                    <div className="w-8 h-8 rounded-lg bg-[var(--gold)]/10 flex items-center justify-center">
+                                    <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
                                       <span className="text-[var(--gold)] font-bold text-sm">
                                         {chapterIndex + 1}
                                       </span>
@@ -644,7 +644,7 @@ export default function AdminCourseEdit() {
                               variant="ghost"
                               size="sm"
                               onClick={() => openAddLesson(chapter.id)}
-                              className="text-[var(--gold)] hover:text-[var(--gold-dark)] hover:bg-[var(--gold)]/10"
+                              className="text-[var(--gold)] hover:text-[var(--gold-dark)] hover:bg-accent/10"
                             >
                               <Plus className="w-4 h-4 ml-1" />
                               שיעור
