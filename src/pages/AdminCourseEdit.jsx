@@ -244,7 +244,7 @@ export default function AdminCourseEdit() {
   if (!user || courseLoading || !editingCourse) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c9b14d]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--gold)]"></div>
       </div>
     );
   }
@@ -552,7 +552,7 @@ export default function AdminCourseEdit() {
               <Button
                 onClick={handleSaveCourse}
                 disabled={updateCourseMutation.isPending}
-                className="w-full bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold mt-4"
+                className="w-full bg-[var(--gold)] hover:bg-[var(--gold-dark)] text-black font-semibold mt-4"
               >
                 <Save className="w-4 h-4 ml-2" />
                 {updateCourseMutation.isPending ? 'שומר...' : 'שמור שינויים'}
@@ -571,7 +571,7 @@ export default function AdminCourseEdit() {
                 setNewChapter({ title: '' });
                 setShowChapterDialog(true);
               }}
-              className="bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold"
+              className="bg-[var(--gold)] hover:bg-[var(--gold-dark)] text-black font-semibold"
             >
               <Plus className="w-4 h-4 ml-2" />
               פרק חדש
@@ -584,7 +584,7 @@ export default function AdminCourseEdit() {
               <p className="text-muted-foreground mb-4">אין פרקים עדיין</p>
               <Button
                 onClick={() => setShowChapterDialog(true)}
-                className="bg-[#c9b14d] hover:bg-[#a89436] text-black"
+                className="bg-[var(--gold)] hover:bg-[var(--gold-dark)] text-black"
               >
                 <Plus className="w-4 h-4 ml-2" />
                 הוסף פרק ראשון
@@ -629,8 +629,8 @@ export default function AdminCourseEdit() {
                                     >
                                       <GripVertical className="w-5 h-5 text-muted-foreground hover:text-muted-foreground" />
                                     </div>
-                                    <div className="w-8 h-8 rounded-lg bg-[#c9b14d]/10 flex items-center justify-center">
-                                      <span className="text-[#c9b14d] font-bold text-sm">
+                                    <div className="w-8 h-8 rounded-lg bg-[var(--gold)]/10 flex items-center justify-center">
+                                      <span className="text-[var(--gold)] font-bold text-sm">
                                         {chapterIndex + 1}
                                       </span>
                                     </div>
@@ -644,7 +644,7 @@ export default function AdminCourseEdit() {
                               variant="ghost"
                               size="sm"
                               onClick={() => openAddLesson(chapter.id)}
-                              className="text-[#c9b14d] hover:text-[#a89436] hover:bg-[#c9b14d]/10"
+                              className="text-[var(--gold)] hover:text-[var(--gold-dark)] hover:bg-[var(--gold)]/10"
                             >
                               <Plus className="w-4 h-4 ml-1" />
                               שיעור
@@ -715,7 +715,7 @@ export default function AdminCourseEdit() {
                                                 <p className="text-muted-foreground text-xs">{lesson.duration}</p>
                                               )}
                                               {lesson.lesson_type === 'external_link' && (
-                                                <span className="text-[#c9b14d] text-xs">קישור חיצוני</span>
+                                                <span className="text-[var(--gold)] text-xs">קישור חיצוני</span>
                                               )}
                                             </div>
                                           </div>
@@ -798,7 +798,7 @@ export default function AdminCourseEdit() {
               <Button
                 type="submit"
                 disabled={addChapterMutation.isPending || updateChapterMutation.isPending}
-                className="flex-1 bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold"
+                className="flex-1 bg-[var(--gold)] hover:bg-[var(--gold-dark)] text-black font-semibold"
               >
                 {editingChapter ? 'עדכן' : 'הוסף'}
               </Button>
@@ -909,7 +909,7 @@ export default function AdminCourseEdit() {
               <Button
                 type="submit"
                 disabled={addLessonMutation.isPending || updateLessonMutation.isPending}
-                className="flex-1 bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold"
+                className="flex-1 bg-[var(--gold)] hover:bg-[var(--gold-dark)] text-black font-semibold"
               >
                 {editingLesson ? 'עדכן' : 'הוסף'}
               </Button>

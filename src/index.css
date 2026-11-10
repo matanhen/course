@@ -197,3 +197,13 @@ button:focus-visible {
   backdrop-filter: blur(10px);
   border: 1px solid color-mix(in srgb, var(--gold) 25%, transparent);
 }
+
+/* Keep inner scroll areas (dialogs, drawers, panels) from chaining the scroll
+   to the page underneath / triggering the iOS rubber-band. */
+[class*='overflow-auto'],
+[class*='overflow-y-auto'],
+[class*='overflow-scroll'],
+[class*='overflow-y-scroll'],
+[class*='overflow-x-auto'] {
+  overscroll-behavior: contain;
+}

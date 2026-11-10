@@ -62,7 +62,7 @@ export default function Landing() {
   if (checkingAuth) {
     return (
       <div
-        className="min-h-screen bg-[#105330] flex items-center justify-center"
+        className="min-h-screen bg-[var(--green-primary)] flex items-center justify-center"
         style={{ paddingLeft: 'env(safe-area-inset-left)', paddingRight: 'env(safe-area-inset-right)' }}
         dir="rtl"
       >
@@ -73,7 +73,7 @@ export default function Landing() {
 
   return (
     <div
-      className="min-h-screen bg-[#105330] flex flex-col items-center justify-center p-6"
+      className="min-h-screen bg-[var(--green-primary)] flex flex-col items-center justify-center p-6"
       style={{ paddingLeft: 'calc(1.5rem + env(safe-area-inset-left))', paddingRight: 'calc(1.5rem + env(safe-area-inset-right))' }}
       dir="rtl"
     >
@@ -92,7 +92,7 @@ export default function Landing() {
             <img src={logoUrl} alt="האקדמיה לפיננסים" className="h-28 w-auto max-w-[260px] object-contain" />
           ) : (
             <div className="w-20 h-20 rounded-2xl bg-white flex items-center justify-center shadow-lg">
-              <GraduationCap className="w-10 h-10 text-[#105330]" />
+              <GraduationCap className="w-10 h-10 text-[var(--green-primary)]" />
             </div>
           )}
         </div>
@@ -114,7 +114,7 @@ export default function Landing() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="כתובת אימייל"
-                className="bg-card/80 border-border text-foreground placeholder:text-muted-foreground pr-11 py-6 focus:border-[#105330] focus:ring-[#105330]/20"
+                className="bg-card/80 border-border text-foreground placeholder:text-muted-foreground pr-11 py-6 focus:border-[var(--green-primary)] focus:ring-[var(--green-primary)]/20"
                 dir="rtl"
               />
             </div>
@@ -131,7 +131,7 @@ export default function Landing() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#105330] text-white font-bold py-6 text-base rounded-xl hover:bg-[#0a3d20] transition-colors disabled:opacity-50 mt-2"
+              className="w-full bg-[var(--green-primary)] text-white font-bold py-6 text-base rounded-xl hover:bg-[var(--green-dark)] transition-colors disabled:opacity-50 mt-2"
             >
               {loading ? (
                 <div className="flex items-center gap-2 justify-center">

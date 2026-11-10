@@ -98,7 +98,7 @@ export default function AdminDashboard() {
       title: 'קורסים', 
       value: courses.length, 
       icon: BookOpen, 
-      color: 'from-[#c9b14d] to-[#e5d07a]',
+      color: 'from-[var(--gold)] to-[#e5d07a]',
       link: 'AdminCourses'
     },
     { 
@@ -127,7 +127,7 @@ export default function AdminDashboard() {
   if (!user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c9b14d]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--gold)]"></div>
       </div>
     );
   }
@@ -154,7 +154,7 @@ export default function AdminDashboard() {
           className="flex items-center justify-center transition-all"
           style={{ height: isRefreshing ? 48 : pullDistance, overflow: 'hidden' }}
         >
-          <RefreshCw className={`w-5 h-5 text-[#c9b14d] ${isRefreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-5 h-5 text-[var(--gold)] ${isRefreshing ? 'animate-spin' : ''}`} />
         </div>
       )}
 
@@ -181,7 +181,7 @@ export default function AdminDashboard() {
               <div className="h-16 w-32 flex items-center justify-center border border-dashed border-border rounded-lg text-muted-foreground text-xs">אין לוגו</div>
             )}
             <div className="flex gap-2">
-              <label className="cursor-pointer inline-flex items-center gap-2 bg-[#c9b14d] hover:bg-[#a89436] text-black font-semibold rounded-md px-4 py-2 text-sm transition-colors">
+              <label className="cursor-pointer inline-flex items-center gap-2 bg-[var(--gold)] hover:bg-[var(--gold-dark)] text-black font-semibold rounded-md px-4 py-2 text-sm transition-colors">
                 <Upload className="w-4 h-4" />
                 {uploadingLogo ? 'מעלה...' : 'העלה לוגו'}
                 <input type="file" accept="image/*" className="hidden" onChange={onLogoUpload} disabled={uploadingLogo} />
@@ -207,12 +207,12 @@ export default function AdminDashboard() {
             transition={{ delay: index * 0.1 }}
           >
             <Link to={createPageUrl(stat.link)} aria-label={`מעבר ל${stat.title}`}>
-              <Card className="bg-card/50 border-border hover:border-[#c9b14d]/30 transition-all p-6 group">
+              <Card className="bg-card/50 border-border hover:border-[var(--gold)]/30 transition-all p-6 group">
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-4`}>
                   <stat.icon className="w-6 h-6 text-foreground" />
                 </div>
                 <h3 className="text-3xl lg:text-4xl font-bold text-foreground mb-1">{stat.value}</h3>
-                <p className="text-muted-foreground group-hover:text-[#c9b14d] transition-colors">{stat.title}</p>
+                <p className="text-muted-foreground group-hover:text-[var(--gold)] transition-colors">{stat.title}</p>
               </Card>
             </Link>
           </motion.div>
@@ -225,36 +225,36 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {!isManager && (
             <Link to={createPageUrl('AdminCourses')} aria-label="הוסף קורס חדש">
-              <Card className="bg-card/50 border-border hover:border-[#c9b14d]/50 p-6 transition-all group">
+              <Card className="bg-card/50 border-border hover:border-[var(--gold)]/50 p-6 transition-all group">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-[#c9b14d]/10 flex items-center justify-center">
-                    <Plus className="w-7 h-7 text-[#c9b14d]" />
+                  <div className="w-14 h-14 rounded-xl bg-[var(--gold)]/10 flex items-center justify-center">
+                    <Plus className="w-7 h-7 text-[var(--gold)]" />
                   </div>
                   <div>
-                    <h3 className="text-foreground font-semibold group-hover:text-[#c9b14d] transition-colors">
+                    <h3 className="text-foreground font-semibold group-hover:text-[var(--gold)] transition-colors">
                       הוסף קורס חדש
                     </h3>
                     <p className="text-muted-foreground text-sm">צור קורס חדש עם פרקים ושיעורים</p>
                   </div>
-                  <ArrowLeft className="w-5 h-5 text-muted-foreground mr-auto group-hover:text-[#c9b14d] group-hover:-translate-x-1 transition-all" />
+                  <ArrowLeft className="w-5 h-5 text-muted-foreground mr-auto group-hover:text-[var(--gold)] group-hover:-translate-x-1 transition-all" />
                 </div>
               </Card>
             </Link>
           )}
 
           <Link to={createPageUrl('AdminClients')} aria-label="נהל לקוחות">
-            <Card className="bg-card/50 border-border hover:border-[#c9b14d]/50 p-6 transition-all group">
+            <Card className="bg-card/50 border-border hover:border-[var(--gold)]/50 p-6 transition-all group">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-xl bg-purple-500/10 flex items-center justify-center">
                   <Users className="w-7 h-7 text-purple-500" />
                 </div>
                 <div>
-                  <h3 className="text-foreground font-semibold group-hover:text-[#c9b14d] transition-colors">
+                  <h3 className="text-foreground font-semibold group-hover:text-[var(--gold)] transition-colors">
                     נהל לקוחות
                   </h3>
                   <p className="text-muted-foreground text-sm">הוסף או הסר לקוחות מורשים</p>
                 </div>
-                <ArrowLeft className="w-5 h-5 text-muted-foreground mr-auto group-hover:text-[#c9b14d] group-hover:-translate-x-1 transition-all" />
+                <ArrowLeft className="w-5 h-5 text-muted-foreground mr-auto group-hover:text-[var(--gold)] group-hover:-translate-x-1 transition-all" />
               </div>
             </Card>
           </Link>
@@ -269,7 +269,7 @@ export default function AdminDashboard() {
             <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">אין קורסים עדיין</p>
             <Link to={createPageUrl('AdminCourses')} aria-label="צור קורס ראשון">
-              <Button className="mt-4 bg-[#c9b14d] hover:bg-[#a89436] text-black">
+              <Button className="mt-4 bg-[var(--gold)] hover:bg-[var(--gold-dark)] text-black">
                 צור קורס ראשון
               </Button>
             </Link>
@@ -282,7 +282,7 @@ export default function AdminDashboard() {
               
               return (
                 <Link key={course.id} to={isManager ? '#' : createPageUrl(`AdminCourseEdit?id=${course.id}`)} aria-label={`עריכת קורס ${course.title}`}>
-                  <Card className="bg-card/50 border-border hover:border-[#c9b14d]/30 transition-all overflow-hidden group">
+                  <Card className="bg-card/50 border-border hover:border-[var(--gold)]/30 transition-all overflow-hidden group">
                     <div className="aspect-video bg-secondary relative overflow-hidden">
                       {course.thumbnail ? (
                         <img 
@@ -298,7 +298,7 @@ export default function AdminDashboard() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     </div>
                     <div className="p-4">
-                      <h3 className="text-foreground font-semibold group-hover:text-[#c9b14d] transition-colors">
+                      <h3 className="text-foreground font-semibold group-hover:text-[var(--gold)] transition-colors">
                         {course.title}
                       </h3>
                       <p className="text-muted-foreground text-sm mt-1">
