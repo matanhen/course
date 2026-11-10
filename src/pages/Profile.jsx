@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { User, LogOut, Trash2 } from 'lucide-react';
+import { User, LogOut, Trash2, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -17,6 +17,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -24,27 +25,46 @@ export default function Profile() {
   }, []);
 
   const handleDeleteAccount = async () => {
+    if (!user?.email || deleting) return;
+    setDeleting(true);
+
     try {
-      // Send deletion request email to admin
-      await base44.integrations.Core.SendEmail({
-        to: 'admin@youngrichacademy.co.il',
-        subject: `בקשת מחיקת חשבון - ${user?.email}`,
-        body: `המשתמש ${user?.full_name || ''} (${user?.email}) ביקש למחוק את חשבונו.\n\nמזהה משתמש: ${user?.id}\nתאריך: ${new Date().toLocaleString('he-IL')}\n\nנא לטפל בבקשה זו בהקדם.`,
-      });
-      toast({
-        title: "הבקשה נשלחה בהצלחה",
-        description: "בקשת מחיקת החשבון נשלחה למנהל המערכת ותטופל בהקדם. תתנתק כעת מהמערכת.",
-      });
+      const emails = [...new Set([user.email, user.email.toLowerCase()])];
+
+      // Delete the client's data first (best effort — the account deletion purges it too)
+      await Promise.allSettled(emails.map(async (email) => {
+        const [allowedClients, accessRecords, progressRecords] = await Promise.all([
+          base44.entities.AllowedClient.filter({ email }),
+          base44.entities.ClientCourseAccess.filter({ email }),
+          base44.entities.LessonProgress.filter({ user_email: email }),
+        ]);
+
+        await Promise.all([
+          ...allowedClients.map(r => base44.entities.AllowedClient.delete(r.id)),
+          ...accessRecords.map(r => base44.entities.ClientCourseAccess.delete(r.id)),
+          ...progressRecords.map(r => base44.entities.LessonProgress.delete(r.id)),
+        ]);
+      }));
+
+      // Delete the user account itself
+      await base44.functions.invoke('deleteMyAccount', {});
     } catch (e) {
-      console.warn('Failed to send deletion request email', e);
+      console.warn('Account deletion failed', e);
+      setDeleting(false);
       toast({
-        title: "שגיאה בשליחת הבקשה",
-        description: "לא הצלחנו לשלוח את בקשת המחיקה, אך תתנתק מהמערכת. נא לפנות שוב למנהל המערכת.",
+        title: "שגיאה במחיקת החשבון",
+        description: "לא הצלחנו למחוק את החשבון. נא לפנות למנהל המערכת.",
         variant: "destructive",
       });
+      return;
     }
+
+    toast({
+      title: "החשבון נמחק",
+      description: "כל הנתונים שלך נמחקו לצמיתות. תתנתק כעת מהמערכת.",
+    });
     // Brief delay so the toast is visible before logout redirects
-    setTimeout(() => base44.auth.logout('/'), 1500);
+    setTimeout(() => base44.auth.logout('/'), 1200);
   };
 
   return (
@@ -92,15 +112,24 @@ export default function Profile() {
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-foreground">מחיקת חשבון</AlertDialogTitle>
                 <AlertDialogDescription className="text-muted-foreground">
-                  האם אתה בטוח שברצונך למחוק את החשבון? פעולה זו תשלח בקשה למנהל המערכת ואינה ניתנת לביטול. לאחר שליחת הבקשה תתנתק אוטומטית מהמערכת, והבקשה תטופל על ידי מנהל המערכת בהמשך.
+                  האם אתה בטוח שברצונך למחוק את החשבון? כל הנתונים שלך — הפרופיל, הגישה לקורסים וההתקדמות בשיעורים — יימחקו לצמיתות ולא ניתן יהיה לשחזר אותם. בסיום תתנתק אוטומטית מהמערכת.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter className="flex-row-reverse gap-2">
                 <AlertDialogAction
-                  onClick={handleDeleteAccount}
-                  className="bg-red-600 hover:bg-red-700 text-foreground"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleDeleteAccount();
+                  }}
+                  disabled={deleting}
+                  className="bg-red-600 hover:bg-red-700 text-foreground disabled:opacity-70"
                 >
-                  מחק חשבון
+                  {deleting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 ml-2 animate-spin" />
+                      מוחק...
+                    </>
+                  ) : 'מחק חשבון'}
                 </AlertDialogAction>
                 <AlertDialogCancel className="border-border text-muted-foreground hover:bg-secondary">
                   ביטול

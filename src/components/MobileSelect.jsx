@@ -61,7 +61,10 @@ export default function MobileSelect({
                 <DrawerTitle className="text-foreground text-center">{title}</DrawerTitle>
               </DrawerHeader>
             )}
-            <div className="p-4 space-y-1 overflow-y-auto max-h-[60vh] pb-safe">
+            <div
+              className="p-4 space-y-1 overflow-y-auto max-h-[60vh]"
+              style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom))' }}
+            >
               {options.map((opt) => (
                 <button
                   key={opt.value}

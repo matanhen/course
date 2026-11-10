@@ -717,7 +717,7 @@ export default function CourseView() {
                         <button
                           type="button"
                           aria-label={isPlaying ? "השהה" : "נגן"}
-                          className="w-16 h-16 rounded-full bg-background/60 backdrop-blur-sm flex items-center justify-center hover:bg-background/80 transition-colors"
+                          className="w-16 h-16 min-w-[44px] min-h-[44px] rounded-full bg-background/60 backdrop-blur-sm flex items-center justify-center hover:bg-background/80 transition-colors"
                           onClick={(e) => { e.stopPropagation(); togglePlayPause(); }}
                         >
                           <PlayCircle className="w-10 h-10 text-foreground" />
@@ -725,17 +725,23 @@ export default function CourseView() {
                       )}
                     </div>
                     {/* Bottom controls: seek bar, speed, fullscreen */}
-                    <div className="absolute bottom-0 left-0 right-0 px-2 pb-2 pt-6 flex items-center gap-2 bg-gradient-to-t from-black/80 to-transparent" dir="ltr">
+                    <div
+                      className="absolute bottom-0 left-0 right-0 px-2 pb-2 pt-6 flex items-center gap-2 bg-gradient-to-t from-black/80 to-transparent"
+                      style={{ paddingBottom: 'calc(0.5rem + env(safe-area-inset-bottom))' }}
+                      dir="ltr"
+                    >
                       <span className="text-white font-bold text-xs tabular-nums w-10 text-right shrink-0">{formatTime(videoTime)}</span>
                       <div
                         ref={seekBarRef}
                         tabIndex={0}
-                        className="flex-1 h-2 bg-secondary rounded-full cursor-pointer relative touch-none focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
+                        className="flex-1 h-6 flex items-center cursor-pointer relative touch-none rounded-full focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
                         onPointerDown={onSeekPointerDown}
                         onPointerMove={onSeekPointerMove}
                         onPointerUp={onSeekPointerUp}
                       >
-                        <div className="absolute inset-y-0 left-0 bg-[var(--green-primary)] rounded-full" style={{ width: `${videoProgress}%` }} />
+                        <div className="relative w-full h-2 bg-secondary rounded-full overflow-hidden">
+                          <div className="absolute inset-y-0 left-0 bg-[var(--green-primary)] rounded-full" style={{ width: `${videoProgress}%` }} />
+                        </div>
                       </div>
                       <span className="text-white font-bold text-xs tabular-nums w-10 shrink-0">{formatTime(videoDuration)}</span>
                       <div className="relative shrink-0">
@@ -744,7 +750,7 @@ export default function CourseView() {
                           type="button"
                           onClick={() => setSpeedMenuOpen(o => !o)}
                           aria-label="מהירות נגינה"
-                          className="h-7 min-w-[28px] px-1 lg:h-8 lg:min-w-[32px] lg:px-1.5 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors text-foreground text-xs font-medium focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
+                          className="min-w-[44px] min-h-[44px] px-2 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors text-foreground text-xs font-medium focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
                         >
                           {playbackRate}x
                         </button>
@@ -767,7 +773,7 @@ export default function CourseView() {
                         type="button"
                         aria-label={fsMode ? "צא ממסך מלא" : "מסך מלא"}
                         onClick={toggleFullscreen}
-                        className="w-7 h-7 lg:w-8 lg:h-8 rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
+                        className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg bg-background/50 backdrop-blur-sm flex items-center justify-center hover:bg-background/70 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[var(--gold)]"
                       >
                         {fsMode ? <Minimize2 className="w-5 h-5 text-foreground" /> : <Maximize2 className="w-5 h-5 text-foreground" />}
                       </button>
