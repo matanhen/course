@@ -46,9 +46,13 @@ export default function Landing() {
       const clientData = await base44.entities.AllowedClient.filter({ email: normalizedEmail });
 
       if (clientData.length === 0) {
-        setError('כניסה ללקוחות בלבד. האימייל שלך אינו רשום במערכת.');
-        setLoading(false);
-        return;
+        // Admins and managers may sign in as well, even without a client record
+        const access = await base44.functions.invoke('checkLoginAccess', { email: normalizedEmail });
+        if (!access.data?.allowed) {
+          setError('כניסה ללקוחות בלבד. האימייל שלך אינו רשום במערכת.');
+          setLoading(false);
+          return;
+        }
       }
 
       // Redirect to platform login — it will send a magic link and return user to /Home
